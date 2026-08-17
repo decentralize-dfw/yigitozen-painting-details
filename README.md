@@ -12,7 +12,14 @@ to 11 MB apiece, 38 in all.
 | articulo attack on mandarin, 2026 | `articuloattackonmandarin/` | 7 |
 | walls of perception, 2026 | `wallsofperception/` | 4 |
 
-## How the site uses them
+## The catalogue
+
+`catalogue/` holds the print catalogue: the PDF itself, the HTML and CSS it
+is set from, the plate images it uses, and the script that prints it.
+[yigitozen.xyz](https://yigitozen.xyz) links to the PDF here rather than
+carrying an 18 MB file of its own.
+
+## How the site uses the scans
 
 [yigitozen.xyz](https://yigitozen.xyz) does not serve these files. A page
 that asked a visitor for an 11 MB PNG per detail would not load, which is

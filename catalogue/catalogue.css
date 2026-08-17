@@ -1,0 +1,103 @@
+@page { size: 210mm 297mm; margin: 0; }
+* { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+html, body { margin: 0; padding: 0; background: #fff; color: #16130f; }
+body { font-family: "Liberation Serif", "DejaVu Serif", Georgia, serif; }
+.page {
+  width: 210mm; height: 297mm; position: relative; overflow: hidden;
+  page-break-after: always; break-after: page; background: #fff;
+}
+.page:last-child { page-break-after: auto; break-after: auto; }
+.sans { font-family: "Liberation Sans", "DejaVu Sans", Helvetica, Arial, sans-serif; }
+
+/* ---------- kapak ---------- */
+.cover { display: flex; flex-direction: column; justify-content: space-between; padding: 46mm 30mm 28mm; }
+.cover .top { }
+.cover h1 { font-size: 33pt; line-height: 1.06; font-weight: 400; letter-spacing: .01em; margin: 0; }
+.cover .alias { font-size: 10.5pt; letter-spacing: .22em; text-transform: uppercase; color: #6a615a; margin-top: 7mm; }
+.cover .rule { width: 34mm; height: .5pt; background: #16130f; margin: 12mm 0 11mm; }
+.cover .sub { font-size: 13pt; line-height: 1.5; color: #2c2722; max-width: 118mm; }
+.cover .bottom { font-size: 9.5pt; letter-spacing: .12em; text-transform: uppercase; color: #6a615a; line-height: 1.9; }
+
+/* ---------- biyografi portresi (kucuk) ---------- */
+.about .portrait { margin: 12mm 0 0; }
+.about .portrait img { width: 26mm; height: auto; display: block; box-shadow: 0 0 0 .5pt #ded7cf; }
+
+/* ---------- logo (sag ust) ---------- */
+.mark { position: absolute; top: 15mm; right: 30mm; line-height: 0; }
+.mark img { height: 12mm; width: auto; display: block; }      /* sayfalar: kucuk */
+.mark.lg { top: 30mm; }
+.mark.lg img { height: 40mm; }                                 /* kapak: orta boy */
+
+/* ---------- genel metin sayfasi ---------- */
+.sheet { padding: 30mm 30mm 26mm; height: 100%; display: flex; flex-direction: column; }
+h2.sect {
+  font-family: "Liberation Sans", "DejaVu Sans", sans-serif;
+  font-size: 9.5pt; letter-spacing: .2em; text-transform: uppercase; font-weight: 700;
+  color: #6a615a; margin: 0 0 3mm;
+}
+.sect-rule { height: .5pt; background: #cdc5bd; margin-bottom: 7mm; }
+
+/* ---------- index ---------- */
+table.idx { width: 100%; border-collapse: collapse; font-size: 9pt; }
+table.idx th {
+  font-family: "Liberation Sans", "DejaVu Sans", sans-serif;
+  font-size: 7.2pt; letter-spacing: .13em; text-transform: uppercase; color: #857b73;
+  font-weight: 700; text-align: left; padding: 0 3mm 3mm 0; border-bottom: .5pt solid #cdc5bd;
+}
+table.idx td { padding: 3.1mm 3mm 3.1mm 0; border-bottom: .25pt solid #e8e2db; vertical-align: baseline; }
+table.idx td.no { width: 9mm; color: #857b73; font-variant-numeric: tabular-nums; }
+table.idx td.ti { font-size: 9.6pt; line-height: 1.35; }
+table.idx td.yr { width: 13mm; font-variant-numeric: tabular-nums; }
+table.idx td.md { width: 38mm; color: #4a423b; }
+table.idx td.dm { width: 24mm; color: #4a423b; font-variant-numeric: tabular-nums; }
+table.idx td.lo { width: 19mm; color: #4a423b; }
+table.idx td.pg { width: 10mm; text-align: right; color: #857b73; font-variant-numeric: tabular-nums; }
+
+/* ---------- about ---------- */
+.about p { font-size: 10.5pt; line-height: 1.72; margin: 0 0 5.5mm; max-width: 128mm; }
+.about .bio { margin-top: 12mm; }
+.about h3.sub {
+  font-family: "Liberation Sans", "DejaVu Sans", sans-serif;
+  font-size: 7.8pt; letter-spacing: .18em; text-transform: uppercase; font-weight: 700;
+  color: #857b73; margin: 0 0 4mm;
+}
+.about .contact { margin-top: auto; font-size: 8.6pt; line-height: 1.8; color: #6a615a; }
+
+/* ---------- levha (plate) ---------- */
+.plate { height: 100%; display: flex; flex-direction: column; }
+.plate .band {          /* sayfanin ust %50'si */
+  height: 50%; display: flex; align-items: center; justify-content: center;
+  padding: 0 24mm;
+}
+.plate .band img {      /* bandin %60'ini kaplar */
+  max-height: 60%; max-width: 68%;
+  width: auto; height: auto; display: block;
+  box-shadow: 0 0 0 .5pt #ded7cf;
+}
+.plate .info { padding: 23mm 30mm 0; }   /* her levhada ayni Y */
+.plate .cat {
+  font-family: "Liberation Sans", "DejaVu Sans", sans-serif;
+  font-size: 8pt; letter-spacing: .2em; color: #857b73; margin-bottom: 5mm;
+}
+.plate h3 {
+  font-size: 18pt; font-weight: 400; line-height: 1.24; margin: 0 0 8mm;
+  max-width: 138mm; min-height: 16mm;   /* 2 satir: meta sabit kalir */
+}
+dl.meta { margin: 0; font-size: 9.6pt; line-height: 1.5; }
+dl.meta div { display: flex; padding: 2.2mm 0; border-top: .25pt solid #e8e2db; }
+dl.meta div:last-child { border-bottom: .25pt solid #e8e2db; }
+dl.meta dt {
+  font-family: "Liberation Sans", "DejaVu Sans", sans-serif;
+  width: 30mm; flex: 0 0 30mm; font-size: 7.4pt; letter-spacing: .13em;
+  text-transform: uppercase; color: #857b73; padding-top: .7mm;
+}
+dl.meta dd { margin: 0; color: #16130f; }
+
+/* ---------- alt bilgi ---------- */
+.foot {
+  position: absolute; left: 30mm; right: 30mm; bottom: 15mm;
+  display: flex; justify-content: space-between;
+  font-family: "Liberation Sans", "DejaVu Sans", sans-serif;
+  font-size: 7pt; letter-spacing: .13em; text-transform: uppercase; color: #9c938b;
+  border-top: .25pt solid #e8e2db; padding-top: 2.5mm;
+}
