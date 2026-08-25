@@ -9,14 +9,25 @@ body { font-family: "Liberation Serif", "DejaVu Serif", Georgia, serif; }
 .page:last-child { page-break-after: auto; break-after: auto; }
 .sans { font-family: "Liberation Sans", "DejaVu Sans", Helvetica, Arial, sans-serif; }
 
-/* ---------- kapak ---------- */
-.cover { display: flex; flex-direction: column; justify-content: space-between; padding: 46mm 30mm 28mm; }
-.cover .top { }
-.cover h1 { font-size: 33pt; line-height: 1.06; font-weight: 400; letter-spacing: .01em; margin: 0; }
-.cover .alias { font-size: 10.5pt; letter-spacing: .22em; text-transform: uppercase; color: #6a615a; margin-top: 7mm; }
-.cover .rule { width: 34mm; height: .5pt; background: #16130f; margin: 12mm 0 11mm; }
-.cover .sub { font-size: 13pt; line-height: 1.5; color: #2c2722; max-width: 118mm; }
-.cover .bottom { font-size: 9.5pt; letter-spacing: .12em; text-transform: uppercase; color: #6a615a; line-height: 1.9; }
+/* ---------- kapak: ortada yalniz isaret ---------- */
+.cover { display: flex; align-items: center; justify-content: center; padding: 0; }
+.cover .emblem { line-height: 0; }
+.cover .emblem img { height: 75mm; width: auto; display: block; }
+
+/* ---------- kunye: kapaktaki yazilar, indeksin sol altinda kucuk ----- */
+.imprint { margin-top: auto; max-width: 98mm; padding-top: 14mm; }
+.imprint .ti { font-size: 11.5pt; line-height: 1.2; color: #16130f; }
+.imprint .who {
+  font-family: "Liberation Sans", "DejaVu Sans", sans-serif;
+  font-size: 7pt; letter-spacing: .2em; text-transform: uppercase;
+  color: #857b73; margin-top: 2.2mm;
+}
+.imprint p { font-size: 7.8pt; line-height: 1.6; color: #6a615a; margin: 4.5mm 0 0; }
+.imprint .line {
+  font-family: "Liberation Sans", "DejaVu Sans", sans-serif;
+  font-size: 6.8pt; letter-spacing: .14em; text-transform: uppercase;
+  color: #9c938b; margin-top: 4mm;
+}
 
 /* ---------- biyografi portresi (kucuk) ---------- */
 .about .portrait { margin: 12mm 0 0; }
@@ -25,8 +36,6 @@ body { font-family: "Liberation Serif", "DejaVu Serif", Georgia, serif; }
 /* ---------- logo (sag ust) ---------- */
 .mark { position: absolute; top: 15mm; right: 30mm; line-height: 0; }
 .mark img { height: 12mm; width: auto; display: block; }      /* sayfalar: kucuk */
-.mark.lg { top: 30mm; }
-.mark.lg img { height: 40mm; }                                 /* kapak: orta boy */
 
 /* ---------- genel metin sayfasi ---------- */
 .sheet { padding: 30mm 30mm 26mm; height: 100%; display: flex; flex-direction: column; }
