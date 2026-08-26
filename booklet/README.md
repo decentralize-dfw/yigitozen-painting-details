@@ -7,7 +7,7 @@ same words, set as an art book.
 **Read `GUIDE.md` before changing anything here.** It is the editorial spec
 the layout answers to, drawn from the books this one is measured against.
 
-240 x 320 mm, 88 pages. Everything sits on a twelve column grid with 16 mm
+240 x 320 mm, 121 pages. Everything sits on a twelve column grid with 16 mm
 margins, and two rules hold on every page: no picture is ever cropped, and
 nothing is ever laid over a picture. A width is given and the height follows
 from the picture's own proportion, so a wide detail stays wide.
@@ -26,6 +26,10 @@ from the picture's own proportion, so a wide detail stays wide.
 - **49 process stages** across five works, a contact sheet to a work.
 - **6 studies and versions**, the pictures that sit at the root of this
   repository, each on its own sheet.
+- **Six recurring figures**, a spread each: the onlooker, the chair, the
+  crow, the cage, the body, the face. Text on one sheet, and on the other a
+  crop from every painting the thing appears in, thirty-five crops in all,
+  each one located in its painting rather than guessed.
 - Imprint, a line set large, the essay, the biography, the list of shows,
   the contents, and a black divider for each year.
 

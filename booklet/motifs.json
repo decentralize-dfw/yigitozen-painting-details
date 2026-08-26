@@ -1,0 +1,415 @@
+{
+ "_": "Kitabin tekrar eden motifleri. Her bolum bir yazi sayfasi ve bir kesit sayfasi. Kutular kirpilmis tablonun icinde [sol, ust, genislik, yukseklik] kesridir.",
+ "sections": [
+  {
+   "key": "onlooker",
+   "name": "The onlooker",
+   "range": "2019–2026",
+   "lead": "Cogs, and they believe in the work",
+   "a": "A small figure turns up in eight of these paintings, built from stacked circles, an X drawn over each eye and in one of them a mouth stitched shut. It is never the subject. It stands at the foot of the heap, in a row along a boat, hung upside down in a corner, ranged across a board.",
+   "b": "They are the functionaries. Emptied of anything of their own, put there to serve a purpose, and, as far as anything in the painting shows, convinced they are doing some good. The X is not violence done to them; it is the condition of the job. Present at the scene, and unable to report it.",
+   "crops": [
+    {
+     "n": 1,
+     "box": [
+      0.42,
+      0.52,
+      0.46,
+      0.34
+     ],
+     "line": "Blue, stacked two and three high, ranged across the board"
+    },
+    {
+     "n": 5,
+     "box": [
+      0.3,
+      0.5,
+      0.55,
+      0.28
+     ],
+     "line": "A row of them standing along the boat"
+    },
+    {
+     "n": 20,
+     "box": [
+      0.52,
+      0.1,
+      0.34,
+      0.3
+     ],
+     "line": "White and tufted, crossed eyes and a stitched mouth"
+    },
+    {
+     "n": 22,
+     "box": [
+      0.01,
+      0.03,
+      0.26,
+      0.34
+     ],
+     "line": "Ovoid clusters marked with an X, hung at the upper left"
+    },
+    {
+     "n": 23,
+     "box": [
+      0.44,
+      0.58,
+      0.42,
+      0.32
+     ],
+     "line": "Three of them, arms linked, before the mountain"
+    },
+    {
+     "n": 24,
+     "box": [
+      0.06,
+      0.7,
+      0.86,
+      0.28
+     ],
+     "line": "Three at the foot of the white heap, one floating clear of it"
+    },
+    {
+     "n": 29,
+     "box": [
+      0.01,
+      0.12,
+      0.3,
+      0.38
+     ],
+     "line": "Hung upside down at the upper left, fingers spread"
+    },
+    {
+     "n": 31,
+     "box": [
+      0.42,
+      0.6,
+      0.48,
+      0.34
+     ],
+     "line": "Red, drawn in a crowd, one of them raised above the rest"
+    }
+   ]
+  },
+  {
+   "key": "chair",
+   "name": "The chair",
+   "range": "2019–2026",
+   "lead": "An empty seat where the authority should be",
+   "a": "A chair is drawn into painting after painting and nobody is sitting in it. It floats on a panel high up, it is outlined in white against a wall, it stands at the edge of the scene turned slightly away. Where a figure does sit, the seat is a stool at the edge of the sheet rather than a place at the head of anything.",
+   "b": "It is the empty observer: the authority the scene is arranged for, who is not at the head of the work. The paintings keep the furniture of judgement and withhold the judge. A bird stands on one of these chairs in the mark used for the studio, which is as close as the seat ever comes to being occupied.",
+   "crops": [
+    {
+     "n": 2,
+     "box": [
+      0.09,
+      0.11,
+      0.19,
+      0.16
+     ],
+     "line": "Outlined in white on the pink panel, above everything"
+    },
+    {
+     "n": 4,
+     "box": [
+      0.06,
+      0.3,
+      0.88,
+      0.42
+     ],
+     "line": "The dark back the figure is set against"
+    },
+    {
+     "n": 22,
+     "box": [
+      0.7,
+      0.28,
+      0.28,
+      0.44
+     ],
+     "line": "Drawn in white line at the right, turned away"
+    },
+    {
+     "n": 23,
+     "box": [
+      0.42,
+      0.02,
+      0.3,
+      0.28
+     ],
+     "line": "Floating over the room, pink and empty"
+    },
+    {
+     "n": 35,
+     "box": [
+      0.1,
+      0.52,
+      0.3,
+      0.44
+     ],
+     "line": "A stool at the edge of the sheet, in charcoal"
+    }
+   ]
+  },
+  {
+   "key": "crow",
+   "name": "The crow",
+   "range": "2019–2026",
+   "lead": "The messenger, and what it is carrying",
+   "a": "Birds are the one thing in these paintings that moves under its own power. A bird-headed body bends over the bed; a flock is flung down the diagonal at a boat; a beak long enough to cross half the canvas comes out of a pastel body; white heads rise off the top edge.",
+   "b": "The crow arrives as the messenger, which in every tradition means power borrowed from somewhere else and not answerable here. What it carries is never opened. It is also where good and evil stop being separable: the same wing that is sent is the wing that is used, and the painting keeps both readings on the surface at once.",
+   "crops": [
+    {
+     "n": 19,
+     "box": [
+      0.5,
+      0.06,
+      0.48,
+      0.86
+     ],
+     "line": "The bird headed body, bent over the bed"
+    },
+    {
+     "n": 5,
+     "box": [
+      0.52,
+      0.03,
+      0.45,
+      0.36
+     ],
+     "line": "The flock, thrown down the diagonal"
+    },
+    {
+     "n": 6,
+     "box": [
+      0.02,
+      0.08,
+      0.58,
+      0.36
+     ],
+     "line": "The head, and the beak going out across the canvas"
+    },
+    {
+     "n": 29,
+     "box": [
+      0.28,
+      0.01,
+      0.62,
+      0.32
+     ],
+     "line": "White heads lifting off the top edge"
+    },
+    {
+     "n": 16,
+     "box": [
+      0.42,
+      0.42,
+      0.46,
+      0.4
+     ],
+     "line": "A dark head with a beak, low at the right"
+    }
+   ]
+  },
+  {
+   "key": "cage",
+   "name": "The cage",
+   "range": "2019–2026",
+   "lead": "Perception, and where it stops",
+   "a": "A structure is drawn over the scene rather than built in it: a white box laid across the top with two uprights and no walls, a bright field belted in on all four sides by dark, a panel framed inside the picture, a rectangle of bars hung at the corner. None of them shuts anything in.",
+   "b": "The cage is the limit of perception, and it is always thinner than the thing it is around. It is line where the bodies are matter, and it stops before it closes. In the last of them the frame is not painted at all: the canvas is turned over and its own stretcher bars divide the picture into the two rooms the figures are kept in.",
+   "crops": [
+    {
+     "n": 2,
+     "box": [
+      0.02,
+      0.01,
+      0.96,
+      0.28
+     ],
+     "line": "The box drawn from above, its walls never arriving"
+    },
+    {
+     "n": 15,
+     "box": [
+      0.0,
+      0.06,
+      0.34,
+      0.7
+     ],
+     "line": "The dark belt closing on the light field"
+    },
+    {
+     "n": 20,
+     "box": [
+      0.2,
+      0.06,
+      0.62,
+      0.46
+     ],
+     "line": "A panel framed inside the picture"
+    },
+    {
+     "n": 6,
+     "box": [
+      0.62,
+      0.02,
+      0.34,
+      0.2
+     ],
+     "line": "A rectangle of bars, hung at the corner"
+    },
+    {
+     "n": 35,
+     "box": [
+      0.36,
+      0.02,
+      0.28,
+      0.92
+     ],
+     "line": "The stretcher bar, dividing the back into two rooms"
+    }
+   ]
+  },
+  {
+   "key": "body",
+   "name": "The body",
+   "range": "2019–2026",
+   "lead": "Cell over cell, and no human left",
+   "a": "No body in these paintings is drawn as one thing. It accumulates: ovoids stacked into a leg, cells packed into a torso, coloured balls piled where a chest should be, a heap in which an arm belongs to nobody in particular. The contour that would say where a person ends is not drawn.",
+   "b": "This is the break with the human, and it is put as a thin ladder rather than a fall. Each cell is a step, the body is what the steps add up to, and the count can go up or down. What is being painted is not a figure that has come apart but a figure that was assembled, and can be assembled differently the next time.",
+   "crops": [
+    {
+     "n": 9,
+     "box": [
+      0.2,
+      0.2,
+      0.55,
+      0.45
+     ],
+     "line": "Cells packed into a torso"
+    },
+    {
+     "n": 8,
+     "box": [
+      0.06,
+      0.28,
+      0.44,
+      0.46
+     ],
+     "line": "Egg over egg, into a leg"
+    },
+    {
+     "n": 3,
+     "box": [
+      0.14,
+      0.28,
+      0.72,
+      0.32
+     ],
+     "line": "Coloured balls where the chest should be"
+    },
+    {
+     "n": 17,
+     "box": [
+      0.05,
+      0.1,
+      0.85,
+      0.55
+     ],
+     "line": "Stacked rounded forms, all the way up"
+    },
+    {
+     "n": 24,
+     "box": [
+      0.08,
+      0.08,
+      0.85,
+      0.55
+     ],
+     "line": "A heap in which no limb belongs to anyone"
+    },
+    {
+     "n": 27,
+     "box": [
+      0.2,
+      0.42,
+      0.68,
+      0.38
+     ],
+     "line": "Lobes, and no contour to close them"
+    }
+   ]
+  },
+  {
+   "key": "face",
+   "name": "The face",
+   "range": "2019–2026",
+   "lead": "The one square metre that is fought over",
+   "a": "Everything the paintings will not settle is settled, or refused, on the face. One head is worked until it has neither eyes nor mouth while the head opposite it is nothing but glare. One neck carries two faces at once, one a skull and one asleep. A band of red is laid across the eyes. In one painting the head is a lumpy tip with no face set on it at all.",
+   "b": "The face is the battlefield of identity: the place where the painting decides whether there is a person here, and often declines to decide. The bodies are assembled out of parts and can be rebuilt; the face is where that becomes a question about somebody rather than about construction.",
+   "crops": [
+    {
+     "n": 1,
+     "box": [
+      0.02,
+      0.02,
+      0.42,
+      0.4
+     ],
+     "line": "Worked until there is no eye and no mouth"
+    },
+    {
+     "n": 27,
+     "box": [
+      0.02,
+      0.02,
+      0.92,
+      0.3
+     ],
+     "line": "One neck, two faces, one of them a skull"
+    },
+    {
+     "n": 12,
+     "box": [
+      0.02,
+      0.42,
+      0.3,
+      0.3
+     ],
+     "line": "Turned up out of the dark, painted blue"
+    },
+    {
+     "n": 32,
+     "box": [
+      0.05,
+      0.08,
+      0.42,
+      0.52
+     ],
+     "line": "A face taking half the picture, drawn over itself"
+    },
+    {
+     "n": 21,
+     "box": [
+      0.16,
+      0.02,
+      0.58,
+      0.3
+     ],
+     "line": "Eyes sunk, the head heavier than the body"
+    },
+    {
+     "n": 18,
+     "box": [
+      0.14,
+      0.16,
+      0.58,
+      0.62
+     ],
+     "line": "No face set upon it at all"
+    }
+   ]
+  }
+ ]
+}

@@ -153,7 +153,29 @@ without being asked:
   frame in a process sequence carries its source and its rights holder.
 - **How to buy one.** An address, a city, a line that says enquiries.
 
-## 10. Two lengths
+## 10. One work to a spread
+
+No spread carries two different works. A work with detail photography opens
+on a left page with one of its own details, full bleed where the proportion
+allows it exactly and a single large plate where it does not, and its
+information stands on the right page facing it. Which detail leads is set
+per work in `LEAD` and is never whatever happened to be first.
+
+The block that follows ends on a right page, so the next work starts clean.
+Where the count comes out wrong the fix is a page of content, not a blank:
+one detail is lifted out of its grid and given a sheet to itself. Works with
+no detail photography are set two to a spread, one page each.
+
+## 11. The recurring
+
+Six things come back across the seven years and each has a spread: the
+onlooker, the chair, the crow, the cage, the body, the face. A spread is one
+sheet of text, naming the thing and saying what it carries, and one sheet of
+crops, one from every painting it appears in, each with the work's number
+and year. Every crop was located in its painting and checked; none of them
+is a guess.
+
+## 12. Two lengths
 
 The book exists at two lengths from one source. The long one is the whole
 record: every work, every detail, every stage. The short one is seventeen

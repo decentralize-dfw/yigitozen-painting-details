@@ -115,7 +115,7 @@ def page(run='', klass=''):
 # ── veri ─────────────────────────────────────────────────────────────
 WORKS = json.load(open(SRC, encoding='utf-8'))
 WHERE   = json.load(open(os.path.join(HERE, 'where.json'), encoding='utf-8'))
-MOTIF   = json.load(open(os.path.join(HERE, 'motif.json'), encoding='utf-8'))
+MOTIFS  = json.load(open(os.path.join(HERE, 'motifs.json'), encoding='utf-8'))
 CREDITS = json.load(open(os.path.join(HERE, 'credits.json'), encoding='utf-8'))
 
 # Kayitta detay diye gecen ama detay olmayanlar: bunlar isin baska bir hali
@@ -381,25 +381,46 @@ def grid_page(run, items, head=None, tag='d', cap=True, y0=30.0):
         y += hs[k] + gapv
     return p
 
-# Uc detay iki sayfaya tasar. Detaylar tam 1800 x 1200, yani 1.5; ikiye
-# bolununce her yari 0.75 eder ve sayfanin orani da 240/320 = 0.75. Yani
-# iki sayfayi bastan basa dolduruyor ve yine hicbir yeri kesilmiyor.
-BLEED = {(1, 6), (6, 0), (15, 1)}
+# Bir eserin acilis sayfasi hep sag sayfada durur ve karsisindaki sol sayfa
+# da o eserin kendi detayidir, bir oncekinin degil. Hangi detayin one
+# gectigi rastgele degil: her eser icin sirasi verilmis, oran tutmazsa
+# siradaki denenir.
+LEAD = {1:[0,4,1], 2:[2,0,6], 3:[2,1,8], 4:[3,0,1], 5:[4,0,6], 6:[0,6,2],
+        8:[0,1,4], 9:[0,1,2], 12:[1,0,3], 14:[0,1,2], 15:[0,1,4], 27:[0]}
+
+
+def order(w):
+    """Eserin detaylari, one cikarilmis olanlar basta."""
+    pref = LEAD.get(w['n'], [])
+    ks = [k for k in pref if k < len(w['details'])]
+    return ks + [k for k in range(len(w['details'])) if k not in ks]
+
+
+def take(w, used, want):
+    """Orani tutan ilk detay: 'wide' 1.5, 'tall' 0.75, 'any' hepsi."""
+    for k in order(w):
+        if k in used: continue
+        a = ratio(w['details'][k]['src'])
+        if want == 'wide' and abs(a - 1.5) > .02: continue
+        if want == 'tall' and abs(a - .75) > .02: continue
+        return k
+    return None
+
 
 def bleed_spread(w, k, d):
-    """Bir detayi iki sayfaya, ortadan bolerek, kirpmadan."""
-    src = os.path.join(ROOT, d['src'].lstrip('/'))
-    im = Image.open(src).convert('RGB')
+    """Orani 1.5 olan bir detay iki sayfaya, ortadan bolerek, kirpmadan.
+       Iki yari da 0.75 eder, sayfanin orani da 0.75."""
+    im = Image.open(os.path.join(ROOT, d['src'].lstrip('/'))).convert('RGB')
     iw, ih = im.size
     for half in (0, 1):
         c = im.crop((half * iw // 2, 0, (half + 1) * iw // 2, ih))
         t = 'w%02db%d%d' % (w['n'], k, half)
         c2 = c.copy(); c2.thumbnail((1100, 1100), Image.LANCZOS)
-        c2.save(os.path.join(IMG, t + '.jpg'), quality=80, subsampling=2, optimize=True)
+        c2.save(os.path.join(IMG, t + '.jpg'), quality=78, subsampling=2, optimize=True)
         p = page(w['run'], 'dark')
         p.raw('<img src="images/%s.jpg" style="left:0;top:0;width:240mm;height:320mm">' % t)
         if half:
-            p.box(R(5), 292, W(5), '%02d &nbsp; %s' % (w['n'], e(where(d))), 'cap rt onimg')
+            p.box(R(5), 292, W(5), '%02d \u00b7 %s' % (w['n'], e(where(d))), 'cap rt onimg')
 
 
 def bleed_page_one(w, k, d):
@@ -410,34 +431,69 @@ def bleed_page_one(w, k, d):
     p.box(R(5), 292, W(5), '%02d \u00b7 %s' % (w['n'], e(where(d))), 'cap rt onimg')
 
 
-def detail_pages(w):
-    """Detaylar. Ilki tek basina ve buyuk, alt kenari sayfanin dip cizgisine
-       oturur; kitabin her yerinde ayni ufuk. Kalanlar izgarada, hepsi butun
-       halde: yatay bir detay yatay durur."""
-    ds = list(w['details'])
-    if not ds: return
-    # Yalniz orani tam 1.5 olan bir detay iki sayfaya bolunebilir; baska bir
-    # oranda yarim sayfaya sigdirmak icin germek gerekir ve o gerilmez.
-    # Bir detay ancak orani tutuyorsa sayfayi doldurur: 1.5 ise ikiye
-    # bolunup cift sayfaya, 0.75 ise tek sayfaya, tam olarak. Baska bir
-    # oranda germek gerekir, o yuzden yerinde birakilir.
-    for k in sorted([k for (n, k) in BLEED if n == w['n']], reverse=True):
-        if k >= len(ds): continue
-        a = ratio(ds[k]['src'])
-        if abs(a - 1.5) < .02:   bleed_spread(w, k, ds.pop(k))
-        elif abs(a - .75) < .02: bleed_page_one(w, k, ds.pop(k))
-    if not ds: return
-    d0 = ds.pop(0)
+def plate_page(w, k, d):
+    """Tam sayfa olamayan bir detay: sayfada tek basina, buyuk, kirpilmadan."""
+    a = ratio(d['src'])
+    cw = W(11) if a > 1.15 else (W(6) if a < .85 else W(8))
+    x = ML if a > 1.15 else (X(3) if w['n'] % 2 else X(2))
+    y = max(30.0, FOOT - 5.4 - cw / a)
     p = page(w['run'])
     p.rule(ML, 15, CONTENT_W, True)
     p.box(ML, 17.4, W(7), '%02d &nbsp; %s' % (w['n'], e(w['title'])), 'lab')
     p.box(R(3), 17.4, W(3), 'Detail', 'lab rt')
-    a0 = ratio(d0['src'])
-    cw = W(11) if a0 > 1.15 else (W(6) if a0 < .85 else W(8))
-    x  = ML if a0 > 1.15 else (X(3) if w['n'] % 2 else X(2))
-    y  = FOOT - 5.4 - cw / a0
-    if y < 30: y = 30
-    p.pic(d0['src'], x, y, cw, cap=where(d0), tag='w%02dd00' % w['n'])
+    p.pic(d['src'], x, y, cw, cap=where(d), tag='w%02dL%d' % (w['n'], k))
+
+
+def blank(run):
+    page(run, 'blank')
+
+
+def align(run, parity):
+    """Sonraki sayfanin tek ya da cift olmasini saglar. Bir eserin acilisi
+       hep tek sayida bir sayfaya, yani sagina dusmek zorunda."""
+    while (len(PAGES) + 1) % 2 != parity % 2:
+        blank(run)
+
+
+def lead_in(w):
+    """Acilisin karsisindaki sol sayfa. Her zaman o eserin kendi detayi:
+       orani tam sayfaya uyuyorsa bastan basa, uymuyorsa sayfada tek basina
+       ve buyuk. Sirasi LEAD'de verilmis, rastgele secilmez."""
+    used = []
+    k = take(w, used, 'tall')
+    if k is not None:
+        used.append(k); bleed_page_one(w, k, w['details'][k])
+    else:
+        k = take(w, used, 'any')
+        if k is not None:
+            used.append(k); plate_page(w, k, w['details'][k])
+        else:
+            blank(w['run'])
+    w['used_lead'] = used
+
+
+def wide_spread(w):
+    """Acilistan hemen sonra, orani 1.5 olan bir detay iki sayfaya. Acilis
+       tek sayida oldugu icin bu her zaman tam bir acilima oturur."""
+    used = w.get('used_lead', [])
+    k = take(w, used, 'wide')
+    if k is None: return
+    used.append(k); w['used_lead'] = used
+    bleed_spread(w, k, w['details'][k])
+
+
+def detail_pages(w, promote=False):
+    """Acilista kullanilmayan detaylar, izgarada, hepsi butun halde.
+       `promote` bir detayi izgaradan alip tek basina bir sayfaya cikarir:
+       blogun sayfa sayisini bir artirir, ki bos sayfa acmak gerekmesin."""
+    used = list(w.get('used_lead', []))
+    ks = [k for k in order(w) if k not in used]
+    if promote and ks:
+        k = ks.pop(0); used.append(k)
+        plate_page(w, k, w['details'][k])
+        w['used_lead'] = used
+    ds = [w['details'][k] for k in ks]
+    if not ds: return
     n = 0
     while ds:
         take = 6 if len(ds) >= 5 else len(ds)
@@ -508,61 +564,94 @@ for yr in YEARS:
       p.box(ML, 279, W(8), ' &nbsp;&middot;&nbsp; '.join('%02d' % x['n'] for x in group), 'cap')
       p.box(R(2), 279, W(2), ('%d work%s' % (len(group), '' if len(group) == 1 else 's')), 'cap rt')
 
+    # Bir acilimda iki ayri eser bulunmaz. Detayi olan eser bir sol sayfa
+    # kendi detayiyla acilir ve sag sayfada kunyesi durur; detayi olmayan
+    # eserler ikiser ikiser esleserek bir acilimi paylasir.
+    pending = []
+
+    def flush():
+        while pending:
+            w = pending.pop(0)
+            align(run, 0)                     # tek kalirsa sol sayfaya otursun
+            work_open(w)
+            if len(PAGES) % 2 == 0: blank(run)
+
     for w in group:
-        work_open(w)
-        if SHORT: continue
-        aside_page(w)
-        detail_pages(w)
-        process_page(w)
+        if SHORT:
+            work_open(w); continue
+        if not w['details']:
+            pending.append(w)
+            if len(pending) == 2:
+                align(run, 0)
+                work_open(pending.pop(0)); work_open(pending.pop(0))
+            continue
+        flush()
+        align(run, 0)                          # sonraki sayfa sol olsun
+
+        def block(promote):
+            lead_in(w)
+            work_open(w)
+            wide_spread(w)
+            aside_page(w)
+            detail_pages(w, promote)
+            process_page(w)
+
+        # Blok tek sayida bitmek zorunda, yoksa sonraki eser bir baskasinin
+        # sayfasiyla ayni acilima duser. Bos sayfa acmak yerine once bir
+        # detay izgaradan alinip tek basina bir sayfaya cikarilir.
+        mark = len(PAGES)
+        block(False)
+        if len(PAGES) % 2 == 0:
+            del PAGES[mark:]
+            w.pop('used_lead', None)
+            block(True)
+            align(run, 0)         # blok tek sayida bir sayfada bitsin
+    flush()
 
 # ══ motif ═══════════════════════════════════════════════════════════
-def motif_pages():
-    """Kitabin en cok is goren iki sayfasi: 2019'dan 2026'ya tekrar eden
-       figur, adiyla ve gectigi butun islerden kesitlerle yan yana."""
-    ws = [BY_N[c['n']] for c in MOTIF['crops']]
-    yrs = sorted(set(x['year'] for x in ws))
-    p = page('The onlooker')
-    p.rule(ML, 15, CONTENT_W, True)
-    p.box(ML, 17.4, W(6), 'A recurring figure', 'lab')
-    p.box(R(3), 17.4, W(3), '%s&ndash;%s' % (yrs[0], yrs[-1]), 'lab rt')
-    p.box(ML, 120, W(8), 'The onlooker', 'shout')
-    p.box(ML, 176, W(5),
-          'A small figure turns up in eight of these paintings, built from stacked '
-          'circles, an X drawn over each eye and in one of them a mouth stitched shut. '
-          'It is never the subject. It stands at the foot of the heap, in a row along a '
-          'boat, hung upside down in a corner, ranged across a board: present at the '
-          'scene and unable to report it.', 'note')
-    p.box(X(6), 176, W(6),
-          'It is also the answer to the gap in the dates. The canvases stop in 2020 and '
-          'start again in 2026, but the figure that opens the book on a chequered board '
-          'is the same one drawn in red on paper seven years earlier. What paused was the '
-          'painting, not the language.'
-          '<p>Where it appears: %s.</p>' % ', '.join('%02d' % c['n'] for c in MOTIF['crops']),
-          'note')
-    p.rule(ML, 272, CONTENT_W)
-    p.box(ML, 274, CONTENT_W, 'Eight works, seven years', 'cap')
-
-    items = []
-    for c in MOTIF['crops']:
-        w = BY_N[c['n']]
-        items.append((w['plate']['src'],
-                      '%02d \u00b7 %s \u00b7 %s' % (w['n'], w['year'], c['line']),
-                      crop_of(w, c['box'])))
-    grid_page('The onlooker', items,
-              head=('The onlooker, in each painting it appears in', 'Details'),
-              tag='motif', y0=28.0)
-
-
+# Kitabin en cok is goren bolumu: yedi yil boyunca tekrar eden alti sey,
+# her biri bir yazi sayfasi ve gectigi butun islerden kesitler.
 def crop_of(w, b):
-    """Motif kutusu tablonun kirpilmis hali icinde verilmistir; saklanan
+    """Motif kutusu kirpilmis tablonun icinde verilmistir; saklanan
        fotografin icindeki yerine cevirir."""
     pb = w['plate'].get('box') or [0, 0, 1, 1]
     return [pb[0] + b[0] * pb[2], pb[1] + b[1] * pb[3], b[2] * pb[2], b[3] * pb[3]]
 
 
-motif_pages()
+def motif_section(sec):
+    ws = [BY_N[c['n']] for c in sec['crops']]
+    p = page(sec['name'])
+    p.rule(ML, 15, CONTENT_W, True)
+    p.box(ML, 17.4, W(6), 'A recurring figure', 'lab')
+    p.box(R(3), 17.4, W(3), e(sec['range']), 'lab rt')
+    p.box(ML, 118, W(8), e(sec['name']), 'shout')
+    p.box(ML, 158, W(7), e(sec['lead']), 'lead')
+    p.box(ML, 190, W(5), e(sec['a']), 'note')
+    p.box(X(6), 190, W(6), e(sec['b']), 'note')
+    p.rule(ML, 272, CONTENT_W)
+    p.box(ML, 274, W(8), '%d works' % len(ws), 'cap')
+    p.box(R(4), 274, W(4), ' \u00b7 '.join('%02d' % c['n'] for c in sec['crops']), 'cap rt')
 
-# ══ arka ═════════════════════════════════════════════════════════════
+    items = [(BY_N[c['n']]['plate']['src'],
+              '%02d \u00b7 %s \u00b7 %s' % (c['n'], BY_N[c['n']]['year'], c['line']),
+              crop_of(BY_N[c['n']], c['box']))
+             for c in sec['crops']]
+    grid_page(sec['name'], items,
+              head=(e(sec['name']) + ', in each painting it appears in', 'Details'),
+              tag='m-' + sec['key'], y0=28.0)
+
+
+# Kisa surumde alti bolumun yalniz ilki: gonderim icin bir ornek yeter.
+if not SHORT:
+    p = page('The recurring', 'dark')
+    p.box(ML, 150, CONTENT_W, 'The<br>recurring', 'yr')
+    p.rule(ML, 276, CONTENT_W)
+    p.box(ML, 279, W(8), ' \u00b7 '.join(x['name'] for x in MOTIFS['sections']), 'cap')
+    p.box(R(2), 279, W(2), '%d figures' % len(MOTIFS['sections']), 'cap rt')
+for sec in (MOTIFS['sections'][:1] if SHORT else MOTIFS['sections']):
+    motif_section(sec)
+
+# ══ arka ══# ══ arka ═════════════════════════════════════════════════════════════
 p = page('Colophon')
 p.rule(ML, 15, CONTENT_W, True)
 p.box(ML, 17.4, W(4), 'Colophon', 'lab')
