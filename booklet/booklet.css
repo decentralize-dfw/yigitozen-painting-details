@@ -1,225 +1,100 @@
 /* ══════════════════════════════════════════════════════════════════════
    ARTBOOKLET — Yiğit Özen
-   240 x 320 mm. Tek kural: her eserin bir sayfasi var ve o sayfa otuz bes
-   eserde de ayni. Detayi olan eserin detaylari onun arkasindan tam sayfa
-   gelir, her birinin ustunde tabloda neresi oldugu yazar. Baska bir sey
-   yazmaz: teknigi de tarihi de eserin kendi sayfasinda soylenmistir.
+   GUIDE.md'nin karsiligi. Kurallar orada, olculer burada.
 
-   Kenarlar simetrik, cunku bir eser sayfasi kitabin hangi yaninda olursa
-   olsun ayni yerde durmak zorunda.
+   Sayfadaki her sey milimetreyle konumlanir; build.py izgaradan cikan
+   sayilari verir. Burada yalniz yazinin olcusu, cizginin kalinligi ve
+   kagidin rengi vardir. Perde, gölge, yuvarlatma yoktur.
    ══════════════════════════════════════════════════════════════════════ */
 
-@page { size: 240mm 320mm; margin: 0; }
-* { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+@page { size: 240mm 320mm; margin: 0 }
+* { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact }
 
 html, body { margin: 0; padding: 0; background: #fff }
 body {
   font-family: "Liberation Sans", Helvetica, Arial, sans-serif;
-  color: #101010;
-  -webkit-font-smoothing: antialiased;
+  color: #101010; -webkit-font-smoothing: antialiased;
 }
 
 :root {
-  --w: 240mm; --h: 320mm;
-  --side: 18mm;       /* iki yan da ayni */
-  --top: 15mm;
-  --bot: 26mm;        /* folyo bandi */
   --ink: #101010;
-  --mid: #6f6a64;
-  --faint: #b9b3ac;
+  --grey: #7a736c;
   --hair: #ddd8d2;
 }
 
 .pg {
-  width: var(--w); height: var(--h);
-  position: relative; overflow: hidden; background: #fff;
-  padding: var(--top) var(--side) var(--bot);
+  width: 240mm; height: 320mm; position: relative;
+  overflow: hidden; background: #fff;
   page-break-after: always; break-after: page;
 }
 .pg:last-child { page-break-after: auto; break-after: auto }
+.pg.dark { background: #0d0d0d; color: #fff }
 
-/* ── folyo ──────────────────────────────────────────────────────────
-   Sayfa numarasi sayfanin en agir isareti; dis kosede durur. */
-.folio {
-  position: absolute; bottom: 11mm; left: var(--side); right: var(--side);
-  display: flex; align-items: baseline; gap: 6mm;
-  font-size: 7pt; letter-spacing: .17em; text-transform: uppercase; color: var(--mid);
-}
-.pg.R .folio { flex-direction: row-reverse }
-.folio .num {
-  font-size: 30pt; font-weight: 700; letter-spacing: -.03em;
-  color: var(--ink); line-height: .8;
-}
-.folio .run { flex: 1 }
-.pg.R .folio .run { text-align: right }
-.folio .rule { flex: 0 0 auto; width: .5pt; height: 3.6mm; background: var(--hair) }
-.pg.dark .folio { color: rgba(255,255,255,.78); text-shadow: 0 1px 14px rgba(0,0,0,.9) }
-.pg.dark .folio .num { color: #fff }
-.pg.ink-b .folio { color: rgba(0,0,0,.62); text-shadow: 0 0 14px rgba(255,255,255,.85) }
-.pg.ink-b .folio .num { color: var(--ink) }
+/* konumlanan iki sey: kutu ve gorsel */
+.b   { position: absolute }
+img  { position: absolute; display: block }
+img.full { left: 0; top: 0; width: 240mm; height: 320mm; object-fit: cover }
+img.mk   { left: 50%; top: 50%; width: 46mm; height: auto; transform: translate(-50%,-50%) }
 
-/* ── tam sayfa gorsel ───────────────────────────────────────────────*/
-.bleed { position: absolute; inset: 0 }
-.bleed img { width: 100%; height: 100%; object-fit: cover; display: block }
-/* Ust ve alt seride cok hafif bir perde: yazi her boyanin uzerinde okunur
-   kalsin, boya da kapanmasin. */
-.pg.dark .bleed::before, .pg.dark .bleed::after { content: ""; position: absolute; left: 0; right: 0 }
-.pg.dark .bleed::before { top: 0; height: 38mm; background: linear-gradient(to bottom, rgba(0,0,0,.34), rgba(0,0,0,0)) }
-.pg.dark .bleed::after  { bottom: 0; height: 34mm; background: linear-gradient(to top, rgba(0,0,0,.34), rgba(0,0,0,0)) }
-.pg.ink-t .bleed::before { background: linear-gradient(to bottom, rgba(255,255,255,.46), rgba(255,255,255,0)) }
-.pg.ink-b .bleed::after  { background: linear-gradient(to top, rgba(255,255,255,.5), rgba(255,255,255,0)) }
+/* cizgiler */
+.r   { position: absolute; height: .4pt; background: var(--hair) }
+.r.t { height: 1pt; background: var(--ink) }
+.pg.dark .r   { background: rgba(255,255,255,.28) }
+.pg.dark .r.t { background: #fff }
 
-/* detayin tek satiri: numarasi ve tabloda neresi oldugu */
-.bcap {
-  position: absolute; top: var(--top); left: var(--side); right: var(--side);
-  display: flex; gap: 5mm;
-  font-size: 6.6pt; letter-spacing: .17em; text-transform: uppercase; font-weight: 700;
-  color: rgba(255,255,255,.94);
-  text-shadow: 0 1px 14px rgba(0,0,0,.9), 0 0 4px rgba(0,0,0,.7);
+/* ── mikro ──────────────────────────────────────────────────────────*/
+.lab {
+  font-size: 6.2pt; letter-spacing: .18em; text-transform: uppercase;
+  font-weight: 700; line-height: 1.5;
 }
-.pg.ink-t .bcap { color: rgba(0,0,0,.8); text-shadow: 0 0 14px rgba(255,255,255,.9) }
-.bcap .n { color: inherit; opacity: .62 }
+.lab.dim { color: var(--grey) }
+.cap {
+  font-size: 6.2pt; letter-spacing: .12em; text-transform: uppercase;
+  line-height: 1.5; color: var(--grey);
+}
+.cap b { color: var(--ink); letter-spacing: .18em; display: block; margin-bottom: 1mm }
+.rt { float: right; text-align: right }
+.pg.dark .cap { color: rgba(255,255,255,.62) }
 
-/* ── eser sayfasi ───────────────────────────────────────────────────
-   Numara, tablonun kendisi, serit, ad ve yazi, dipte uc not. Otuz bes
-   eserde de ayni; degisen yalniz resim. */
-.wk { height: 100%; display: flex; flex-direction: column }
-.wno { font-size: 15pt; font-weight: 700; letter-spacing: -.04em; line-height: .9 }
+/* ── yazi ───────────────────────────────────────────────────────────*/
+.note {
+  font-size: 7.6pt; line-height: 1.5; color: #2f2b27;
+  hyphens: auto; -webkit-hyphens: auto; text-align: justify;
+}
+.note p { margin: 0 0 3.4mm }
+.note p:last-child { margin-bottom: 0 }
+.cv { font-size: 7pt; line-height: 1.35 }
+.cv.rt { color: var(--grey) }
 
-/* Bandin yuksekligi acikca verilir ve resim dibe yaslanir: boylece dik de
-   yatay da olsa her tablo sayfanin ayni yerinde biter. */
-.band {
-  flex: 0 0 152mm; height: 152mm; min-height: 0; margin-top: 8mm;
-  display: flex; align-items: flex-end; justify-content: center;
-}
-.band img { max-height: 100%; max-width: 100%; width: auto; display: block }
-
-.strip {
-  display: flex; justify-content: space-between; align-items: baseline;
-  font-size: 6.6pt; letter-spacing: .16em; text-transform: uppercase;
-  font-weight: 700; color: var(--ink);
-  padding-top: 4.5mm;
-}
-.strip span { white-space: nowrap }
-.strip .q { text-transform: none; letter-spacing: .06em }
-.strip .y { color: var(--mid) }
-
-.say {
-  position: absolute; left: 50%; transform: translateX(-50%);
-  bottom: 44mm; width: 118mm; text-align: center;
-}
-.say h3 { font-size: 8.6pt; font-weight: 700; margin: 0 0 2mm; letter-spacing: -.005em }
-.say p {
-  font-size: 7.4pt; line-height: 1.5; margin: 0; color: #2f2b27;
-  hyphens: auto; -webkit-hyphens: auto;
-}
-
-/* renk, kurgu ve el uzerine uc not, dipte bir sirada */
-.notes {
-  position: absolute; bottom: 22mm; left: var(--side); right: var(--side);
-  display: flex; gap: 7mm; list-style: none; margin: 0; padding-top: 2.6mm;
-  border-top: .5pt solid var(--ink);
-}
-.notes li {
-  flex: 1 1 0; font-size: 6pt; line-height: 1.45; letter-spacing: .1em;
-  text-transform: uppercase; color: var(--mid);
-}
-.notes li b { display: block; color: var(--ink); letter-spacing: .17em; margin-bottom: 1.2mm }
-
-/* ── kapak ──────────────────────────────────────────────────────────*/
-.pg.cover { padding: 0 }
-.cover .scrim { position: absolute; inset: auto 0 0 0; height: 62%;
-  background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,.62) 78%) }
-.cover .scrim.t { inset: 0 0 auto 0; height: 22%;
-  background: linear-gradient(to top, rgba(0,0,0,0), rgba(0,0,0,.45)) }
-.cover .hd {
-  position: absolute; top: 13mm; left: var(--side); right: var(--side);
-  display: flex; justify-content: space-between;
-  font-size: 6.8pt; letter-spacing: .22em; text-transform: uppercase; color: rgba(255,255,255,.9);
-}
-.cover .ti {
-  position: absolute; left: var(--side); bottom: 34mm;
-  font-size: 62pt; font-weight: 700; line-height: .86; letter-spacing: -.035em; color: #fff;
-}
-.cover .sub {
-  position: absolute; left: var(--side); bottom: 20mm;
-  font-size: 9.5pt; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.92);
-}
-.cover .edge {
-  position: absolute; right: var(--side); bottom: 20mm; text-align: right;
-  font-size: 6.8pt; letter-spacing: .2em; text-transform: uppercase;
-  color: rgba(255,255,255,.72); line-height: 1.9;
-}
-
-/* ── on sayfalar: duz yazi dibe oturur, listeler ustten baslar ───────*/
-.imprint { position: absolute; left: var(--side); bottom: var(--bot); width: 96mm }
-.imprint .ti { font-size: 16pt; font-weight: 700; letter-spacing: -.02em; line-height: 1.05 }
-.imprint .who { font-size: 6.8pt; letter-spacing: .22em; text-transform: uppercase; color: var(--mid); margin-top: 3mm }
-.imprint p { font-size: 7.4pt; line-height: 1.6; color: #37322d; margin: 6mm 0 0; hyphens: auto }
-.imprint .line { font-size: 6.4pt; letter-spacing: .16em; text-transform: uppercase; color: var(--faint); margin-top: 6mm }
-
-.shout { position: absolute; left: var(--side); right: var(--side); bottom: var(--bot) }
-.shout .lbl { font-size: 6.8pt; letter-spacing: .22em; text-transform: uppercase; color: var(--mid); margin-bottom: 9mm }
-.shout .big { font-size: 40pt; font-weight: 700; line-height: .96; letter-spacing: -.035em }
-.shout .big em { font-style: normal; color: var(--faint) }
-
-.sect { font-size: 7pt; letter-spacing: .24em; text-transform: uppercase; font-weight: 700; margin: 0 0 3mm }
-.sect-rule { height: 1pt; background: var(--ink); margin-bottom: 7mm }
-.essay { height: 100%; display: flex; flex-direction: column }
-.lead { font-size: 11pt; line-height: 1.34; font-weight: 700; letter-spacing: -.015em; margin: 0 0 7mm }
-.cols { column-count: 2; column-gap: 8mm; margin-top: auto }
-.cols p { font-size: 8pt; line-height: 1.52; margin: 0 0 4mm; text-align: justify; hyphens: auto }
-
-.bio { height: 100%; display: flex; flex-direction: column; justify-content: flex-end }
-.bio .por { margin-bottom: 9mm }
-.bio .por img { width: 78mm; height: auto; display: block }
-.bio h2 { font-size: 24pt; font-weight: 700; letter-spacing: -.04em; line-height: .95; margin: 0 0 6mm }
-.bio p { font-size: 8.2pt; line-height: 1.6; margin: 0 0 4.5mm; max-width: 104mm; color: #2f2b27 }
-
-.cv { height: 100%; display: flex; flex-direction: column }
-.cv h4 {
-  font-size: 6.8pt; letter-spacing: .24em; text-transform: uppercase; font-weight: 700;
-  margin: 0 0 2.5mm; border-bottom: 1pt solid var(--ink); padding-bottom: 2mm;
-}
-.cv section { margin-bottom: 9mm }
-.cv ul { list-style: none; margin: 0; padding: 0 }
-.cv li {
-  display: flex; gap: 4mm; align-items: baseline;
-  font-size: 7.2pt; line-height: 1.4; padding: 1.5mm 0;
-  border-bottom: .25pt solid var(--hair);
-}
-.cv li .w { flex: 1 }
-.cv li .y { color: var(--mid); font-variant-numeric: tabular-nums }
-
-/* ── bolum ayraci ───────────────────────────────────────────────────*/
-.divider { height: 100%; display: flex; flex-direction: column; justify-content: flex-end }
-.divider .yr { font-size: 108pt; font-weight: 700; line-height: .8; letter-spacing: -.05em; margin-bottom: 6mm }
-.divider .pl { font-size: 13pt; font-weight: 700; letter-spacing: -.01em }
-.divider .ct { font-size: 6.8pt; letter-spacing: .2em; text-transform: uppercase; color: var(--mid); margin-top: 4mm }
-.divider .rule { height: 1pt; background: var(--ink); margin-top: 8mm }
+/* ── iri ────────────────────────────────────────────────────────────*/
+.num   { font-size: 30pt; font-weight: 700; letter-spacing: -.04em; line-height: .8 }
+.ti    { font-size: 13pt; font-weight: 700; letter-spacing: -.02em; line-height: 1.1 }
+.ti em { font-style: italic }
+.big-ti { font-size: 26pt; line-height: .98; letter-spacing: -.03em }
+.lead  { font-size: 15pt; font-weight: 700; letter-spacing: -.02em; line-height: 1.16 }
+.shout { font-size: 40pt; font-weight: 700; letter-spacing: -.035em; line-height: .98 }
+.shout em { font-style: normal; color: #b9b3ac }
+.yr    { font-size: 96pt; font-weight: 700; letter-spacing: -.05em; line-height: .78 }
 
 /* ── icindekiler ────────────────────────────────────────────────────*/
-.toc { height: 100%; display: flex; flex-direction: column }
-.toc h2 { font-size: 34pt; font-weight: 700; letter-spacing: -.04em; margin: 0 0 8mm; line-height: .9 }
-.toc ol { list-style: none; margin: 0; padding: 0 }
-.toc li {
-  display: flex; align-items: baseline; gap: 3mm;
-  padding: 3.2mm 0; border-top: .25pt solid var(--hair); font-size: 8.4pt;
+.toc   { font-size: 8pt; line-height: 1.2 }
+.toc.t { font-weight: 700; letter-spacing: -.005em }
+.toc.n, .toc.y, .toc.p { color: var(--grey); font-variant-numeric: tabular-nums }
+
+/* ── folyo ──────────────────────────────────────────────────────────
+   Sayfa numarasi grafik bir isaret degil; kucuk durur. */
+.folio {
+  position: absolute; bottom: 9mm; left: 16mm; right: 16mm;
+  display: flex; gap: 5mm;
+  font-size: 6.2pt; letter-spacing: .18em; text-transform: uppercase; color: var(--grey);
 }
-.toc li:last-child { border-bottom: .25pt solid var(--hair) }
-.toc .n { width: 7mm; color: var(--faint); font-variant-numeric: tabular-nums }
-.toc .t { flex: 1; font-weight: 700; letter-spacing: -.005em }
-.toc .y { color: var(--mid); font-variant-numeric: tabular-nums }
-.toc .p { width: 8mm; text-align: right; font-variant-numeric: tabular-nums; color: var(--mid) }
+.pg.L .folio { flex-direction: row }
+.pg.R .folio { flex-direction: row-reverse }
+.folio .run { flex: 1 }
+.pg.R .folio .run { text-align: right }
+.pg.dark .folio { color: rgba(255,255,255,.55) }
 
-/* ── kolofon ve son sayfa ───────────────────────────────────────────*/
-.end { height: 100%; display: flex; flex-direction: column; justify-content: flex-end }
-.end p { font-size: 7.4pt; line-height: 1.6; color: #37322d; margin: 0 0 4mm; max-width: 92mm }
-.end .contact { font-size: 6.8pt; letter-spacing: .16em; text-transform: uppercase; color: var(--mid); line-height: 2; margin-top: 6mm }
-.pg.last { display: flex; align-items: center; justify-content: center }
-.pg.last .folio { display: none }
-.pg.last img { height: 46mm; width: auto; display: block }
-
-.mark { position: absolute; top: var(--top); left: var(--side); line-height: 0 }
-.pg.R .mark { left: auto; right: var(--side) }
-.mark img { height: 9mm; width: auto; display: block }
+/* ── kapak ──────────────────────────────────────────────────────────*/
+.cover .hd, .cover .cvr-ti { color: #fff }
+.cvr-ti { font-size: 62pt; font-weight: 700; letter-spacing: -.035em; line-height: .86 }
+.cover .lab { color: #fff }

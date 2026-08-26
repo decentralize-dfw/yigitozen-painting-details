@@ -2,66 +2,128 @@
 """
 ARTBOOKLET — Yigit Ozen
 
-booklet.html'i works.json'dan uretir ve gorselleri images/ altina hazirlar.
-Kaynak veri katalogla ayni: ayni resimler, ayni yazilar. Fark duzende.
+booklet.html'i works.json'dan uretir, gorselleri images/ altina hazirlar.
 
-    python3 build.py            # ../../yigit/works.json okur
-    python3 build.py PATH       # baska bir works.json okur
+    python3 build.py ../../yigit/works.json
+    node print-pdf.js
 
-Sonra:  node print-pdf.js
+DUZEN
+Sayfa bir izgaradir: 240 x 320 mm, kenarlar 16 mm, on iki sutun, dort mm
+bosluk. Her sey milimetreyle o izgaraya konur.
+
+Iki kural her sayfada gecerlidir:
+
+  1. Hicbir gorsel kirpilmaz. Genisligi verilir, yuksekligi kendi oraniyla
+     hesaplanir. Yatay bir detayi dikey bir sayfaya sigdirmak icin kesmek,
+     detayin gosterilme sebebini yok eder.
+  2. Sayfaya perde, gradyan, gölge konmaz. Beyaz kagit, siyah murekkep,
+     ince cizgi. Renk yalnizca resimden gelir.
+
+Bunlarin disinda her sayfa kendi malzemesine gore kurulur: bir tablonun
+dik mi yatay mi oldugu, kac detayi oldugu, sureci var mi. Ayni iki sayfa
+yoktur, ama hepsi ayni izgaradan cikar.
 """
-import json, os, sys, html, re
+import json, os, sys, html, math
 from PIL import Image
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 IMG  = os.path.join(HERE, 'images')
 SRC  = sys.argv[1] if len(sys.argv) > 1 else os.path.join(HERE, '..', '..', 'yigit', 'works.json')
-ROOT = os.path.dirname(os.path.abspath(SRC))          # site kokunde /img/... duruyor
+ROOT = os.path.dirname(os.path.abspath(SRC))
 
 e = lambda t: html.escape(str(t), quote=True)
 
+# ── izgara ───────────────────────────────────────────────────────────
+PW, PH   = 240.0, 320.0
+ML, MR   = 16.0, 16.0
+MT, MB   = 15.0, 18.0
+COLS, GAP = 12, 4.0
+CW = (PW - ML - MR - (COLS - 1) * GAP) / COLS          # bir sutun
+CONTENT_W = PW - ML - MR
+CONTENT_H = PH - MT - MB
+
+def X(i):  return ML + i * (CW + GAP)                  # i. sutunun sol kenari
+def W(n):  return n * CW + (n - 1) * GAP               # n sutunluk genislik
+def R(i):  return ML + CONTENT_W - W(i)                # sagdan i sutun
+
 # ── gorsel hazirligi ─────────────────────────────────────────────────
 made = {}
-def prep(src, long_side, tag, box=None):
-    """Site kokundeki bir dosyayi booklet/images altina indirger.
+def prep(src, placed_mm, tag, box=None):
+    """Bir dosyayi sayfada duracagi olcuye gore hazirlar. Genislik
+       milimetre olarak verilir; dosya o genisligin 13 katinda kesilir,
+       yani kabaca 330 nokta/inc, en fazla 1500 piksel. Kucuk duracak bir
+       gorsel icin buyuk dosya tasimanin anlami yok.
 
-       Tablolarin bir cogunda saklanan fotograf duvari ve tuvalin disini da
-       tasiyor; kayittaki `box` tuvalin o fotograf icindeki yeridir, sol,
-       ust, genislik ve yukseklik olarak kesirle verilir. Once oradan
-       kesilir, sonra kucultulur; yoksa levhaya duvar da girer."""
-    key = (src, long_side, tuple(box) if box else None)
+       Tablolarin cogunda saklanan fotograf duvari da tasiyor; kayittaki
+       `box` tuvalin fotograf icindeki yeridir, once oradan kesilir."""
+    px = int(min(1200, max(340, placed_mm * 10)))
+    key = (src, px, tuple(box) if box else None)
     if key in made: return made[key]
-    path = os.path.join(ROOT, src.lstrip('/'))
-    im = Image.open(path).convert('RGB')
+    im = Image.open(os.path.join(ROOT, src.lstrip('/'))).convert('RGB')
     if box:
-        W, H = im.size
+        w, h = im.size
         x, y, bw, bh = box
-        im = im.crop((round(x * W), round(y * H), round((x + bw) * W), round((y + bh) * H)))
+        im = im.crop((round(x*w), round(y*h), round((x+bw)*w), round((y+bh)*h)))
     w, h = im.size
-    s = min(1.0, long_side / max(w, h))
-    if s < 1.0: im = im.resize((round(w*s), round(h*s)), Image.LANCZOS)
-    out = tag + '.jpg'
-    im.save(os.path.join(IMG, out), quality=76, subsampling=2, optimize=True)
-    made[key] = 'images/' + out
+    s = min(1.0, px / float(max(w, h)))
+    if s < 1.0: im = im.resize((max(1, round(w*s)), max(1, round(h*s))), Image.LANCZOS)
+    out = '%s-%d.jpg' % (tag, px)
+    im.save(os.path.join(IMG, out), quality=77, subsampling=2, optimize=True)
+    made[key] = ('images/' + out, im.size[0] / float(im.size[1]))
     return made[key]
+
+def ratio(src, box=None):
+    im = Image.open(os.path.join(ROOT, src.lstrip('/')))
+    w, h = im.size
+    if box: return (box[2] * w) / (box[3] * h)
+    return w / float(h)
+
+# ── sayfa ────────────────────────────────────────────────────────────
+class Page:
+    def __init__(self, run='', klass=''):
+        self.run, self.klass, self.bits = run, klass, []
+    def raw(self, s): self.bits.append(s); return self
+    def box(self, x, y, w, inner, klass=''):
+        self.bits.append('<div class="b %s" style="left:%.2fmm;top:%.2fmm;width:%.2fmm">%s</div>'
+                         % (klass, x, y, w, inner))
+        return self
+    def rule(self, x, y, w, thick=False):
+        self.bits.append('<div class="r%s" style="left:%.2fmm;top:%.2fmm;width:%.2fmm"></div>'
+                         % (' t' if thick else '', x, y, w))
+        return self
+    def pic(self, src, x, y, w, cap=None, box=None, tag=None, above=False):
+        """Genisligi verilen, yuksekligi kendi oranindan cikan bir gorsel.
+           Alt yazi altina, ya da istenirse ustune konur."""
+        path, ar = prep(src, w, tag or os.path.splitext(os.path.basename(src))[0], box)
+        h = w / ar
+        if cap and above:
+            self.box(x, y, w, e(cap), 'cap')
+            y += 3.4
+        self.bits.append('<img src="%s" style="left:%.2fmm;top:%.2fmm;width:%.2fmm;height:%.2fmm">'
+                         % (path, x, y, w, h))
+        if cap and not above:
+            self.box(x, y + h + 1.8, w, e(cap), 'cap')
+        return y + h + (5.4 if cap and not above else 0)
+
+PAGES = []
+def page(run='', klass=''):
+    p = Page(run, klass); PAGES.append(p); return p
 
 # ── veri ─────────────────────────────────────────────────────────────
 WORKS = json.load(open(SRC, encoding='utf-8'))
 WHERE = json.load(open(os.path.join(HERE, 'where.json'), encoding='utf-8'))
 for w in WORKS:
-    w['plates']  = [i for i in w['images'] if not i.get('hidden')]
-    w['details'] = [i for i in w['plates'][1:] if i.get('label') == 'Detail']
+    ims = w['images']
+    w['plate']   = ims[0]
+    w['details'] = [i for i in ims[1:] if i.get('label') == 'Detail']
+    w['aside']   = [i for i in ims[1:] if i.get('label') in ('Study', 'Version')]
+    w['process'] = [i for i in ims[1:] if i.get('label') == 'In progress']
+    w['ar']      = ims[0].get('ar') or ratio(ims[0]['src'], ims[0].get('box'))
 
 BY_N = {w['n']: w for w in WORKS}
-BLEED, PLACED = 1300, 1250
-
-def paint(w, big=False):
-    return prep(w['images'][0]['src'], BLEED if big else PLACED,
-                'w%02d%s' % (w['n'], '-lg' if big else ''), w['images'][0].get('box'))
-
-def det(w, k, big=True):
-    d = w['details'][k]
-    return prep(d['src'], BLEED if big else PLACED, 'w%02d-d%02d' % (w['n'], k + 1))
+first_page = {}
+def where(d):
+    return WHERE.get(d['src'].split('/')[-1], d.get('label', 'Detail'))
 
 # ── metin ────────────────────────────────────────────────────────────
 P1 = ('The figures in these paintings are assembled rather than drawn whole. A body '
@@ -88,91 +150,6 @@ BLURB = ('Thirty-five paintings made since 2019 across Istanbul, Milan and Luxem
          'are taken in wet paint, on the spot, and layer goes over layer like a '
          'palimpsest: colour clusters of movement, energy, aura and feeling rather than '
          'of light and shadow.')
-
-# ── sayfa parcalari ──────────────────────────────────────────────────
-def strip(w):
-    """eserin kunye seridi: teknik, adi, tuvali, yili. Yalniz eser sayfasinda."""
-    return ('<div class="strip"><span>Painting</span>'
-            '<span class="q">&ldquo;%s&rdquo;</span><span>%s</span>'
-            '<span class="y">&rsquo;%s</span></div>'
-            % (e(w['title']), e(w['medium']), e(w['year'])))
-
-
-HEADS = ('Colour', 'Composition', 'Hand')
-def notes(facets):
-    """renk, kurgu ve el uzerine uc not, dipte bir sira halinde"""
-    return ('<ul class="notes">' +
-            ''.join('<li><b>%s</b>%s</li>' % (HEADS[i], e(x)) for i, x in enumerate(facets)) +
-            '</ul>')
-
-
-def where(w, d):
-    """Detayin ustundeki tek satir: eserin numarasi ve tabloda neresi oldugu.
-       Teknik ve tarih burada tekrar edilmez; onlar eserin sayfasinda soylendi."""
-    return ('<div class="bcap"><span class="n">%02d</span><span>%s</span></div>'
-            % (w['n'], e(WHERE.get(d['src'].split('/')[-1], 'Detail'))))
-
-
-def ink(src, box=None):
-    """Tam sayfa bir gorselin ust ve alt seridi acik mi koyu mu. Beyaz yazi
-       acik bir boyanin uzerinde kayboluyor; o sayfada murekkep koyuya doner."""
-    im = Image.open(os.path.join(ROOT, src.lstrip('/'))).convert('L')
-    if box:
-        W, H = im.size
-        x, y, bw, bh = box
-        im = im.crop((round(x * W), round(y * H), round((x + bw) * W), round((y + bh) * H)))
-    w, h = im.size
-    band = lambda b: sum(im.crop(b).resize((24, 6)).getdata()) / (24 * 6 * 255.0)
-    k = ''
-    if band((0, 0, w, int(h * .13))) > .58: k += ' ink-t'
-    if band((0, int(h * .87), w, h)) > .58: k += ' ink-b'
-    return k
-
-
-MARK = '<div class="mark"><img src="images/logo.svg" alt=""></div>'
-
-# ── sayfa listesi ────────────────────────────────────────────────────
-pages = []                      # her biri: (run, body, extra-class)
-first_page = {}                 # n -> sayfa numarasi
-
-def add(run, body, klass=''):
-    pages.append((run, body, klass))
-    return len(pages)
-
-def bleed_page(run, src, klass='dark', tag='', probe=None, box=None):
-    return add(run, '<div class="bleed"><img src="%s" alt=""></div>%s' % (src, tag),
-               klass + (ink(probe, box) if probe else ''))
-
-# 1 ── kapak
-cover_img = prep('/img/full/detail/7famboardgame_detail_3.jpg', BLEED, 'cover')
-add('', '<div class="bleed"><img src="%s" alt=""></div>'
-        '<div class="scrim t"></div><div class="scrim"></div>'
-        '<div class="hd"><span>Artbooklet</span><span>Thirty-five works</span>'
-        '<span>Istanbul &middot; Milan &middot; Luxembourg</span></div>'
-        '<div class="ti">YIĞIT<br>ÖZEN</div>'
-        '<div class="sub">Paintings since 2019</div>'
-        '<div class="edge">yigitozen.xyz<br>de-centralize.com</div>' % cover_img, 'cover dark')
-
-# 2-3 ── kunye | bagirti
-add('Imprint', MARK +
-    '<div class="imprint"><div class="ti">Paintings<br>since 2019</div>'
-    '<div class="who">Yiğit Özen</div><p>%s</p>'
-    '<div class="line">35 works &middot; Artbooklet &middot; yigitozen.xyz</div></div>' % e(BLURB))
-add('On the work',
-    '<div class="shout"><div class="lbl">On the work</div>'
-    '<div class="big">The decisions<br>are taken in<br>wet paint,<br>'
-    '<em>on the spot.</em></div></div>')
-
-# 4-5 ── yazi | tasan gorsel
-add('On the work',
-    '<div class="essay"><h2 class="sect">On the work</h2><div class="sect-rule"></div>'
-    '<p class="lead">A body accumulates out of clusters of rounded cells and bubbles that '
-    'lean against one another, and it may close or stay open.</p>'
-    '<div class="cols"><p>%s</p><p>%s</p><p>%s</p></div></div>' % (e(P1), e(P2), e(P3)))
-_d = BY_N[2]['details'][2]
-bleed_page('On the work', det(BY_N[2], 2), tag=where(BY_N[2], _d), probe=_d['src'])
-
-# 5-6 ── ozgecmis | calisma listesi
 BIO = ['Yiğit Özen was born in 1994 in Istanbul and trained as an architect.',
        'The paintings date from 2018 onward and were made across Istanbul, Milan and '
        'Luxembourg.',
@@ -206,36 +183,227 @@ CV = [('Awards and mentions', [
         ('KODA by Polkadot, Factory Berlin, Berlin', '2023'),
         ('New Codes by VCA, Draup and Mad Global, Royal Institution, London', '2023')])]
 
-add('Biography',
-    '<div class="bio"><div class="por"><img src="%s" alt="Yiğit Özen"></div>'
-    '<h2>Yiğit<br>Özen</h2>%s</div>'
-    % (prep('/img/portrait.jpg', 900, 'portrait'),
-       ''.join('<p>%s</p>' % e(x) for x in BIO)))
-add('Biography', '<div class="cv">' + ''.join(
-    '<section><h4>%s</h4><ul>%s</ul></section>'
-    % (h, ''.join('<li><span class="w">%s</span><span class="y">%s</span></li>' % (a, b)
-                  for a, b in rows))
-    for h, rows in CV) + '</div>')
+# ══ on sayfalar ══════════════════════════════════════════════════════
+# Kapak. Kirpma burada da yok: resim sayfanin genisligince, kendi
+# yuksekligiyle duruyor, alti siyah kagit ve ad.
+cover, car = prep('/img/full/detail/7famboardgame_detail_3.jpg', 240, 'cover')
+p = page('', 'cover dark')
+p.raw('<img src="%s" style="left:0;top:36mm;width:240mm;height:%.2fmm">' % (cover, 240 / car))
+p.box(ML, 13, CONTENT_W, 'Artbooklet<span class="rt">Thirty-five works</span>', 'lab')
+p.box(ML, 232, CONTENT_W, 'YIĞIT<br>ÖZEN', 'cvr-ti')
+p.rule(ML, 288, CONTENT_W)
+p.box(ML, 291, CONTENT_W,
+      'Paintings since 2019<span class="rt">Istanbul &middot; Milan &middot; Luxembourg &middot; yigitozen.xyz</span>',
+      'lab')
 
-# 7-8 ── icindekiler (numaralar sonra doldurulur)
-toc_a = add('Contents', '@@TOC1@@')
-toc_b = add('Contents', '@@TOC2@@')
+p = page('Imprint')
+p.rule(ML, 15, CONTENT_W, True)
+p.box(ML, 18, W(6), 'Artbooklet', 'lab')
+p.box(ML, 232, W(5), 'Paintings<br>since 2019', 'ti big-ti')
+p.box(ML, 258, W(5), 'Yiğit Özen', 'lab')
+p.box(X(6), 232, W(6), e(BLURB), 'note')
+p.box(ML, 292, CONTENT_W, '35 works<span class="rt">yigitozen.xyz</span>', 'cap')
 
-# ── bolumler ─────────────────────────────────────────────────────────
+p = page('On the work')
+p.box(ML, 150, CONTENT_W, 'The decisions<br>are taken in wet paint,<br><em>on the spot.</em>', 'shout')
+p.rule(ML, 292, CONTENT_W)
+p.box(ML, 294, CONTENT_W, 'On the work', 'cap')
+
+p = page('On the work')
+p.rule(ML, 15, CONTENT_W, True)
+p.box(ML, 18, W(4), 'On the work', 'lab')
+p.box(X(4), 18, W(8), 'A body accumulates out of clusters of rounded cells and bubbles '
+                      'that lean against one another, and it may close or stay open.', 'lead')
+p.box(ML, 200, W(4), e(P1), 'note')
+p.box(X(4), 200, W(4), e(P2), 'note')
+p.box(X(8), 200, W(4), e(P3), 'note')
+
+por, _ = prep('/img/portrait.jpg', 84, 'portrait')
+p = page('Biography')
+p.rule(ML, 15, CONTENT_W, True)
+p.box(ML, 18, W(4), 'Biography', 'lab')
+p.raw('<img src="%s" style="left:%.2fmm;top:36mm;width:%.2fmm">' % (por, X(6), W(6)))
+p.box(ML, 232, W(5), 'Yiğit<br>Özen', 'ti big-ti')
+p.box(X(6), 232, W(6), ''.join('<p>%s</p>' % e(x) for x in BIO), 'note')
+
+p = page('Biography')
+y = 15.0
+for h4, rows in CV:
+    p.rule(ML, y, CONTENT_W, True)
+    p.box(ML, y + 2.4, W(3), h4, 'lab')
+    yy = y + 2.4
+    for a, b in rows:
+        p.box(X(3), yy, W(8), a, 'cv')
+        p.box(R(1), yy, W(1), b, 'cv rt')
+        yy += 5.6
+    y = yy + 7
+
+toc_pages = [page('Contents'), page('Contents')]
+
+# ══ eserler ══════════════════════════════════════════════════════════
+def label_row(p, w, y):
+    """Sayfanin tepesindeki ince serit: teknik, olcu, yer, yil."""
+    p.rule(ML, y, CONTENT_W, True)
+    p.box(ML,    y + 2.4, W(4), e(w['medium']), 'lab')
+    p.box(X(4),  y + 2.4, W(3), e(w['dim']), 'lab')
+    p.box(X(7),  y + 2.4, W(3), e(w.get('place', '')), 'lab dim')
+    p.box(R(1),  y + 2.4, W(1), e(w['year']), 'lab rt')
+
+def facet_row(p, w, y):
+    p.rule(ML, y, CONTENT_W)
+    for i, (h, t) in enumerate(zip(('Colour', 'Composition', 'Hand'), w['facets'])):
+        p.box(X(i * 4), y + 2.2, W(4) - 4, '<b>%s</b>%s' % (h, e(t)), 'cap')
+
+def work_open(w):
+    """Eserin acilis sayfasi. Tablo kendi oraniyla, sayfanin bir yaninda;
+       yazi obur yanda. Dik tablo bir yer ister, yatay tablo baska: duzen
+       resmin sekline gore kurulur, resim duzene gore kesilmez."""
+    p = page(w['run'])
+    label_row(p, w, 15)
+    tag = 'w%02d' % w['n']
+    left = (w['n'] % 2 == 1)
+    if w['ar'] < 0.95:                                  # dik tablo
+        cw = W(7)
+        px = ML if left else R(7)
+        tx = R(4) if left else ML
+        py = 34
+        p.pic(w['plate']['src'], px, py, cw, box=w['plate'].get('box'), tag=tag)
+        p.box(tx, 34, W(4), '%02d' % w['n'], 'num')
+        p.box(tx, 52, W(4), '<em>%s</em>' % e(w['title']), 'ti')
+        p.box(tx, 52 + 4.6 * math.ceil(len(w['title']) / 22.0) + 6, W(4), e(w['note']), 'note')
+    elif w['ar'] > 1.15:                                # yatay tablo
+        cw = W(10)
+        px = ML if left else R(10)
+        p.box(R(1) if left else ML, 34, W(1), '%02d' % w['n'], 'num')
+        p.pic(w['plate']['src'], px, 34, cw, box=w['plate'].get('box'), tag=tag)
+        ty = 34 + cw / w['ar'] + 12
+        p.box(ML, ty, W(5), '<em>%s</em>' % e(w['title']), 'ti')
+        p.box(X(6), ty, W(6), e(w['note']), 'note')
+    else:                                               # kare tablo
+        cw = W(8)
+        px = X(2) if left else X(2)
+        p.pic(w['plate']['src'], px, 40, cw, box=w['plate'].get('box'), tag=tag)
+        p.box(ML, 15 + 12, W(2), '%02d' % w['n'], 'num')
+        ty = 40 + cw / w['ar'] + 12
+        p.box(ML, ty, W(5), '<em>%s</em>' % e(w['title']), 'ti')
+        p.box(X(6), ty, W(6), e(w['note']), 'note')
+    facet_row(p, w, 272)
+    first_page[w['n']] = len(PAGES)
+    return p
+
+FOOT = 272.0            # sayfanin dip cizgisi: her sayfada ayni yerde
+
+# Bir satirda kac gorsel ve her birinin kac sutun genisliginde olacagi.
+# Iki gorsel ya yan yana altisar sutun, ya alt alta sekizer: hangisi sayfayi
+# daha iyi doldurursa. Secim malzemeye gore yapilir, kaliba gore degil.
+SHAPES = [(1, 12), (1, 9), (1, 7), (2, 6), (2, 5), (3, 4), (3, 3), (4, 3)]
+
+def rows_h(items, cols, span, capsp):
+    cw = W(span)
+    return [max(cw / ratio(src, box) for src, _, box in items[i:i + cols]) + capsp
+            for i in range(0, len(items), cols)]
+
+def grid_page(run, items, head=None, tag='d', cap=True, y0=30.0):
+    """Bir sayfaya n gorsel. Satir duzeni sayfayi en iyi dolduracak sekilde
+       secilir, artan bosluk satir aralarina dagitilir, her gorsel kendi
+       orani ile durur. Kirpma yok."""
+    avail = FOOT - y0
+    capsp = 5.4 if cap else 0
+    best = None
+    for cols, span in SHAPES:
+        if cols > len(items) or cols * span > COLS: continue
+        hs = rows_h(items, cols, span, capsp)
+        h = sum(hs)
+        if h > avail: continue
+        score = abs(h / avail - .84)
+        if best is None or score < best[0]: best = (score, cols, span, hs)
+    if best is None:
+        cols, span = 4, 3
+        hs = rows_h(items, cols, span, capsp)
+    else:
+        _, cols, span, hs = best
+
+    rows = len(hs)
+    slack = max(0.0, avail - sum(hs))
+    gapv = min(26.0, slack / max(1, rows - 1)) if rows > 1 else 0.0
+    y = y0 + (slack * .5 if rows == 1 else (slack - gapv * (rows - 1)) * .2)
+
+    p = page(run)
+    if head:
+        p.rule(ML, 15, CONTENT_W, True)
+        p.box(ML, 17.4, W(7), head[0], 'lab')
+        if len(head) > 1: p.box(R(3), 17.4, W(3), head[1], 'lab rt')
+    cw = W(span)
+    step = 0 if cols == 1 else (CONTENT_W - cw) / (cols - 1)
+    for k, i in enumerate(range(0, len(items), cols)):
+        for j, (src, cap_t, box) in enumerate(items[i:i + cols]):
+            p.pic(src, ML + j * step, y, cw, cap=(cap_t if cap else None), box=box,
+                  tag='%s%03d' % (tag, i + j))
+        y += hs[k] + gapv
+    return p
+
+def detail_pages(w):
+    """Detaylar. Ilki tek basina ve buyuk, alt kenari sayfanin dip cizgisine
+       oturur; kitabin her yerinde ayni ufuk. Kalanlar izgarada, hepsi butun
+       halde: yatay bir detay yatay durur."""
+    ds = list(w['details'])
+    if not ds: return
+    d0 = ds.pop(0)
+    p = page(w['run'])
+    p.rule(ML, 15, CONTENT_W, True)
+    p.box(ML, 17.4, W(7), '%02d &nbsp; %s' % (w['n'], e(w['title'])), 'lab')
+    p.box(R(3), 17.4, W(3), 'Detail', 'lab rt')
+    a0 = ratio(d0['src'])
+    cw = W(11) if a0 > 1.15 else (W(6) if a0 < .85 else W(8))
+    x  = ML if a0 > 1.15 else (X(3) if w['n'] % 2 else X(2))
+    y  = FOOT - 5.4 - cw / a0
+    if y < 30: y = 30
+    p.pic(d0['src'], x, y, cw, cap=where(d0), tag='w%02dd00' % w['n'])
+    n = 0
+    while ds:
+        take = 6 if len(ds) >= 5 else len(ds)
+        chunk, ds = ds[:take], ds[take:]
+        grid_page(w['run'], [(d['src'], where(d), None) for d in chunk],
+                  head=('%02d &nbsp; %s' % (w['n'], e(w['title'])), 'Details'),
+                  tag='w%02dg%d' % (w['n'], n))
+        n += 1
+
+def process_page(w):
+    """Surec. Hepsi tek sayfada, kucuk, altlarinda yazi yok: bunlar bir
+       eserin nasil kurulduguna dair sira, tek tek gosterilecek levha degil."""
+    ps = w['process']
+    if not ps: return
+    cols = 4 if len(ps) > 6 else 3
+    span = COLS // cols
+    cw = W(span)
+    p = page(w['run'])
+    p.rule(ML, 15, CONTENT_W, True)
+    p.box(ML, 17.4, W(6), '%02d &nbsp; %s' % (w['n'], e(w['title'])), 'lab')
+    p.box(R(3), 17.4, W(3), 'Process', 'lab rt')
+    rows = math.ceil(len(ps) / float(cols))
+    hs = [max(cw / ratio(d['src']) for d in ps[i:i + cols])
+          for i in range(0, len(ps), cols)]
+    slack = max(0.0, (FOOT - 30.0) - sum(hs))
+    gapv = min(14.0, slack / max(1, rows - 1)) if rows > 1 else 0.0
+    y = 30.0
+    for k, i in enumerate(range(0, len(ps), cols)):
+        for j, d in enumerate(ps[i:i + cols]):
+            p.pic(d['src'], X(j * span), y, cw, tag='w%02dp%02d' % (w['n'], i + j))
+        y += hs[k] + gapv
+    p.box(ML, 292, CONTENT_W, '%d stages' % len(ps), 'cap')
+
+def aside_page(w):
+    """Kokte duran calismalar: bir eserin etudu ya da baska bir hali."""
+    if not w['aside']: return
+    grid_page(w['run'], [(a['src'], a.get('label'), None) for a in w['aside']],
+              head=('%02d &nbsp; %s' % (w['n'], e(w['title'])),
+                    'Study' if len(w['aside']) == 1 and w['aside'][0].get('label') == 'Study'
+                    else 'Studies and versions'),
+              tag='w%02da' % w['n'], y0=40)
+
 YEARS = []
 for w in WORKS:
     if w['year'] not in YEARS: YEARS.append(w['year'])
-
-
-def wk_page(w):
-    """Her eserin sayfasi. Otuz besinde de ayni: numara, tablo, serit, ad ve
-       yazi, dipte uc not."""
-    return ('<div class="wk"><div class="wno">%02d</div>'
-            '<div class="band"><img src="%s" alt=""></div>%s</div>'
-            '<div class="say"><h3>%s</h3><p>%s</p></div>%s'
-            % (w['n'], paint(w), strip(w),
-               e(w['title']), e(w['note']), notes(w['facets'])))
-
 
 for yr in YEARS:
     group = [w for w in WORKS if w['year'] == yr]
@@ -243,48 +411,69 @@ for yr in YEARS:
     for w in group: places[w.get('place', '')] = places.get(w.get('place', ''), 0) + 1
     place = max(places, key=places.get)
     run = '%s &middot; %s' % (yr, place)
-    span = ('%02d' % group[0]['n']) if len(group) == 1 else \
-           ('%02d&ndash;%02d' % (group[0]['n'], group[-1]['n']))
+    for w in group: w['run'] = run
 
-    add(run, '<div class="divider"><div class="yr">%s</div><div class="pl">%s</div>'
-             '<div class="ct">%s &middot; %d work%s</div><div class="rule"></div></div>'
-             % (e(yr), e(place), span, len(group), '' if len(group) == 1 else 's'))
+    p = page(run, 'dark')
+    p.box(ML, 196, CONTENT_W, e(yr), 'yr')
+    p.box(ML, 262, W(5), e(place), 'ti')
+    p.rule(ML, 276, CONTENT_W)
+    p.box(ML, 279, W(8), ' &nbsp;&middot;&nbsp; '.join('%02d' % x['n'] for x in group), 'cap')
+    p.box(R(2), 279, W(2), '%d works' % len(group), 'cap rt')
 
     for w in group:
-        # Once eserin sayfasi. Detayi olmayan eser burada biter: ayni resmi
-        # buyutup karsi sayfaya koymak eseri gostermez, sadece bozar.
-        first_page[w['n']] = add(run, wk_page(w))
-        # Sonra detaylarinin hepsi, birer tam sayfa, tek satirla.
-        for k, d in enumerate(w['details']):
-            bleed_page(run, det(w, k), tag=where(w, d), probe=d['src'])
+        work_open(w)
+        aside_page(w)
+        detail_pages(w)
+        process_page(w)
 
-# ── icindekiler, sayfalar belli olunca ───────────────────────────────
-def toc(items, head=None):
-    rows = ''.join(
-        '<li><span class="n">%02d</span><span class="t">%s</span>'
-        '<span class="y">%s</span><span class="p">%d</span></li>'
-        % (w['n'], e(w['title']), e(w['year']), first_page.get(w['n'], 0))
-        for w in items)
-    h = '<h2>%s</h2>' % head if head else ''
-    return '<div class="toc">%s<ol>%s</ol></div>' % (h, rows)
+# ══ arka ═════════════════════════════════════════════════════════════
+p = page('Colophon')
+p.rule(ML, 15, CONTENT_W, True)
+p.box(ML, 17.4, W(4), 'Colophon', 'lab')
+p.box(ML, 232, W(5),
+      'All works by Yiğit Özen, born 1994 in Istanbul and trained as an architect.', 'note')
+p.box(X(6), 232, W(6),
+      'Dimensions are given as width by height. Plates reproduce documentation of the '
+      'paintings; colour and surface differ from the works themselves. A technical '
+      'catalogue of the same works, with the full index, is published separately.'
+      '<p>All works &copy; Yiğit Özen. All rights reserved.</p>', 'note')
+p.box(ML, 292, CONTENT_W,
+      'yigitozen.xyz &middot; de-centralize.com<span class="rt">'
+      'Instagram @yjgjf &middot; x@yigitozen.xyz</span>', 'cap')
 
-pages[toc_a - 1] = (pages[toc_a - 1][0], toc(WORKS[:18], 'Contents'), '')
-pages[toc_b - 1] = (pages[toc_b - 1][0], toc(WORKS[18:]), '')
+logo = page('', 'last')
+logo.raw('<img class="mk" src="images/logo.svg">')
 
-# ── yaz ──────────────────────────────────────────────────────────────
+# ══ icindekiler ══════════════════════════════════════════════════════
+def toc(p, items, head=None):
+    y = 15.0
+    p.rule(ML, y, CONTENT_W, True)
+    p.box(ML, y + 2.4, W(4), head or 'Contents (continued)', 'lab')
+    y += 14
+    for w in items:
+        p.box(ML,   y, W(1), '%02d' % w['n'], 'toc n')
+        p.box(X(1), y, W(7), e(w['title']), 'toc t')
+        p.box(X(9), y, W(2), e(w['year']), 'toc y')
+        p.box(R(1), y, W(1), str(first_page[w['n']]), 'toc p rt')
+        p.rule(ML, y + 6.4, CONTENT_W)
+        y += 8.6
+
+toc(toc_pages[0], WORKS[:18], 'Contents')
+toc(toc_pages[1], WORKS[18:])
+
+# ══ yaz ══════════════════════════════════════════════════════════════
 out = ['<!doctype html>', '<html lang="en">', '<head>', '<meta charset="utf-8">',
        '<title>Yiğit Özen &mdash; Artbooklet</title>',
        '<link rel="stylesheet" href="booklet.css">', '</head>', '<body>', '']
-for i, (run, body, klass) in enumerate(pages, start=1):
-    side = '' if i == 1 else (' L' if i % 2 == 0 else ' R')
-    folio = ('' if i == 1 else
-             '<div class="folio"><span class="num">%d</span><span class="rule"></span>'
-             '<span class="run">%s</span></div>' % (i, run))
-    out.append('<section class="pg%s%s">%s%s</section>'
-               % (side, (' ' + klass if klass else ''), body, folio))
+for i, p in enumerate(PAGES, start=1):
+    side = 'L' if i % 2 == 0 else 'R'
+    folio = ('' if p.klass in ('cover dark', 'last') else
+             '<div class="folio"><span class="n">%d</span><span class="run">%s</span></div>'
+             % (i, p.run))
+    out.append('<section class="pg %s%s">%s%s</section>'
+               % (side, (' ' + p.klass if p.klass else ''), ''.join(p.bits), folio))
     out.append('')
 out += ['</body>', '</html>', '']
 open(os.path.join(HERE, 'booklet.html'), 'w', encoding='utf-8').write('\n'.join(out))
-
-print('pages: %d' % len(pages))
+print('pages: %d' % len(PAGES))
 print('images: %d' % len(made))
