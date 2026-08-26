@@ -98,3 +98,8 @@ img.mk   { left: 50%; top: 50%; width: 46mm; height: auto; transform: translate(
 .cover .hd, .cover .cvr-ti { color: #fff }
 .cvr-ti { font-size: 62pt; font-weight: 700; letter-spacing: -.035em; line-height: .86 }
 .cover .lab { color: #fff }
+
+/* boyanin uzerinde duran tek satir: perde degil, golge degil, sadece beyaz */
+.cap.onimg { color: rgba(255,255,255,.9) }
+/* adres ve e-posta versal olunca yer tutucu gibi okunuyor */
+.cap.plain { text-transform: none; letter-spacing: .02em }

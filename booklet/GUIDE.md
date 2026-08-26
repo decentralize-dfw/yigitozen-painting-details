@@ -129,3 +129,26 @@ Every page is built from its own material.
 4. Filling a page because it looks empty.
 5. Type between 8 pt and 26 pt.
 6. The same composition twice in a row.
+
+---
+
+## 9. What the book must say about itself
+
+A book that will be sent to people who do not know the work has to answer,
+without being asked:
+
+- **Why the years jump.** 2019, 2020, one canvas in 2023, then 2026. The
+  biography says it: from 2020 the studio work went to XR and spatial
+  design. Say it in the book rather than leaving a curator to guess.
+- **What recurs.** The small figure with crossed eyes is in eight of the
+  thirty-five, 2019 through 2026. It is named, given a spread, and every
+  appearance is shown side by side.
+- **Which shows were paintings.** The exhibition list is split: painting
+  under one head, XR and spatial design under another. Unsplit, a reader
+  takes the design shows for the painting's history.
+- **Where a number comes from.** A percentage in a paragraph was measured
+  on the documentation file, not on the canvas, and no colour target was
+  used. The colophon says so.
+- **Whose picture it is.** A quotation carries its speaker, a reference
+  frame in a process sequence carries its source and its rights holder.
+- **How to buy one.** An address, a city, a line that says enquiries.

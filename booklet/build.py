@@ -111,19 +111,34 @@ def page(run='', klass=''):
 
 # ── veri ─────────────────────────────────────────────────────────────
 WORKS = json.load(open(SRC, encoding='utf-8'))
-WHERE = json.load(open(os.path.join(HERE, 'where.json'), encoding='utf-8'))
+WHERE   = json.load(open(os.path.join(HERE, 'where.json'), encoding='utf-8'))
+MOTIF   = json.load(open(os.path.join(HERE, 'motif.json'), encoding='utf-8'))
+CREDITS = json.load(open(os.path.join(HERE, 'credits.json'), encoding='utf-8'))
+
+# Kayitta detay diye gecen ama detay olmayanlar: bunlar isin baska bir hali
+# ya da baska bir denemesi. Kitapta detay bolumune degil, etudlerin yanina.
+NOT_DETAIL = {
+    'ciaocapo_detail_6.jpg': 'Another version, on green and blue',
+    'ciaocapo_detail_7.jpg': 'The pair in blue and grey',
+    'ciaocapo_detail_8.jpg': 'The pair, before the colour',
+    'cellularspleens_detail_4.jpg': 'The whole, in another version',
+}
 for w in WORKS:
     ims = w['images']
     w['plate']   = ims[0]
-    w['details'] = [i for i in ims[1:] if i.get('label') == 'Detail']
-    w['aside']   = [i for i in ims[1:] if i.get('label') in ('Study', 'Version')]
+    base = lambda i: i['src'].split('/')[-1]
+    w['details'] = [i for i in ims[1:]
+                    if i.get('label') == 'Detail' and base(i) not in NOT_DETAIL]
+    w['aside']   = [i for i in ims[1:] if i.get('label') in ('Study', 'Version')
+                    or base(i) in NOT_DETAIL]
     w['process'] = [i for i in ims[1:] if i.get('label') == 'In progress']
     w['ar']      = ims[0].get('ar') or ratio(ims[0]['src'], ims[0].get('box'))
 
 BY_N = {w['n']: w for w in WORKS}
 first_page = {}
 def where(d):
-    return WHERE.get(d['src'].split('/')[-1], d.get('label', 'Detail'))
+    b = d['src'].split('/')[-1]
+    return NOT_DETAIL.get(b) or WHERE.get(b, d.get('label', 'Detail'))
 
 # ── metin ────────────────────────────────────────────────────────────
 P1 = ('The figures in these paintings are assembled rather than drawn whole. A body '
@@ -145,43 +160,35 @@ P3 = ('Familiar compositional formats are kept while the agreement that made the
       'and its mouth sewn shut, so the witness is cancelled before anything can be '
       'reported. Scale works as a verdict, one face given as a person and the rest reduced '
       'to signs, sometimes a face replaced by a number.')
-BLURB = ('Thirty-five paintings made since 2019 across Istanbul, Milan and Luxembourg. '
-         'Acrylic on canvas, carton and paper, with one charcoal drawing. The decisions '
-         'are taken in wet paint, on the spot, and layer goes over layer like a '
-         'palimpsest: colour clusters of movement, energy, aura and feeling rather than '
-         'of light and shadow.')
+BLURB = ('Thirty-five works made since 2019 across Istanbul, Milan and Luxembourg: '
+         'acrylic on canvas, on carton and on paper, and one drawing in charcoal on the '
+         'reverse of a canvas. They are given here newest first, and a small figure with '
+         'crossed eyes runs through them from one end of the seven years to the other.')
 BIO = ['Yiğit Özen was born in 1994 in Istanbul and trained as an architect.',
-       'The paintings date from 2018 onward and were made across Istanbul, Milan and '
-       'Luxembourg.',
+       'The painting dates from 2018 onward. The thirty-five works in this book were made '
+       'between 2019 and 2026, across Istanbul, Milan and Luxembourg.',
+       'From 2020 the studio work went largely to XR and spatial design, and the canvases '
+       'thin out to one commission in 2023 before the painting resumes in 2026. The years '
+       'are given as they fall rather than smoothed over.',
        'Alongside the paintings, Özen works as an XR and spatial web designer, and is the '
        'founder of decentralize design in Milan and Virtually Ever After in Luxembourg. '
        'That practice has been shown at Kunsthalle Zürich, the Royal Institution in '
        'London, Holy Art Gallery London and Art Basel Miami.']
-CV = [('Awards and mentions', [
-        ('Creatorverse Buildathon by Parcel x PangeaDAO, Music Venue, Winner', '2022'),
-        ('Creatorverse Buildathon by Parcel x PangeaDAO, Meeting Space, Runner-up', '2022'),
-        ('Grant Program by EnterDAO’s Landworks, Fashion Venue, Winner', '2022'),
-        ('Grant Program by EnterDAO’s Landworks, Headquarters, Winner', '2022'),
-        ('Top 50 Creators of Metaverse by Metamundo', '2023'),
-        ('CryptoCubes by Han, Runner-up', '2023'),
-        ('VCA x Draup Virtual Fashion Residency, 1st Prize, selected by RedDAO', '2023'),
-        ('MONA 3D Objects Buildathon, Center Pieces, Honorable Mention', '2024')]),
-      ('Talks', [
-        ('Virtual Show &amp; Tell at Hyperfy, hosted by untitled, xyz', '2023'),
-        ('VCA Mentorship, 6th Cohort, Architecture in the Metaverse', '2023'),
-        ('Opening Keynote, Digital Fashion Summit, Creative Denmark', '2024')]),
-      ('Exhibitions', [
+# Sergi listesi ikiye ayrilir. Bir resim kitabinda ikisi ayrimsiz durursa
+# okuyucu tasarim isinin sergilerini resimlerin sergisi sanir.
+CV = [('Painting, selected exhibitions', [
         ('Power of the Nature, Fabbrica del Vapore, Milan', '2019'),
-        ('The Arts Special Projects, Fabbrica del Vapore, Milan', '2019'),
+        ('The Arts Special Projects, Fabbrica del Vapore, Milan', '2019')]),
+      ('XR and spatial design, selected', [
         ('Communitas III by Kollektiv Kollektiv, Kunsthaus Steffisburg', '2021'),
         ('New Freedom Think, Mads Gallery, Milan', '2022'),
         ('Art Design, Holy Art Gallery, London', '2022'),
-        ('Klein Metaverse Event, BabylonsNFT, Yachtingverse', '2022'),
         ('DYOR, Kunsthalle Zürich, Zurich', '2022'),
         ('Creators of the Metaverse by Metamundo, Art Basel Miami', '2022'),
-        ('First Look Metaverse Watch Party, MONA', '2023'),
-        ('KODA by Polkadot, Factory Berlin, Berlin', '2023'),
-        ('New Codes by VCA, Draup and Mad Global, Royal Institution, London', '2023')])]
+        ('New Codes by VCA, Draup and Mad Global, Royal Institution, London', '2023')]),
+      ('Talks', [
+        ('VCA Mentorship, 6th Cohort, Architecture in the Metaverse', '2023'),
+        ('Opening Keynote, Digital Fashion Summit, Creative Denmark', '2024')])]
 
 # ══ on sayfalar ══════════════════════════════════════════════════════
 # Kapak. Kirpma burada da yok: resim sayfanin genisligince, kendi
@@ -190,7 +197,7 @@ cover, car = prep('/img/full/detail/7famboardgame_detail_3.jpg', 240, 'cover')
 p = page('', 'cover dark')
 p.raw('<img src="%s" style="left:0;top:36mm;width:240mm;height:%.2fmm">' % (cover, 240 / car))
 p.box(ML, 13, CONTENT_W, 'Artbooklet<span class="rt">Thirty-five works</span>', 'lab')
-p.box(ML, 232, CONTENT_W, 'YIĞIT<br>ÖZEN', 'cvr-ti')
+p.box(ML, 232, CONTENT_W, 'Yİ\u011eİT<br>ÖZEN', 'cvr-ti')
 p.rule(ML, 288, CONTENT_W)
 p.box(ML, 291, CONTENT_W,
       'Paintings since 2019<span class="rt">Istanbul &middot; Milan &middot; Luxembourg &middot; yigitozen.xyz</span>',
@@ -241,6 +248,10 @@ for h4, rows in CV:
 toc_pages = [page('Contents'), page('Contents')]
 
 # ══ eserler ══════════════════════════════════════════════════════════
+# Bir eserin yazisi baskasinin cumlesiyle basliyorsa kaynagi yaninda durur.
+SOURCE = {3: 'Tony Soprano, <em>The Sopranos</em>, HBO, season one'}
+
+
 def label_row(p, w, y):
     """Sayfanin tepesindeki ince serit: teknik, olcu, yer, yil."""
     p.rule(ML, y, CONTENT_W, True)
@@ -270,7 +281,10 @@ def work_open(w):
         p.pic(w['plate']['src'], px, py, cw, box=w['plate'].get('box'), tag=tag)
         p.box(tx, 34, W(4), '%02d' % w['n'], 'num')
         p.box(tx, 52, W(4), '<em>%s</em>' % e(w['title']), 'ti')
-        p.box(tx, 52 + 4.6 * math.ceil(len(w['title']) / 22.0) + 6, W(4), e(w['note']), 'note')
+        ny = 52 + 4.6 * math.ceil(len(w['title']) / 22.0) + 6
+        p.box(tx, ny, W(4), e(w['note']), 'note')
+        if w['n'] in SOURCE:
+            p.box(tx, ny + 4.2 * math.ceil(len(w['note']) / 46.0) + 4, W(4), SOURCE[w['n']], 'cap')
     elif w['ar'] > 1.15:                                # yatay tablo
         cw = W(10)
         px = ML if left else R(10)
@@ -342,11 +356,51 @@ def grid_page(run, items, head=None, tag='d', cap=True, y0=30.0):
         y += hs[k] + gapv
     return p
 
+# Uc detay iki sayfaya tasar. Detaylar tam 1800 x 1200, yani 1.5; ikiye
+# bolununce her yari 0.75 eder ve sayfanin orani da 240/320 = 0.75. Yani
+# iki sayfayi bastan basa dolduruyor ve yine hicbir yeri kesilmiyor.
+BLEED = {(1, 6), (6, 0), (15, 1)}
+
+def bleed_spread(w, k, d):
+    """Bir detayi iki sayfaya, ortadan bolerek, kirpmadan."""
+    src = os.path.join(ROOT, d['src'].lstrip('/'))
+    im = Image.open(src).convert('RGB')
+    iw, ih = im.size
+    for half in (0, 1):
+        c = im.crop((half * iw // 2, 0, (half + 1) * iw // 2, ih))
+        t = 'w%02db%d%d' % (w['n'], k, half)
+        c2 = c.copy(); c2.thumbnail((1100, 1100), Image.LANCZOS)
+        c2.save(os.path.join(IMG, t + '.jpg'), quality=80, subsampling=2, optimize=True)
+        p = page(w['run'], 'dark')
+        p.raw('<img src="images/%s.jpg" style="left:0;top:0;width:240mm;height:320mm">' % t)
+        if half:
+            p.box(R(5), 292, W(5), '%02d &nbsp; %s' % (w['n'], e(where(d))), 'cap rt onimg')
+
+
+def bleed_page_one(w, k, d):
+    """Orani tam sayfayla ayni olan bir detay: bastan basa, kesilmeden."""
+    path, _ = prep(d['src'], 240, 'w%02dB%d' % (w['n'], k))
+    p = page(w['run'], 'dark')
+    p.raw('<img src="%s" style="left:0;top:0;width:240mm;height:320mm">' % path)
+    p.box(R(5), 292, W(5), '%02d \u00b7 %s' % (w['n'], e(where(d))), 'cap rt onimg')
+
+
 def detail_pages(w):
     """Detaylar. Ilki tek basina ve buyuk, alt kenari sayfanin dip cizgisine
        oturur; kitabin her yerinde ayni ufuk. Kalanlar izgarada, hepsi butun
        halde: yatay bir detay yatay durur."""
     ds = list(w['details'])
+    if not ds: return
+    # Yalniz orani tam 1.5 olan bir detay iki sayfaya bolunebilir; baska bir
+    # oranda yarim sayfaya sigdirmak icin germek gerekir ve o gerilmez.
+    # Bir detay ancak orani tutuyorsa sayfayi doldurur: 1.5 ise ikiye
+    # bolunup cift sayfaya, 0.75 ise tek sayfaya, tam olarak. Baska bir
+    # oranda germek gerekir, o yuzden yerinde birakilir.
+    for k in sorted([k for (n, k) in BLEED if n == w['n']], reverse=True):
+        if k >= len(ds): continue
+        a = ratio(ds[k]['src'])
+        if abs(a - 1.5) < .02:   bleed_spread(w, k, ds.pop(k))
+        elif abs(a - .75) < .02: bleed_page_one(w, k, ds.pop(k))
     if not ds: return
     d0 = ds.pop(0)
     p = page(w['run'])
@@ -386,11 +440,17 @@ def process_page(w):
     slack = max(0.0, (FOOT - 30.0) - sum(hs))
     gapv = min(14.0, slack / max(1, rows - 1)) if rows > 1 else 0.0
     y = 30.0
+    note = None
     for k, i in enumerate(range(0, len(ps), cols)):
         for j, d in enumerate(ps[i:i + cols]):
             p.pic(d['src'], X(j * span), y, cw, tag='w%02dp%02d' % (w['n'], i + j))
+            c = CREDITS.get(d['src'].split('/')[-1])
+            if c: note = c
         y += hs[k] + gapv
-    p.box(ML, 292, CONTENT_W, '%d stages' % len(ps), 'cap')
+    if note:
+        p.rule(ML, 286, W(9))
+        p.box(ML, 288, W(9), e(note), 'cap')
+    p.box(R(2), 292, W(2), '%d stages' % len(ps), 'cap rt')
 
 def aside_page(w):
     """Kokte duran calismalar: bir eserin etudu ya da baska bir hali."""
@@ -418,7 +478,7 @@ for yr in YEARS:
     p.box(ML, 262, W(5), e(place), 'ti')
     p.rule(ML, 276, CONTENT_W)
     p.box(ML, 279, W(8), ' &nbsp;&middot;&nbsp; '.join('%02d' % x['n'] for x in group), 'cap')
-    p.box(R(2), 279, W(2), '%d works' % len(group), 'cap rt')
+    p.box(R(2), 279, W(2), ('%d work%s' % (len(group), '' if len(group) == 1 else 's')), 'cap rt')
 
     for w in group:
         work_open(w)
@@ -426,20 +486,109 @@ for yr in YEARS:
         detail_pages(w)
         process_page(w)
 
+# ══ motif ═══════════════════════════════════════════════════════════
+def motif_pages():
+    """Kitabin en cok is goren iki sayfasi: 2019'dan 2026'ya tekrar eden
+       figur, adiyla ve gectigi butun islerden kesitlerle yan yana."""
+    ws = [BY_N[c['n']] for c in MOTIF['crops']]
+    yrs = sorted(set(x['year'] for x in ws))
+    p = page('The onlooker')
+    p.rule(ML, 15, CONTENT_W, True)
+    p.box(ML, 17.4, W(6), 'A recurring figure', 'lab')
+    p.box(R(3), 17.4, W(3), '%s&ndash;%s' % (yrs[0], yrs[-1]), 'lab rt')
+    p.box(ML, 120, W(8), 'The onlooker', 'shout')
+    p.box(ML, 176, W(5),
+          'A small figure turns up in eight of these paintings, built from stacked '
+          'circles, an X drawn over each eye and in one of them a mouth stitched shut. '
+          'It is never the subject. It stands at the foot of the heap, in a row along a '
+          'boat, hung upside down in a corner, ranged across a board: present at the '
+          'scene and unable to report it.', 'note')
+    p.box(X(6), 176, W(6),
+          'It is also the answer to the gap in the dates. The canvases stop in 2020 and '
+          'start again in 2026, but the figure that opens the book on a chequered board '
+          'is the same one drawn in red on paper seven years earlier. What paused was the '
+          'painting, not the language.'
+          '<p>Where it appears: %s.</p>' % ', '.join('%02d' % c['n'] for c in MOTIF['crops']),
+          'note')
+    p.rule(ML, 272, CONTENT_W)
+    p.box(ML, 274, CONTENT_W, 'Eight works, seven years', 'cap')
+
+    items = []
+    for c in MOTIF['crops']:
+        w = BY_N[c['n']]
+        items.append((w['plate']['src'],
+                      '%02d \u00b7 %s \u00b7 %s' % (w['n'], w['year'], c['line']),
+                      crop_of(w, c['box'])))
+    grid_page('The onlooker', items,
+              head=('The onlooker, in each painting it appears in', 'Details'),
+              tag='motif', y0=28.0)
+
+
+def crop_of(w, b):
+    """Motif kutusu tablonun kirpilmis hali icinde verilmistir; saklanan
+       fotografin icindeki yerine cevirir."""
+    pb = w['plate'].get('box') or [0, 0, 1, 1]
+    return [pb[0] + b[0] * pb[2], pb[1] + b[1] * pb[3], b[2] * pb[2], b[3] * pb[3]]
+
+
+motif_pages()
+
 # ══ arka ═════════════════════════════════════════════════════════════
 p = page('Colophon')
 p.rule(ML, 15, CONTENT_W, True)
 p.box(ML, 17.4, W(4), 'Colophon', 'lab')
-p.box(ML, 232, W(5),
-      'All works by Yiğit Özen, born 1994 in Istanbul and trained as an architect.', 'note')
-p.box(X(6), 232, W(6),
-      'Dimensions are given as width by height. Plates reproduce documentation of the '
-      'paintings; colour and surface differ from the works themselves. A technical '
-      'catalogue of the same works, with the full index, is published separately.'
+p.box(ML, 168, W(5),
+      '<p>All works by Yiğit Özen, born 1994 in Istanbul and trained as an architect. '
+      'Works are given newest first, so a paragraph that says a thing happens for the '
+      'first time means the first time reading backwards through the book.</p>'
+      '<p>Dimensions are width by height, in centimetres.</p>'
+      '<p>Photography by the artist. Plates and details reproduce documentation of the '
+      'paintings; colour and surface differ from the works themselves.</p>', 'note')
+p.box(X(6), 168, W(6),
+      '<p>Where a paragraph gives a proportion or a percentage, it was measured on the '
+      'documentation file rather than on the painting, and it describes that file. No '
+      'colour target was used in the photography, so the figures are a reading of the '
+      'photograph and not a colorimetric claim about the paint.</p>'
+      '<p>The epigraph on 03 is Tony Soprano, <em>The Sopranos</em>, HBO. The first frame '
+      'of the process pages on 02 and 03 is a reference the painting was begun from and '
+      'is credited on the page it appears.</p>'
+      '<p>A technical catalogue of the same works, with the full index, is published '
+      'separately.</p>'
       '<p>All works &copy; Yiğit Özen. All rights reserved.</p>', 'note')
-p.box(ML, 292, CONTENT_W,
-      'yigitozen.xyz &middot; de-centralize.com<span class="rt">'
-      'Instagram @yjgjf &middot; x@yigitozen.xyz</span>', 'cap')
+p.rule(ML, 276, CONTENT_W, True)
+p.box(ML, 279, W(5), 'For enquiries, availability and prices', 'lab')
+p.box(X(5), 279, W(4), 'x@yigitozen.xyz<br>Instagram @yjgjf', 'cap plain')
+p.box(R(3), 279, W(3), 'Studio, Luxembourg<br>yigitozen.xyz &middot; de-centralize.com',
+      'cap plain rt')
+
+# Butun kitap tek sayfada, kucuk: 35 tablo, numaralariyla.
+p = page('Index')
+p.rule(ML, 15, CONTENT_W, True)
+p.box(ML, 17.4, W(6), 'The thirty-five', 'lab')
+p.box(R(3), 17.4, W(3), 'Index', 'lab rt')
+def index_fits(ncols, span):
+    cw = W(span)
+    h = 0.0
+    for i in range(0, len(WORKS), ncols):
+        h += max(cw / x['ar'] for x in WORKS[i:i + ncols]) + 8.5
+    return h
+
+ncols, span = 6, 2
+for c, sp in ((6, 2), (7, 1), (8, 1)):
+    if c * sp <= COLS and index_fits(c, sp) <= FOOT - 30: ncols, span = c, sp; break
+cw = W(span)
+step = (CONTENT_W - cw) / (ncols - 1)
+y = 30.0
+for i in range(0, len(WORKS), ncols):
+    row = WORKS[i:i + ncols]
+    hmax = 0
+    for j, w in enumerate(row):
+        p.pic(w['plate']['src'], ML + j * step, y, cw, box=w['plate'].get('box'),
+              tag='ix%02d' % w['n'])
+        h = cw / w['ar']
+        p.box(ML + j * step, y + h + 1.6, cw, '%02d' % w['n'], 'cap')
+        hmax = max(hmax, h)
+    y += hmax + 8.5
 
 logo = page('', 'last')
 logo.raw('<img class="mk" src="images/logo.svg">')
@@ -451,12 +600,13 @@ def toc(p, items, head=None):
     p.box(ML, y + 2.4, W(4), head or 'Contents (continued)', 'lab')
     y += 14
     for w in items:
+        lines = 2 if len(w['title']) > 58 else 1
         p.box(ML,   y, W(1), '%02d' % w['n'], 'toc n')
         p.box(X(1), y, W(7), e(w['title']), 'toc t')
         p.box(X(9), y, W(2), e(w['year']), 'toc y')
         p.box(R(1), y, W(1), str(first_page[w['n']]), 'toc p rt')
-        p.rule(ML, y + 6.4, CONTENT_W)
-        y += 8.6
+        p.rule(ML, y + 6.4 + (lines - 1) * 4.2, CONTENT_W)
+        y += 8.6 + (lines - 1) * 4.2
 
 toc(toc_pages[0], WORKS[:18], 'Contents')
 toc(toc_pages[1], WORKS[18:])
@@ -475,5 +625,23 @@ for i, p in enumerate(PAGES, start=1):
     out.append('')
 out += ['</body>', '</html>', '']
 open(os.path.join(HERE, 'booklet.html'), 'w', encoding='utf-8').write('\n'.join(out))
+# PDF'in yer imleri icin: hangi baslik hangi sayfada
+marks = []
+for i, p in enumerate(PAGES, start=1):
+    if p.klass == 'cover dark': marks.append(('Cover', i))
+for name, i in (('Imprint', 2), ('On the work', 4), ('Biography', 6), ('Contents', 8)):
+    if i <= len(PAGES): marks.append((name, i))
+seen = set()
+for i, p in enumerate(PAGES, start=1):
+    if p.klass == 'dark' and p.run and p.run not in seen:
+        seen.add(p.run); marks.append((p.run.replace('&middot;', '·'), i))
+for w in WORKS:
+    marks.append(('%02d  %s' % (w['n'], w['title']), first_page[w['n']]))
+for name, i in (('The onlooker', None), ('Colophon', None), ('Index', None)):
+    pass
+json.dump({'marks': marks, 'pages': len(PAGES)},
+          open(os.path.join(HERE, 'outline.json'), 'w', encoding='utf-8'),
+          ensure_ascii=False, indent=1)
+
 print('pages: %d' % len(PAGES))
 print('images: %d' % len(made))
