@@ -152,3 +152,13 @@ without being asked:
 - **Whose picture it is.** A quotation carries its speaker, a reference
   frame in a process sequence carries its source and its rights holder.
 - **How to buy one.** An address, a city, a line that says enquiries.
+
+## 10. Two lengths
+
+The book exists at two lengths from one source. The long one is the whole
+record: every work, every detail, every stage. The short one is seventeen
+pages and is what gets attached to an email: eight works, the recurring
+figure, the address, and a thumbnail of the thirty-five so the eight are
+understood as a selection. Nothing in the short one is written for it. If a
+sentence is not good enough for the short version it is not good enough for
+the long one either.

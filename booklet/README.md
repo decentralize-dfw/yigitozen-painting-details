@@ -37,9 +37,24 @@ and the three facets, along with the paths of the paintings and their
 details.
 
 ```
-python3 build.py ../../yigit/works.json     # writes booklet.html + images/
-node print-pdf.js                           # writes Yigit-Ozen-Artbooklet.pdf
+python3 build.py ../../yigit/works.json     # booklet.html + images/
+node print-pdf.js && python3 post.py        # Yigit-Ozen-Artbooklet.pdf, 95 pages
+
+python3 build.py ../../yigit/works.json --short
+node print-pdf.js --short && python3 post.py --short
 ```
+
+`post.py` writes the PDF's title, author and keywords and the bookmarks, 44
+of them in the long version, which is what makes ninety-five pages reachable.
+
+## The short one
+
+Nobody opens a ninety-five page PDF from a stranger. `--short` builds the
+same book at seventeen pages and 3 MB: cover, imprint, the essay, the
+biography, eight works one to a page, the spread on the recurring figure,
+the colophon with the address, and facing it a thumbnail of all thirty-five
+so the reader can see there is a body of work behind the eight. Which eight
+is one line in `build.py`, `SELECT`.
 
 `build.py` needs Pillow and reads the pictures from the site repository
 beside this one. Three things it does that are easy to miss:

@@ -9,18 +9,25 @@ bes ise atlayabilmek icin ikisi de gerekli.
 import json, os
 from pypdf import PdfReader, PdfWriter
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-PDF  = os.path.join(HERE, 'Yigit-Ozen-Artbooklet.pdf')
-o    = json.load(open(os.path.join(HERE, 'outline.json'), encoding='utf-8'))
+import sys
+HERE  = os.path.dirname(os.path.abspath(__file__))
+SHORT = '--short' in sys.argv
+PDF   = os.path.join(HERE, 'Yigit-Ozen-Artbooklet-Short.pdf' if SHORT
+                     else 'Yigit-Ozen-Artbooklet.pdf')
+o     = json.load(open(os.path.join(HERE, 'outline-short.json' if SHORT else 'outline.json'),
+                       encoding='utf-8'))
 
 r = PdfReader(PDF)
 w = PdfWriter()
 for p in r.pages: w.add_page(p)
 
 w.add_metadata({
-    '/Title':    'Yiğit Özen — Artbooklet. Paintings since 2019',
+    '/Title':    ('Yiğit Özen — Artbooklet, short. Eight works' if SHORT
+                  else 'Yiğit Özen — Artbooklet. Paintings since 2019'),
     '/Author':   'Yiğit Özen',
-    '/Subject':  'Thirty-five works made since 2019 across Istanbul, Milan and Luxembourg',
+    '/Subject':  ('Eight of thirty-five works made since 2019 across Istanbul, Milan and '
+                  'Luxembourg' if SHORT else
+                  'Thirty-five works made since 2019 across Istanbul, Milan and Luxembourg'),
     '/Keywords': ('Yiğit Özen, painting, acrylic on canvas, contemporary painting, '
                   'figurative painting, Istanbul, Milan, Luxembourg, artbook, catalogue'),
     '/Creator':  'yigitozen.xyz',

@@ -28,7 +28,10 @@ from PIL import Image
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 IMG  = os.path.join(HERE, 'images')
-SRC  = sys.argv[1] if len(sys.argv) > 1 else os.path.join(HERE, '..', '..', 'yigit', 'works.json')
+ARGS  = [a for a in sys.argv[1:] if not a.startswith('--')]
+SHORT = '--short' in sys.argv          # gonderim icin on alti sayfalik surum
+SELECT = [1, 2, 3, 5, 12, 14, 24, 27]  # kisa surumde gosterilen isler
+SRC  = ARGS[0] if ARGS else os.path.join(HERE, '..', '..', 'yigit', 'works.json')
 ROOT = os.path.dirname(os.path.abspath(SRC))
 
 e = lambda t: html.escape(str(t), quote=True)
@@ -164,6 +167,13 @@ BLURB = ('Thirty-five works made since 2019 across Istanbul, Milan and Luxembour
          'acrylic on canvas, on carton and on paper, and one drawing in charcoal on the '
          'reverse of a canvas. They are given here newest first, and a small figure with '
          'crossed eyes runs through them from one end of the seven years to the other.')
+SHORT_BLURB = ('Eight of thirty-five works made since 2019 across Istanbul, Milan and '
+               'Luxembourg: acrylic on canvas, on carton and on paper. The whole book, '
+               'with every detail and the stages of the newest paintings, is at '
+               'yigitozen.xyz/artbook. A small figure with crossed eyes runs through the '
+               'thirty-five from one end of the seven years to the other; the last spread '
+               'here is about it.')
+
 BIO = ['Yiğit Özen was born in 1994 in Istanbul and trained as an architect.',
        'The painting dates from 2018 onward. The thirty-five works in this book were made '
        'between 2019 and 2026, across Istanbul, Milan and Luxembourg.',
@@ -208,7 +218,7 @@ p.rule(ML, 15, CONTENT_W, True)
 p.box(ML, 18, W(6), 'Artbooklet', 'lab')
 p.box(ML, 232, W(5), 'Paintings<br>since 2019', 'ti big-ti')
 p.box(ML, 258, W(5), 'Yiğit Özen', 'lab')
-p.box(X(6), 232, W(6), e(BLURB), 'note')
+p.box(X(6), 232, W(6), e(SHORT_BLURB if SHORT else BLURB), 'note')
 p.box(ML, 292, CONTENT_W, '35 works<span class="rt">yigitozen.xyz</span>', 'cap')
 
 p = page('On the work')
@@ -226,26 +236,37 @@ p.box(X(4), 200, W(4), e(P2), 'note')
 p.box(X(8), 200, W(4), e(P3), 'note')
 
 por, _ = prep('/img/portrait.jpg', 84, 'portrait')
-p = page('Biography')
-p.rule(ML, 15, CONTENT_W, True)
-p.box(ML, 18, W(4), 'Biography', 'lab')
-p.raw('<img src="%s" style="left:%.2fmm;top:36mm;width:%.2fmm">' % (por, X(6), W(6)))
-p.box(ML, 232, W(5), 'Yiğit<br>Özen', 'ti big-ti')
-p.box(X(6), 232, W(6), ''.join('<p>%s</p>' % e(x) for x in BIO), 'note')
+if SHORT:
+    p = page('Biography')
+    p.rule(ML, 15, CONTENT_W, True)
+    p.box(ML, 18, W(4), 'Biography', 'lab')
+    p.raw('<img src="%s" style="left:%.2fmm;top:36mm;width:%.2fmm">' % (por, X(7), W(5)))
+    p.box(ML, 232, W(5), 'Yiğit<br>Özen', 'ti big-ti')
+    p.box(X(6), 232, W(6), ''.join('<p>%s</p>' % e(x) for x in BIO[:2]) +
+          '<p>Painting, selected: Power of the Nature and The Arts Special Projects, '
+          'Fabbrica del Vapore, Milan, 2019. The XR and spatial design practice is listed '
+          'separately at de-centralize.com.</p>', 'note')
+toc_pages = []
+if not SHORT:
+    p = page('Biography')
+    p.rule(ML, 15, CONTENT_W, True)
+    p.box(ML, 18, W(4), 'Biography', 'lab')
+    p.raw('<img src="%s" style="left:%.2fmm;top:36mm;width:%.2fmm">' % (por, X(6), W(6)))
+    p.box(ML, 232, W(5), 'Yiğit<br>Özen', 'ti big-ti')
+    p.box(X(6), 232, W(6), ''.join('<p>%s</p>' % e(x) for x in BIO), 'note')
 
-p = page('Biography')
-y = 15.0
-for h4, rows in CV:
-    p.rule(ML, y, CONTENT_W, True)
-    p.box(ML, y + 2.4, W(3), h4, 'lab')
-    yy = y + 2.4
-    for a, b in rows:
-        p.box(X(3), yy, W(8), a, 'cv')
-        p.box(R(1), yy, W(1), b, 'cv rt')
-        yy += 5.6
-    y = yy + 7
-
-toc_pages = [page('Contents'), page('Contents')]
+    p = page('Biography')
+    y = 15.0
+    for h4, rows in CV:
+        p.rule(ML, y, CONTENT_W, True)
+        p.box(ML, y + 2.4, W(3), h4, 'lab')
+        yy = y + 2.4
+        for a, b in rows:
+            p.box(X(3), yy, W(8), a, 'cv')
+            p.box(R(1), yy, W(1), b, 'cv rt')
+            yy += 5.6
+        y = yy + 7
+    toc_pages = [page('Contents'), page('Contents')]
 
 # ══ eserler ══════════════════════════════════════════════════════════
 # Bir eserin yazisi baskasinin cumlesiyle basliyorsa kaynagi yaninda durur.
@@ -283,8 +304,12 @@ def work_open(w):
         p.box(tx, 52, W(4), '<em>%s</em>' % e(w['title']), 'ti')
         ny = 52 + 4.6 * math.ceil(len(w['title']) / 22.0) + 6
         p.box(tx, ny, W(4), e(w['note']), 'note')
+        ny += 4.05 * math.ceil(len(w['note']) / 46.0) + 4
         if w['n'] in SOURCE:
-            p.box(tx, ny + 4.2 * math.ceil(len(w['note']) / 46.0) + 4, W(4), SOURCE[w['n']], 'cap')
+            p.box(tx, ny, W(4), SOURCE[w['n']], 'cap')
+            ny += 3.3 * math.ceil(len(SOURCE[w['n']]) / 58.0) + 5
+        if w.get('read'):
+            p.box(tx, ny, W(4), e(w['read']), 'note')
     elif w['ar'] > 1.15:                                # yatay tablo
         cw = W(10)
         px = ML if left else R(10)
@@ -467,21 +492,25 @@ for w in WORKS:
 
 for yr in YEARS:
     group = [w for w in WORKS if w['year'] == yr]
+    if SHORT: group = [w for w in group if w['n'] in SELECT]
+    if not group: continue
     places = {}
     for w in group: places[w.get('place', '')] = places.get(w.get('place', ''), 0) + 1
     place = max(places, key=places.get)
     run = '%s &middot; %s' % (yr, place)
     for w in group: w['run'] = run
 
-    p = page(run, 'dark')
-    p.box(ML, 196, CONTENT_W, e(yr), 'yr')
-    p.box(ML, 262, W(5), e(place), 'ti')
-    p.rule(ML, 276, CONTENT_W)
-    p.box(ML, 279, W(8), ' &nbsp;&middot;&nbsp; '.join('%02d' % x['n'] for x in group), 'cap')
-    p.box(R(2), 279, W(2), ('%d work%s' % (len(group), '' if len(group) == 1 else 's')), 'cap rt')
+    if not SHORT:
+      p = page(run, 'dark')
+      p.box(ML, 196, CONTENT_W, e(yr), 'yr')
+      p.box(ML, 262, W(5), e(place), 'ti')
+      p.rule(ML, 276, CONTENT_W)
+      p.box(ML, 279, W(8), ' &nbsp;&middot;&nbsp; '.join('%02d' % x['n'] for x in group), 'cap')
+      p.box(R(2), 279, W(2), ('%d work%s' % (len(group), '' if len(group) == 1 else 's')), 'cap rt')
 
     for w in group:
         work_open(w)
+        if SHORT: continue
         aside_page(w)
         detail_pages(w)
         process_page(w)
@@ -590,8 +619,9 @@ for i in range(0, len(WORKS), ncols):
         hmax = max(hmax, h)
     y += hmax + 8.5
 
-logo = page('', 'last')
-logo.raw('<img class="mk" src="images/logo.svg">')
+if not SHORT:
+    logo = page('', 'last')
+    logo.raw('<img class="mk" src="images/logo.svg">')
 
 # ══ icindekiler ══════════════════════════════════════════════════════
 def toc(p, items, head=None):
@@ -608,8 +638,9 @@ def toc(p, items, head=None):
         p.rule(ML, y + 6.4 + (lines - 1) * 4.2, CONTENT_W)
         y += 8.6 + (lines - 1) * 4.2
 
-toc(toc_pages[0], WORKS[:18], 'Contents')
-toc(toc_pages[1], WORKS[18:])
+if toc_pages:
+    toc(toc_pages[0], WORKS[:18], 'Contents')
+    toc(toc_pages[1], WORKS[18:])
 
 # ══ yaz ══════════════════════════════════════════════════════════════
 out = ['<!doctype html>', '<html lang="en">', '<head>', '<meta charset="utf-8">',
@@ -624,23 +655,28 @@ for i, p in enumerate(PAGES, start=1):
                % (side, (' ' + p.klass if p.klass else ''), ''.join(p.bits), folio))
     out.append('')
 out += ['</body>', '</html>', '']
-open(os.path.join(HERE, 'booklet.html'), 'w', encoding='utf-8').write('\n'.join(out))
+open(os.path.join(HERE, 'booklet-short.html' if SHORT else 'booklet.html'),
+     'w', encoding='utf-8').write('\n'.join(out))
 # PDF'in yer imleri icin: hangi baslik hangi sayfada
 marks = []
 for i, p in enumerate(PAGES, start=1):
     if p.klass == 'cover dark': marks.append(('Cover', i))
-for name, i in (('Imprint', 2), ('On the work', 4), ('Biography', 6), ('Contents', 8)):
+for name, i in ((('Imprint', 2), ('On the work', 4), ('Biography', 5))
+                if SHORT else
+                (('Imprint', 2), ('On the work', 4), ('Biography', 6), ('Contents', 8))):
     if i <= len(PAGES): marks.append((name, i))
 seen = set()
 for i, p in enumerate(PAGES, start=1):
     if p.klass == 'dark' and p.run and p.run not in seen:
         seen.add(p.run); marks.append((p.run.replace('&middot;', '·'), i))
 for w in WORKS:
-    marks.append(('%02d  %s' % (w['n'], w['title']), first_page[w['n']]))
+    if w['n'] in first_page:
+        marks.append(('%02d  %s' % (w['n'], w['title']), first_page[w['n']]))
 for name, i in (('The onlooker', None), ('Colophon', None), ('Index', None)):
     pass
-json.dump({'marks': marks, 'pages': len(PAGES)},
-          open(os.path.join(HERE, 'outline.json'), 'w', encoding='utf-8'),
+json.dump({'marks': marks, 'pages': len(PAGES), 'short': SHORT},
+          open(os.path.join(HERE, 'outline-short.json' if SHORT else 'outline.json'),
+               'w', encoding='utf-8'),
           ensure_ascii=False, indent=1)
 
 print('pages: %d' % len(PAGES))

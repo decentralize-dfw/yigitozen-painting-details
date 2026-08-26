@@ -4,8 +4,10 @@ const path = require('path');
 // booklet.html -> PDF. Kullanim: node print-pdf.js
 (async () => {
   const dir = __dirname;
-  const src = 'file://' + path.join(dir, 'booklet.html');
-  const out = path.join(dir, 'Yigit-Ozen-Artbooklet.pdf');
+  const short = process.argv.includes('--short');
+  const src = 'file://' + path.join(dir, short ? 'booklet-short.html' : 'booklet.html');
+  const out = path.join(dir, short ? 'Yigit-Ozen-Artbooklet-Short.pdf'
+                                   : 'Yigit-Ozen-Artbooklet.pdf');
 
   const b = await chromium.launch();
   const p = await b.newPage();
