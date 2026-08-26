@@ -1,0 +1,83 @@
+/* ══════════════════════════════════════════════════════════════════════
+   YIĞIT ÖZEN — PAINTINGS SINCE 2019
+   Kitabin olculeri. Kurallar GUIDE.md'de, konumlar book.py'da; burada
+   yalniz yazinin boyu, cizginin kalinligi ve kagidin rengi var.
+
+   Uc yazi kademesi vardir ve arasinda hicbir sey yoktur:
+     micro   6.4 pt   buyuk harf, aralikli   — kunye, alt yazi, folyo yazisi
+     body    8.8 pt   duz                    — paragraf
+     display 22-64 pt kalin, siki            — baslik, sayfa numarasi
+   ══════════════════════════════════════════════════════════════════════ */
+
+@page { size: 240mm 320mm; margin: 0 }
+* { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact }
+
+html, body { margin: 0; padding: 0; background: #fff }
+body {
+  font-family: "Liberation Sans", Helvetica, Arial, sans-serif;
+  color: #111; -webkit-font-smoothing: antialiased;
+}
+
+:root {
+  --ink:  #111;
+  --grey: #8c8c8c;
+  --hair: #d8d8d8;
+}
+
+.pg {
+  width: 240mm; height: 320mm; position: relative;
+  overflow: hidden; background: #fff;
+  page-break-after: always; break-after: page;
+}
+.pg:last-child { page-break-after: auto; break-after: auto }
+.pg.dark { background: #0c0c0c; color: #fff }
+
+.b  { position: absolute }
+img { position: absolute; display: block }
+img.bleed { left: 0; top: 0; width: 240mm; height: 320mm; object-fit: cover }
+img.mark  { left: 50%; top: 50%; width: 42mm; height: auto; transform: translate(-50%,-50%) }
+
+/* cizgiler: sac teli ve kural */
+.r      { position: absolute; height: .35pt; background: var(--hair) }
+.r.t    { height: .9pt; background: var(--ink) }
+.pg.dark .r   { background: rgba(255,255,255,.3) }
+.pg.dark .r.t { background: #fff }
+
+/* ── micro ──────────────────────────────────────────────────────────*/
+.m {
+  font-size: 6.4pt; letter-spacing: .155em; text-transform: uppercase;
+  font-weight: 600; line-height: 1.62;
+}
+.m.g   { color: var(--grey); font-weight: 500 }
+.m.rt  { text-align: right }
+.m.ct  { text-align: center }
+.m i   { font-style: normal; color: var(--grey); font-weight: 500 }
+.m b   { font-weight: 700 }
+
+/* ── body ───────────────────────────────────────────────────────────*/
+.t {
+  font-size: 8.8pt; line-height: 1.52; letter-spacing: .002em;
+  font-weight: 400; color: var(--ink);
+}
+.t.j   { text-align: justify; hyphens: auto }
+.t.ct  { text-align: center }
+.t.g   { color: #4a4a4a }
+.t p   { margin: 0 0 3.4mm }
+.t p:last-child { margin-bottom: 0 }
+.t em  { font-style: italic }
+
+/* ── display ────────────────────────────────────────────────────────*/
+.d {
+  font-weight: 700; letter-spacing: -.022em; line-height: 1.04;
+  font-size: 26pt;
+}
+.d.s   { font-size: 19pt; letter-spacing: -.016em }
+.d.l   { font-size: 44pt; letter-spacing: -.03em; line-height: .98 }
+.d.xl  { font-size: 64pt; letter-spacing: -.035em; line-height: .94 }
+.d em  { font-style: italic }
+
+/* sayfa numarasi: referanslardaki gibi iri, disa hizali */
+.f {
+  font-size: 21pt; font-weight: 700; letter-spacing: -.03em; line-height: 1;
+}
+.f.rt { text-align: right }
