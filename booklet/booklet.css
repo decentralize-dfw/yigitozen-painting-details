@@ -1,0 +1,263 @@
+/* ══════════════════════════════════════════════════════════════════════
+   ARTBOOKLET — Yiğit Özen
+   240 x 320 mm, tek sayfa. Ikili gorunumde kapak yalniz durur, sonrasi
+   cift-tek eslesir: cift sayfa solda, tek sayfa sagda.
+
+   Katalog belge gibidir; bu degildir. Buyuk grotesk, tasan gorseller,
+   ince kunye seritleri, agir folyolar.
+   ══════════════════════════════════════════════════════════════════════ */
+
+@page { size: 240mm 320mm; margin: 0; }
+* { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+html, body { margin: 0; padding: 0; background: #fff; }
+body {
+  font-family: "Liberation Sans", Helvetica, Arial, sans-serif;
+  color: #101010;
+  -webkit-font-smoothing: antialiased;
+}
+
+:root {
+  --w: 240mm; --h: 320mm;
+  --out: 16mm;        /* dis kenar */
+  --in:  20mm;        /* ic kenar, cilt payi */
+  --top: 15mm;
+  --bot: 26mm;        /* folyo bandi */
+  --ink: #101010;
+  --mid: #6f6a64;
+  --faint: #b9b3ac;
+  --hair: #ddd8d2;
+  --paper: #f2efe9;
+}
+
+.pg {
+  width: var(--w); height: var(--h);
+  position: relative; overflow: hidden;
+  background: #fff;
+  page-break-after: always; break-after: page;
+}
+.pg:last-child { page-break-after: auto; break-after: auto; }
+
+/* sag ve sol sayfa, kenarlari birbirinin aynasi */
+.pg.L { padding: var(--top) var(--in) var(--bot) var(--out); }
+.pg.R { padding: var(--top) var(--out) var(--bot) var(--in); }
+
+/* ── folyo ──────────────────────────────────────────────────────────
+   Sayfa numarasi kucuk degil: sayfanin en agir isareti o. */
+.folio {
+  position: absolute; bottom: 11mm;
+  display: flex; align-items: baseline; gap: 6mm;
+  font-size: 7pt; letter-spacing: .17em; text-transform: uppercase; color: var(--mid);
+}
+.pg.L .folio { left: var(--out); right: var(--in); }
+.pg.R .folio { left: var(--in); right: var(--out); flex-direction: row-reverse; }
+.folio .num {
+  font-size: 30pt; font-weight: 700; letter-spacing: -.03em;
+  color: var(--ink); line-height: .8;
+}
+.folio .run { flex: 1; }
+.pg.R .folio .run { text-align: right; }
+.folio .rule { flex: 0 0 auto; width: .5pt; height: 3.6mm; background: var(--hair); }
+.pg.dark .folio { color: rgba(255,255,255,.78); text-shadow: 0 1px 14px rgba(0,0,0,.9) }
+.pg.dark .folio .num { color: #fff }
+/* acik bir gorselin uzerinde beyaz yazi kayboluyor: o sayfada murekkep koyu */
+.pg.ink-b .folio { color: rgba(0,0,0,.62); text-shadow: 0 0 14px rgba(255,255,255,.85) }
+.pg.ink-b .folio .num { color: var(--ink) }
+.pg.ink-t .bcap { color: rgba(0,0,0,.78); text-shadow: 0 0 14px rgba(255,255,255,.9) }
+
+/* ── tasan gorsel ───────────────────────────────────────────────────
+   Sayfayi bastan basa doldurur; kirpar, sigdirmaz. */
+.bleed { position: absolute; inset: 0; }
+.bleed img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* Kunye ve folyo boyanin uzerinde duruyor. Ust ve alt seride cok hafif bir
+   perde: yazi her boyanin uzerinde okunur kalsin, boya da kapanmasin. */
+.pg.dark .bleed::before, .pg.dark .bleed::after { content: ""; position: absolute; left: 0; right: 0 }
+.pg.dark .bleed::before {
+  top: 0; height: 38mm;
+  background: linear-gradient(to bottom, rgba(0,0,0,.34), rgba(0,0,0,0));
+}
+.pg.dark .bleed::after {
+  bottom: 0; height: 34mm;
+  background: linear-gradient(to top, rgba(0,0,0,.34), rgba(0,0,0,0));
+}
+.pg.ink-t .bleed::before { background: linear-gradient(to bottom, rgba(255,255,255,.46), rgba(255,255,255,0)) }
+.pg.ink-b .bleed::after  { background: linear-gradient(to top, rgba(255,255,255,.5), rgba(255,255,255,0)) }
+.bleed.top { inset: 0 0 auto 0; height: 134mm; }
+/* tablonun butun durdugu bant: kirpilmaz, seridin uzerine oturur */
+.band-plate { height: 162mm; display: flex; align-items: flex-end; justify-content: center }
+.band-plate img { max-height: 100%; max-width: 100%; width: auto; display: block }
+.bleed.half { inset: 0 0 auto 0; height: 179mm; }
+/* ustte tasan bir gorsel varsa akan icerik onun bittigi yerden baslar */
+.pg.topimg  { padding-top: 139mm }
+.pg.halfimg { padding-top: 184mm }
+
+/* tam sayfa gorselin kunyesi, ustte, beyaz */
+.bcap {
+  position: absolute; top: 15mm;
+  font-size: 6.4pt; letter-spacing: .17em; text-transform: uppercase; font-weight: 700;
+  color: rgba(255,255,255,.94);
+  text-shadow: 0 1px 14px rgba(0,0,0,.9), 0 0 4px rgba(0,0,0,.7);
+  display: flex; gap: 5mm;
+}
+.pg.L .bcap { left: var(--out); right: var(--in) }
+.pg.R .bcap { right: var(--out); left: var(--in); justify-content: flex-end }
+.bcap .q { text-transform: none; letter-spacing: .06em }
+
+/* ── kunye seridi ───────────────────────────────────────────────────
+   Gorselin hemen altinda, sayfa genisligine yayilmis dort hucre. */
+.strip {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 6.6pt; letter-spacing: .16em; text-transform: uppercase;
+  font-weight: 700; color: var(--ink);
+  padding-top: 4.5mm;
+}
+.strip span { white-space: nowrap }
+.strip .q { text-transform: none; letter-spacing: .06em; font-weight: 700 }
+.strip .y { color: var(--mid) }
+
+/* ── alt yazi bloku ─────────────────────────────────────────────────
+   Sayfanin dibinde, ortada, dar olcude. Ustunde bos alan birakilir. */
+.cap {
+  position: absolute; left: 50%; transform: translateX(-50%);
+  bottom: 44mm; width: 118mm; text-align: center;
+}
+.cap h3 { font-size: 8.4pt; font-weight: 700; margin: 0 0 2mm; letter-spacing: -.005em }
+.cap p {
+  font-size: 7.4pt; line-height: 1.5; margin: 0; color: #2f2b27;
+  hyphens: auto; -webkit-hyphens: auto;
+}
+/* uc not: renk, kurgu, el. Sayfanin dibinde uc hucre halinde. */
+.notes {
+  position: absolute; bottom: 22mm; display: flex; gap: 7mm;
+  border-top: .5pt solid var(--ink); padding-top: 2.6mm;
+  list-style: none; margin: 0;
+}
+.pg.L .notes { left: var(--out); right: var(--in) }
+.pg.R .notes { left: var(--in); right: var(--out) }
+.notes li {
+  flex: 1 1 0; font-size: 6pt; line-height: 1.45; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--mid);
+}
+.notes li b { display: block; color: var(--ink); letter-spacing: .17em; margin-bottom: 1.2mm }
+
+/* ── kapak ──────────────────────────────────────────────────────────*/
+.cover { padding: 0 }
+.cover .scrim {
+  position: absolute; inset: auto 0 0 0; height: 62%;
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,.62) 78%);
+}
+.cover .scrim.t { inset: 0 0 auto 0; height: 22%; background: linear-gradient(to top, rgba(0,0,0,0), rgba(0,0,0,.45)) }
+.cover .hd {
+  position: absolute; top: 13mm; left: 16mm; right: 16mm;
+  display: flex; justify-content: space-between;
+  font-size: 6.8pt; letter-spacing: .22em; text-transform: uppercase; color: rgba(255,255,255,.9);
+}
+.cover .ti {
+  position: absolute; left: 16mm; bottom: 34mm;
+  font-size: 62pt; font-weight: 700; line-height: .86; letter-spacing: -.035em; color: #fff;
+}
+.cover .sub {
+  position: absolute; left: 16mm; bottom: 20mm;
+  font-size: 9.5pt; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.92);
+}
+.cover .edge {
+  position: absolute; right: 16mm; bottom: 20mm;
+  font-size: 6.8pt; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.72);
+  text-align: right; line-height: 1.9;
+}
+
+/* ── kunye sayfasi ──────────────────────────────────────────────────*/
+.imprint { position: absolute; left: var(--out); bottom: var(--bot); width: 96mm }
+.imprint .ti { font-size: 16pt; font-weight: 700; letter-spacing: -.02em; line-height: 1.05 }
+.imprint .who { font-size: 6.8pt; letter-spacing: .22em; text-transform: uppercase; color: var(--mid); margin-top: 3mm }
+.imprint p { font-size: 7.4pt; line-height: 1.6; color: #37322d; margin: 6mm 0 0; hyphens: auto }
+.imprint .line { font-size: 6.4pt; letter-spacing: .16em; text-transform: uppercase; color: var(--faint); margin-top: 6mm }
+
+/* ── bagirti sayfasi ────────────────────────────────────────────────
+   Tek cumle, sayfanin dibine oturur, satirlari elle kirilir. */
+.shout { position: absolute; left: var(--in); right: var(--out); bottom: var(--bot) }
+.shout .lbl { font-size: 6.8pt; letter-spacing: .22em; text-transform: uppercase; color: var(--mid); margin-bottom: 9mm }
+.shout .big {
+  font-size: 40pt; font-weight: 700; line-height: .96; letter-spacing: -.035em;
+}
+.shout .big em { font-style: normal; color: var(--faint) }
+
+/* ── yazi sayfasi ───────────────────────────────────────────────────*/
+.sect { font-size: 7pt; letter-spacing: .24em; text-transform: uppercase; font-weight: 700; margin: 0 0 3mm }
+.sect-rule { height: 1pt; background: var(--ink); margin-bottom: 7mm }
+.essay { height: 100%; display: flex; flex-direction: column }
+.cols { column-count: 2; column-gap: 8mm; margin-top: auto }
+.cols p {
+  font-size: 8pt; line-height: 1.52; margin: 0 0 4mm; text-align: justify;
+  hyphens: auto; -webkit-hyphens: auto;
+}
+.cols p:first-child::first-line { font-weight: 700 }
+.lead { font-size: 11pt; line-height: 1.34; font-weight: 700; letter-spacing: -.015em; margin: 0 0 7mm }
+
+/* ── bolum ayraci ───────────────────────────────────────────────────*/
+.divider { height: 100%; display: flex; flex-direction: column; justify-content: flex-end }
+.divider .yr {
+  font-size: 108pt; font-weight: 700; line-height: .8; letter-spacing: -.05em; margin-bottom: 6mm;
+}
+.divider .pl { font-size: 13pt; font-weight: 700; letter-spacing: -.01em }
+.divider .ct { font-size: 6.8pt; letter-spacing: .2em; text-transform: uppercase; color: var(--mid); margin-top: 4mm }
+.divider .rule { height: 1pt; background: var(--ink); margin: 8mm 0 0 }
+
+/* ── tek eser sayfasi ───────────────────────────────────────────────
+   Gorsel ustte, kunye altinda, geri kalani bos. */
+.solo { height: 100%; display: flex; flex-direction: column }
+.solo .fr { flex: 0 0 auto; display: flex; align-items: flex-start }
+.pg.R .solo .fr { justify-content: flex-end }
+.solo .fr img { max-height: 166mm; max-width: 100%; width: auto; display: block }
+.solo .tomb { margin-top: 5mm; max-width: 92mm }
+.pg.R .solo .tomb { margin-left: auto; text-align: right }
+.solo .tomb h3 { font-size: 12pt; font-weight: 700; letter-spacing: -.02em; line-height: 1.1; margin: 0 0 2.5mm }
+.solo .tomb .mt { font-size: 6.6pt; letter-spacing: .16em; text-transform: uppercase; color: var(--mid) }
+.solo .note { margin-top: 6mm; max-width: 82mm; font-size: 7.4pt; line-height: 1.5; color: #37322d; hyphens: auto }
+.pg.R .solo .note { margin-left: auto; text-align: right }
+
+/* buyuk baslikli varyant: yazi once, gorsel sonra */
+.loud { height: 100%; display: flex; flex-direction: column }
+.loud h3 {
+  font-size: 27pt; font-weight: 700; line-height: .98; letter-spacing: -.035em;
+  margin: 0 0 6mm; max-width: 96%;
+}
+.loud .mt { font-size: 6.6pt; letter-spacing: .16em; text-transform: uppercase; color: var(--mid); margin-bottom: 8mm }
+.pg.R .loud h3, .pg.R .loud .mt { text-align: right; margin-left: auto }
+.loud .fr { margin-top: auto; display: flex }
+.pg.R .loud .fr { justify-content: flex-end }
+.loud .fr img { max-height: 168mm; max-width: 100%; width: auto; display: block }
+
+/* ── icindekiler ────────────────────────────────────────────────────*/
+.toc { height: 100%; display: flex; flex-direction: column }
+.toc h2 { font-size: 34pt; font-weight: 700; letter-spacing: -.04em; margin: 0 0 8mm; line-height: .9 }
+.toc ol { list-style: none; margin: 0; padding: 0 }
+.toc li {
+  display: flex; align-items: baseline; gap: 3mm;
+  padding: 3.2mm 0; border-top: .25pt solid var(--hair);
+  font-size: 8.4pt;
+}
+.toc li:last-child { border-bottom: .25pt solid var(--hair) }
+.toc .n { width: 7mm; color: var(--faint); font-variant-numeric: tabular-nums }
+.toc .t { flex: 1; font-weight: 700; letter-spacing: -.005em }
+.toc .y { color: var(--mid); font-variant-numeric: tabular-nums }
+.toc .p { width: 8mm; text-align: right; font-variant-numeric: tabular-nums; color: var(--mid) }
+
+/* ── kolofon ────────────────────────────────────────────────────────*/
+.end { height: 100%; display: flex; flex-direction: column; justify-content: flex-end }
+.end .mk { margin-bottom: auto }
+.end .mk img { height: 26mm; width: auto; display: block }
+/* son sayfa: yalniz isaret, ortada, numarasiz */
+/* esini bekleyen sayfa: bos kalir, numarasini da tasimaz */
+.pg.blank .folio { display: none }
+.pg.last { display: flex; align-items: center; justify-content: center }
+.pg.last .folio { display: none }
+.pg.last img { height: 46mm; width: auto; display: block }
+.end p { font-size: 7.4pt; line-height: 1.6; color: #37322d; margin: 0 0 4mm; max-width: 92mm }
+.end .contact { font-size: 6.8pt; letter-spacing: .16em; text-transform: uppercase; color: var(--mid); line-height: 2; margin-top: 6mm }
+
+/* ── kucuk isaret ───────────────────────────────────────────────────*/
+.mark { position: absolute; top: var(--top); line-height: 0 }
+.pg.L .mark { left: var(--out) }
+.pg.R .mark { right: var(--out) }
+.mark img { height: 9mm; width: auto; display: block }
