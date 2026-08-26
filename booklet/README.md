@@ -7,13 +7,19 @@ same words, set as an art book.
 **Read `GUIDE.md` before changing anything here.** It is the editorial spec
 the layout answers to, drawn from the books this one is measured against.
 
-240 x 320 mm, 121 pages. Everything sits on a twelve column grid with 16 mm
+240 x 320 mm, 105 pages, no blank ones. Everything sits on a twelve column grid with 16 mm
 margins, and two rules hold on every page: no picture is ever cropped, and
 nothing is ever laid over a picture. A width is given and the height follows
 from the picture's own proportion, so a wide detail stays wide.
 
 ## What is in it
 
+- **35 works.** A work with detail photography opens on a spread: one of its
+  own details on the left at the largest size it can be without being cut,
+  edge to edge on at least one axis, and its information on the right. The
+  rest of its details follow, scattered rather than gridded. Works without
+  detail photography are set two to a spread. No spread carries two
+  different works, and there are no blank pages.
 - **35 work openings.** The painting whole, its number in display size, the
   title and the paragraph, the medium and dimensions on a rule at the head,
   the three notes on colour, composition and hand at the foot. A tall

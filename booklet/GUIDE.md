@@ -155,6 +155,29 @@ without being asked:
 
 ## 10. One work to a spread
 
+**No blank pages.** A blank is an admission that the material was not
+arranged. Page counts are made to come out right by choosing how many sheets
+the details are spread over and whether the process runs to one sheet or
+two, not by opening an empty one.
+
+**No year dividers.** A year with one work in it made that work look like a
+mistake, and the year already stands at the foot of every page.
+
+**The opening of a work.** Left page: one of its own details, at the largest
+size it can be without being cut, edge to edge on at least one axis. Right
+page: the number, the plate, the strip, the title, the paragraph, the three
+notes. After that the remaining details, scattered.
+
+**Scattered, not gridded.** Detail sheets are two columns of unequal width,
+offset against each other, the wide column changing sides from sheet to
+sheet. A regular grid belongs on the process sheets and nowhere else: a
+process sheet is a sequence, a detail sheet is not a shelf.
+
+**Never two alike side by side.** Details are compared by a coarse
+fingerprint before they are placed, and near-identical ones are moved apart.
+
+## 10a. What the old rule was
+
 No spread carries two different works. A work with detail photography opens
 on a left page with one of its own details, full bleed where the proportion
 allows it exactly and a single large plate where it does not, and its
@@ -168,12 +191,16 @@ no detail photography are set two to a spread, one page each.
 
 ## 11. The recurring
 
-Six things come back across the seven years and each has a spread: the
-onlooker, the chair, the crow, the cage, the body, the face. A spread is one
-sheet of text, naming the thing and saying what it carries, and one sheet of
-crops, one from every painting it appears in, each with the work's number
-and year. Every crop was located in its painting and checked; none of them
-is a guess.
+Six things come back across the seven years: the onlooker, the chair, the
+crow, the cage, the body, the face. The chapter opens on a spread of its
+own, the title on the left and all thirty-five works small on the right.
+Then one spread each: **text on the left page, pictures on the right**,
+facing each other rather than following each other.
+
+Every crop was located in its painting and looked at before it was used. A
+thing that is not the thing does not go in: a pastel body with a long form
+coming out of it is not a crow, and a dark shape behind a sitter is not a
+chair. Both were in and both came out.
 
 ## 12. Two lengths
 

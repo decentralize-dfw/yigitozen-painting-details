@@ -110,16 +110,6 @@
      "line": "Outlined in white on the pink panel, above everything"
     },
     {
-     "n": 4,
-     "box": [
-      0.06,
-      0.3,
-      0.88,
-      0.42
-     ],
-     "line": "The dark back the figure is set against"
-    },
-    {
      "n": 22,
      "box": [
       0.7,
@@ -156,19 +146,9 @@
    "name": "The crow",
    "range": "2019–2026",
    "lead": "The messenger, and what it is carrying",
-   "a": "Birds are the one thing in these paintings that moves under its own power. A bird-headed body bends over the bed; a flock is flung down the diagonal at a boat; a beak long enough to cross half the canvas comes out of a pastel body; white heads rise off the top edge.",
+   "a": "Birds are the one thing in these paintings that moves under its own power. A bird-headed body bends over the bed; a flock is flung down the diagonal at a boat; white heads rise off the top edge; a dark head with a beak sits low at the right of a table.",
    "b": "The crow arrives as the messenger, which in every tradition means power borrowed from somewhere else and not answerable here. What it carries is never opened. It is also where good and evil stop being separable: the same wing that is sent is the wing that is used, and the painting keeps both readings on the surface at once.",
    "crops": [
-    {
-     "n": 19,
-     "box": [
-      0.5,
-      0.06,
-      0.48,
-      0.86
-     ],
-     "line": "The bird headed body, bent over the bed"
-    },
     {
      "n": 5,
      "box": [
@@ -180,14 +160,24 @@
      "line": "The flock, thrown down the diagonal"
     },
     {
-     "n": 6,
+     "n": 16,
      "box": [
-      0.02,
-      0.08,
-      0.58,
-      0.36
+      0.42,
+      0.42,
+      0.46,
+      0.4
      ],
-     "line": "The head, and the beak going out across the canvas"
+     "line": "A dark head with a beak, low at the right"
+    },
+    {
+     "n": 19,
+     "box": [
+      0.5,
+      0.06,
+      0.48,
+      0.86
+     ],
+     "line": "The bird headed body, bent over the bed"
     },
     {
      "n": 29,
@@ -198,16 +188,6 @@
       0.32
      ],
      "line": "White heads lifting off the top edge"
-    },
-    {
-     "n": 16,
-     "box": [
-      0.42,
-      0.42,
-      0.46,
-      0.4
-     ],
-     "line": "A dark head with a beak, low at the right"
     }
    ]
   },

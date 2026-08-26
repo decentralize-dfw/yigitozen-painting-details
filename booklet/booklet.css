@@ -29,6 +29,8 @@ body {
 }
 .pg:last-child { page-break-after: auto; break-after: auto }
 .pg.dark { background: #0d0d0d; color: #fff }
+/* iki yandan tasan bir acilis sayfasi: kagit beyaz kalir */
+.pg.plate { background: #fff }
 
 /* konumlanan iki sey: kutu ve gorsel */
 .b   { position: absolute }
