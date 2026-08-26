@@ -49,6 +49,6 @@ beside this one. Two things it does that are easy to miss:
 - It measures the top and bottom band of every full-bleed picture. Where the
   paint underneath is pale the white type on that page turns dark by itself.
 
-Pictures are reduced into `images/`: 1700 px on the long side for a full
-bleed, 1300 px for a plate. Layout lives in `booklet.css`; the sequence of
+Pictures are reduced into `images/`: 1550 px on the long side for a full
+bleed, 1200 px for a plate. Layout lives in `booklet.css`; the sequence of
 pages lives in `build.py`.

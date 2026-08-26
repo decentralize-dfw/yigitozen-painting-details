@@ -41,7 +41,7 @@ def prep(src, long_side, tag, box=None):
     s = min(1.0, long_side / max(w, h))
     if s < 1.0: im = im.resize((round(w*s), round(h*s)), Image.LANCZOS)
     out = tag + '.jpg'
-    im.save(os.path.join(IMG, out), quality=82, subsampling=1, optimize=True)
+    im.save(os.path.join(IMG, out), quality=81, subsampling=1, optimize=True)
     made[key] = 'images/' + out
     return made[key]
 
@@ -52,7 +52,7 @@ for w in WORKS:
     w['details'] = [i for i in w['plates'][1:] if i.get('label') == 'Detail']
 
 BY_N = {w['n']: w for w in WORKS}
-BLEED, PLACED = 1700, 1300
+BLEED, PLACED = 1550, 1200
 
 def paint(w, big=False):
     return prep(w['images'][0]['src'], BLEED if big else PLACED,
