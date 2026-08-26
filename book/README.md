@@ -3,8 +3,12 @@
 The art book. Thirty-five paintings, one spread each, built from the site's
 `works.json` and the photographs in this repository.
 
-`Yigit-Ozen-Paintings-since-2019.pdf` — 151 pages, 240 × 320 mm.
-`Yigit-Ozen-Paintings-Short.pdf` — eight works, for sending.
+`Yigit-Ozen-Paintings-since-2019.pdf` — 151 pages, 240 × 320 mm, 23 MB.
+`Yigit-Ozen-Paintings-Short.pdf` — 24 pages, eight works and one recurring
+figure, for sending cold.
+
+Set in Inter, under the SIL Open Font License; the files are in `fonts/`
+and are embedded in the PDF.
 
 ## The one idea
 
@@ -37,12 +41,17 @@ it.
 - **An index** of all thirty-five, every plate on one baseline.
 - **Six recurring figures**, a spread each: text on the left, and on the
   right a crop from every painting the thing appears in.
-- Cover, imprint, title, the essay, the biography, the exhibitions, the
-  contents, the colophon.
+- Cover, imprint, title, the essay, the biography, the exhibitions, a page
+  on how the book is arranged, the contents on one sheet, the colophon.
 
-Where the page count would otherwise come out wrong, the spare page is a
-sentence from the work's own note set large, or one detail given the whole
-sheet. There are no blank pages.
+Where a work's note is a quotation it is set apart, italic, with its source
+directly beneath it, and the artist's own paragraph follows in roman. That
+is the only italic body text in the book.
+
+Where the page count would otherwise come out wrong, the spare page is not
+filler: it shows which of the six recurring figures appears in that
+painting, with the crop and the page the chapter on it begins. There are no
+blank pages.
 
 ## Making it
 
@@ -72,3 +81,7 @@ pixels, above it the file grows for nothing.
 4. One work to a spread; a work never shares a spread with another.
 5. No blank pages, and no picture printed twice at the same size.
 6. A grid only on the process sheets, the index, and the recurring.
+7. Titles keep the artist's own spelling and case, in the contents as well
+   as on the page. The name is set YİĞİT, never YIĞIT: CSS uppercase turns
+   a Turkish i into a dotless I, so the name is written out by hand
+   wherever it is set in capitals.

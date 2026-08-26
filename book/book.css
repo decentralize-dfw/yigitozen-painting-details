@@ -13,8 +13,22 @@
 * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact }
 
 html, body { margin: 0; padding: 0; background: #fff }
+/* Inter, SIL Open Font License 1.1. Dosyalar fonts/ icinde. */
+@font-face { font-family: Inter; font-style: normal; font-weight: 400;
+             src: url(fonts/Inter-400.ttf) format('truetype') }
+@font-face { font-family: Inter; font-style: normal; font-weight: 500;
+             src: url(fonts/Inter-500.ttf) format('truetype') }
+@font-face { font-family: Inter; font-style: normal; font-weight: 600;
+             src: url(fonts/Inter-600.ttf) format('truetype') }
+@font-face { font-family: Inter; font-style: normal; font-weight: 700;
+             src: url(fonts/Inter-700.ttf) format('truetype') }
+@font-face { font-family: Inter; font-style: italic; font-weight: 400;
+             src: url(fonts/Inter-Italic-400.ttf) format('truetype') }
+@font-face { font-family: Inter; font-style: italic; font-weight: 700;
+             src: url(fonts/Inter-Italic-700.ttf) format('truetype') }
+
 body {
-  font-family: "Liberation Sans", Helvetica, Arial, sans-serif;
+  font-family: Inter, "Liberation Sans", Helvetica, Arial, sans-serif;
   color: #111; -webkit-font-smoothing: antialiased;
 }
 
@@ -45,7 +59,7 @@ img.mark  { left: 50%; top: 50%; width: 42mm; height: auto; transform: translate
 
 /* ── micro ──────────────────────────────────────────────────────────*/
 .m {
-  font-size: 6.4pt; letter-spacing: .155em; text-transform: uppercase;
+  font-size: 6.4pt; letter-spacing: .085em; text-transform: uppercase;
   font-weight: 600; line-height: 1.62;
 }
 .m.g   { color: var(--grey); font-weight: 500 }
@@ -53,6 +67,11 @@ img.mark  { left: 50%; top: 50%; width: 42mm; height: auto; transform: translate
 .m.ct  { text-align: center }
 .m i   { font-style: normal; color: var(--grey); font-weight: 500 }
 .m b   { font-weight: 700 }
+
+/* alintiya ayrilan blok: kitaptaki tek italik gövde */
+.q     { font-size: 10.4pt; line-height: 1.42; font-style: italic; font-weight: 400 }
+.src   { font-size: 6.4pt; letter-spacing: .085em; text-transform: uppercase;
+         font-weight: 600; line-height: 1.5 }
 
 /* ── body ───────────────────────────────────────────────────────────*/
 .t {
