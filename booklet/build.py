@@ -38,6 +38,7 @@ e = lambda t: html.escape(str(t), quote=True)
 
 # ── izgara ───────────────────────────────────────────────────────────
 PW, PH   = 240.0, 320.0
+CAP_Y    = 292.0        # tam sayfa gorsellerin kunye satiri
 ML, MR   = 16.0, 16.0
 MT, MB   = 15.0, 18.0
 COLS, GAP = 12, 4.0
@@ -153,6 +154,8 @@ NOT_DETAIL = {
     'ciaocapo_detail_8.jpg': 'The pair, before the colour',
     'cellularspleens_detail_4.jpg': 'The whole, in another version',
 }
+# Bunlar kayitta "Detail" diye gecer ama detay degildir; kunyede boyle yazar.
+NOT_DETAIL_KIND = dict.fromkeys(NOT_DETAIL, 'Version')
 for w in WORKS:
     ims = w['images']
     w['plate']   = ims[0]
@@ -169,6 +172,11 @@ first_page = {}
 def where(d):
     b = d['src'].split('/')[-1]
     return NOT_DETAIL.get(b) or WHERE.get(b, d.get('label', 'Detail'))
+
+
+def kind(d):
+    b = d['src'].split('/')[-1]
+    return NOT_DETAIL_KIND.get(b) or d.get('label', 'Study')
 
 # ── metin ────────────────────────────────────────────────────────────
 P1 = ('The figures in these paintings are assembled rather than drawn whole. A body '
@@ -412,50 +420,71 @@ def scatter_page(run, items, head=None, tag='d', flip=False):
 
 
 def mosaic_page(run, items, head=None, tag='m'):
-    """Motif kesitleri. Uc sutun ama esit degil: genislikleri 5, 4 ve 3
-       sutun, baslangiclari kaydirilmis. Pazar tezgahi gibi durmasin diye."""
+    """Bir figurun gectigi butun tablolardan kesitler. Iki sutun, satirlar
+       ayni yukseklikte; her kesit satirin dip cizgisine oturur, boylece
+       kunyeler tek hizada dizilir ve sayfa dagilmaz."""
     p = page(run)
+    Y0, CAPH, RGAP, FT = 32.0, 9.0, 11.0, 10.0
     if head:
         p.rule(ML, 15, CONTENT_W, True)
         p.box(ML, 17.4, W(8), head[0], 'lab')
         if len(head) > 1: p.box(R(3), 17.4, W(3), head[1], 'lab rt')
-    cols = [[ML, W(5), 30.0], [X(5) + 2, W(4), 58.0], [R(3), W(3), 40.0]]
-    for i, (src, cap_t, box) in enumerate(items):
-        c = min(cols, key=lambda z: z[2])          # en yukarida kalan sutuna
-        h = c[1] / ratio(src, box)
-        if c[2] + h > FOOT: c = max(cols, key=lambda z: FOOT - z[2])
-        h = c[1] / ratio(src, box)
-        p.pic(src, c[0], c[2], c[1], cap=cap_t, box=box, tag='%s%02d' % (tag, i))
-        c[2] += h + 11.0
+    n = len(items)
+    cols = 2
+    rows = int(math.ceil(n / float(cols)))
+    cellw = (CONTENT_W - GAP * 2) / cols
+    step = cellw + GAP * 2
+    bh = ((FOOT - FT - Y0) - rows * CAPH - (rows - 1) * RGAP) / rows
+    y = Y0
+    for r in range(rows):
+        row = items[r * cols:(r + 1) * cols]
+        for j, (src, cap_t, box) in enumerate(row):
+            ar = ratio(src, box)
+            iw = min(cellw, bh * ar)
+            ih = iw / ar
+            x = ML + j * step
+            path, _ = prep(src, iw, '%s%02d' % (tag, r * cols + j), box)
+            p.raw('<img src="%s" style="left:%.2fmm;top:%.2fmm;width:%.2fmm;height:%.2fmm">'
+                  % (path, x, y + bh - ih, iw, ih))
+            p.box(x, y + bh + 1.8, cellw, e(cap_t), 'cap')
+        if r < rows - 1:
+            p.rule(ML, y + bh + CAPH + RGAP / 2 - 1.0, CONTENT_W)
+        y += bh + CAPH + RGAP
     return p
 
 
 # ── kucuk gorselli dizin, bir sayfa ─────────────────────────────────
 def index_page(run):
+    """Otuz bes tablo tek sayfada. Her hucre ayni yukseklikte bir bant;
+       gorsel bandin altina oturur, bu yuzden butun satirlar ayni cizgide
+       biter ve numaralar tek bir hizada durur."""
     p = page(run)
     p.rule(ML, 15, CONTENT_W, True)
     p.box(ML, 17.4, W(6), 'The thirty-five', 'lab')
     p.box(R(3), 17.4, W(3), 'Index', 'lab rt')
-    def fits(nc, sp):
-        cw = W(sp); h = 0.0
-        for i in range(0, len(WORKS), nc):
-            h += max(cw / x['ar'] for x in WORKS[i:i + nc]) + 8.5
-        return h
-    nc, span = 6, 2
-    for c, sp in ((6, 2), (7, 1), (8, 1)):
-        if c * sp <= COLS and fits(c, sp) <= FOOT - 30: nc, span = c, sp; break
-    cw = W(span); step = (CONTENT_W - cw) / (nc - 1)
-    rows = [WORKS[i:i + nc] for i in range(0, len(WORKS), nc)]
-    hs = [max(cw / w['ar'] for w in r) + 6.0 for r in rows]
-    slack = max(0.0, (FOOT - 30.0) - sum(hs))
-    gap = min(16.0, slack / max(1, len(rows) - 1))
-    y = 30.0
-    for k, row in enumerate(rows):
+    NC, Y0, CAP, RGAP = 7, 32.0, 5.6, 9.0
+    FT = 8.0
+    rows = [WORKS[i:i + NC] for i in range(0, len(WORKS), NC)]
+    nr = len(rows)
+    step = CONTENT_W / NC
+    cw = step - GAP
+    bh = ((FOOT - FT - Y0) - nr * CAP - (nr - 1) * RGAP) / nr
+    y = Y0
+    for row in rows:
         for j, w in enumerate(row):
-            p.pic(w['plate']['src'], ML + j * step, y, cw, box=w['plate'].get('box'),
-                  tag='ix%02d' % w['n'])
-            p.box(ML + j * step, y + cw / w['ar'] + 1.6, cw, '%02d' % w['n'], 'cap')
-        y += hs[k] + gap
+            iw = min(cw, bh * w['ar'])
+            ih = iw / w['ar']
+            x = ML + j * step
+            path, _ = prep(w['plate']['src'], iw, 'ix%02d' % w['n'], w['plate'].get('box'))
+            p.raw('<img src="%s" style="left:%.2fmm;top:%.2fmm;width:%.2fmm;height:%.2fmm">'
+                  % (path, x, y + bh - ih, iw, ih))
+            p.box(x, y + bh + 1.6, cw, '%02d' % w['n'], 'cap')
+        p.rule(ML, y + bh + CAP + RGAP / 2 - 1.0, CONTENT_W)
+        y += bh + CAP + RGAP
+    p.rule(ML, 272, CONTENT_W)
+    p.box(ML, 274.2, W(8), 'Plates are reproduced at a common height; the numbers are '
+          'the sequence of the book, newest first', 'cap')
+    p.box(R(2), 274.2, W(2), '35 works', 'cap rt')
     return p
 
 
@@ -552,29 +581,42 @@ def align(run, parity):
         blank(run)
 
 
-def lead_page(w, k, d):
-    """Eserin acilis sayfasi. Detay kirpilmadan, sayfada durabilecegi en
-       buyuk olcude: orani sayfayla ayniysa tam dolar, yataysa iki yandan,
-       dikse alttan ustten tasar. Hicbir yerinden kesilmez."""
+def plate_cap(w, d):
+    """Tam sayfa duran bir gorselin kunyesi. Tek bicim: numarasi, orta nokta,
+       tabloda neresi oldugu. Kitabin her yerinde ayni yerde, ayni aralikta."""
+    return '%02d \u00b7 %s' % (w['n'], e(where(d)))
+
+
+def full_page(w, d, tag):
+    """Tam sayfa bir gorsel. Sayfa orani 0.75; gorselin orani buna cok
+       yakinsa sayfayi bastan basa doldurur, fark kenardan alinir. Degilse
+       kirpilmaz: yatikca kenardan kenara, dikce tepeden asagi tasar ve
+       kunye her yerde ayni yerde, ayni bicimde, beyaz uzerinde durur."""
     a = ratio(d['src'])
-    p = page(w['run'], 'dark' if abs(a - .75) < .02 else 'plate')
-    if abs(a - .75) < .02:                       # tam sayfa
-        path, _ = prep(d['src'], 240, 'w%02dL%d' % (w['n'], k))
-        p.raw('<img src="%s" style="left:0;top:0;width:240mm;height:320mm">' % path)
-        p.box(R(5), 292, W(5), '%02d \u00b7 %s' % (w['n'], e(where(d))), 'cap rt onimg')
-    elif a > .75:                                # iki yandan tasar
-        path, _ = prep(d['src'], 240, 'w%02dL%d' % (w['n'], k))
-        h = 240.0 / a
+    path, _ = prep(d['src'], 240, tag)
+    if abs(a - .75) <= .023:                      # sayfayi doldurur
+        p = page(w['run'], 'dark full')
+        p.raw('<img class="cover" src="%s">' % path)
+        p.box(ML, 292, CONTENT_W, plate_cap(w, d), 'cap onimg')
+        return p
+    p = page(w['run'], 'plate')
+    h = PW / a
+    if h <= CAP_Y - 4.0:                          # yatik: kenardan kenara
+        top = min((PH - h) / 2, (CAP_Y - 4.0) - h)
         p.raw('<img src="%s" style="left:0;top:%.2fmm;width:240mm;height:%.2fmm">'
-              % (path, (PH - h) / 2, h))
-        p.box(ML, (PH - h) / 2 + h + 4, CONTENT_W,
-              '%02d &nbsp; %s' % (w['n'], e(where(d))), 'cap')
-    else:                                        # alttan ustten tasar
-        path, _ = prep(d['src'], 320 * a, 'w%02dL%d' % (w['n'], k))
-        wd = 320.0 * a
-        p.raw('<img src="%s" style="left:%.2fmm;top:0;width:%.2fmm;height:320mm">'
-              % (path, (PW - wd) / 2, wd))
-        p.box(ML, 292, CONTENT_W, '%02d &nbsp; %s' % (w['n'], e(where(d))), 'cap')
+              % (path, top, h))
+    else:                                         # dik: tepeden asagi
+        h = CAP_Y - 4.0
+        wd = h * a
+        p.raw('<img src="%s" style="left:%.2fmm;top:0;width:%.2fmm;height:%.2fmm">'
+              % (path, (PW - wd) / 2, wd, h))
+    p.box(ML, 292, CONTENT_W, plate_cap(w, d), 'cap')
+    return p
+
+
+def lead_page(w, k, d):
+    """Eserin acilis sayfasi: tam sayfa, dik de olsa yatik da olsa."""
+    full_page(w, d, 'w%02dL%d' % (w['n'], k))
 
 
 def lead_in(w):
@@ -596,21 +638,88 @@ def wide_spread(w):
     bleed_spread(w, k, w['details'][k])
 
 
-def detail_pages(w, pages):
-    """Acilista kullanilmayan detaylar, dagitilmis kutular halinde, verilen
-       sayfa sayisina bolunerek. Sayfa basina en fazla dort; izgara yok."""
+# Detay sayfasinin duzeni. Dort yuva alt alta, aralari esit, sutun sayfanin
+# ortasinda. Yuvalardan biri kimi zaman bos birakilip yazi alir, kimi zaman
+# ikiye bolunup iki kucuk gorsel alir. Dagitilmis degil, kurulmus.
+SLOTS, SGAP, STOP, SBOT = 4, 10.0, 26.0, 20.0
+IMAX_W = W(11)                                  # yanlarda esit, genis kenar
+
+
+def column_page(w, items, tag):
+    """Bir sayfa: ustten asagi esit yuvalar, en fazla dort. Yuva sayisi
+       sayfadaki oge sayisi kadardir, boylece uc ya da iki oge kalinca
+       gorseller kucuk kalmaz, buyur. Hicbiri kosaya degmez; iki yanda
+       esit kenar birakilir."""
+    n = max(1, min(SLOTS, len(items)))
+    slot_h = (PH - STOP - SBOT - (n - 1) * SGAP) / n
+    p = page(w['run'])
+    p.box(ML, 9.5, W(8), '%02d &nbsp; %s' % (w['n'], e(w['title'])), 'lab')
+    p.box(R(3), 9.5, W(3), 'Detail', 'lab rt')
+    y = STOP
+    for it in items[:n]:
+        if isinstance(it, tuple) and it[0] == 'text':
+            p.box(X(2), y + slot_h * .30, W(8), it[1], 'lead')
+            y += slot_h + SGAP; continue
+        if isinstance(it, list):                   # yuva ikiye bolunur
+            pair = it[:2]
+            gw = (IMAX_W - GAP * 2) / 2
+            hs = [min(slot_h - 6.0, gw / ratio(d['src'])) for d in pair]
+            hh = min(hs)
+            ws = [hh * ratio(d['src']) for d in pair]
+            x = (PW - (sum(ws) + GAP * 2)) / 2
+            for d, cwid in zip(pair, ws):
+                p.pic(d['src'], x, y + (slot_h - hh) / 2 - 2.0, cwid,
+                      cap=where(d), tag='%s%s' % (tag, d['src'][-9:-4]))
+                x += cwid + GAP * 2
+            y += slot_h + SGAP; continue
+        d = it
+        a = ratio(d['src'])
+        cw = min(IMAX_W, (slot_h - 6.0) * a)
+        hh = cw / a
+        p.pic(d['src'], (PW - cw) / 2, y + (slot_h - hh) / 2 - 2.0, cw,
+              cap=where(d), tag='%s%s' % (tag, d['src'][-9:-4]))
+        y += slot_h + SGAP
+    return p
+
+
+def upright_page(w, d, tag):
+    """Dik bir detay tek basina, tam sayfa."""
+    return full_page(w, d, tag)
+
+
+def detail_plan(w):
+    """Kac sayfa tutacagi: dikler birer sayfa, yataylar dorderli sutun."""
     used = list(w.get('used_lead', []))
-    ds = [(w['details'][k]['src'], where(w['details'][k]), None)
-          for k in order(w) if k not in used]
-    if not ds or pages <= 0: return
-    ds = spread_out(ds)
-    per = int(math.ceil(len(ds) / float(pages)))
-    for i in range(pages):
-        chunk = ds[i * per:(i + 1) * per]
-        if not chunk: continue
-        scatter_page(w['run'], chunk,
-                     head=('%02d &nbsp; %s' % (w['n'], e(w['title'])), 'Details'),
-                     tag='w%02dg%d' % (w['n'], i), flip=(i % 2 == 1))
+    rest = [w['details'][k] for k in order(w) if k not in used]
+    up = [d for d in rest if ratio(d['src']) < 1.0]
+    wide = [d for d in rest if ratio(d['src']) >= 1.0]
+    return up, wide
+
+
+def detail_pages(w, extra=0):
+    """Once dik detaylar, her biri tam sayfa. Sonra yataylar: sayfa basina
+       en cok dort, yuvalar oge sayisina gore buyur. `extra` bir sayfa daha
+       acar; o sayfadaki bos yuvaya isin kendi cumlesi gelir."""
+    up, wide = detail_plan(w)
+    for d in up:
+        upright_page(w, d, 'w%02du%s' % (w['n'], d['src'][-9:-4]))
+    if not wide: return
+    wide = [x for x in spread_out([(d['src'], None, None) for d in wide])]
+    wide = [next(d for d in w['details'] if d['src'] == src) for src, _c, _b in wide]
+    n = len(wide)
+    pages = int(math.ceil(n / 4.0)) + (1 if extra else 0)
+    per = int(math.ceil(n / float(pages)))
+    chunks, at = [], 0
+    for _ in range(pages):
+        chunks.append(wide[at:at + per]); at += per
+    chunks = [c for c in chunks if c]
+    for pi, chunk in enumerate(chunks):
+        items = list(chunk)
+        if len(items) == 5:                       # besinci, ikili yuvaya
+            items = items[:3] + [items[3:5]]
+        if extra and pi == len(chunks) - 1 and len(items) < SLOTS:
+            items.insert(max(1, len(items) // 2), ('text', e(w['facets'][pi % 3])))
+        column_page(w, items[:SLOTS], 'w%02dc%d' % (w['n'], pi))
 
 
 def process_page(w, pages=1):
@@ -630,16 +739,25 @@ def process_page(w, pages=1):
         p.box(ML, 17.4, W(7), '%02d &nbsp; %s' % (w['n'], e(w['title'])), 'lab')
         p.box(R(3), 17.4, W(3), 'Process', 'lab rt')
         rows = int(math.ceil(len(part) / float(cols)))
-        hs = [max(cw / ratio(d['src']) for d in part[i:i + cols])
-              for i in range(0, len(part), cols)]
+        base, rem = divmod(len(part), rows)        # satirlar denk bolunur
+        sizes = [base + 1] * rem + [base] * (rows - rem)
+        bands, at = [], 0
+        for sz in sizes:
+            bands.append(part[at:at + sz]); at += sz
+        hs = [max(cw / ratio(d['src']) for d in band) for band in bands]
         slack = max(0.0, (FOOT - 30.0) - sum(hs))
-        gapv = min(14.0, slack / max(1, rows - 1)) if rows > 1 else 0.0
-        y = 30.0
+        gapv = min(24.0, slack / max(1, rows - 1)) if rows > 1 else 0.0
+        gaph = (CONTENT_W - cols * cw) / max(1, cols - 1)
+        y = 30.0 + max(0.0, slack - gapv * max(0, rows - 1)) * .40
         note = None
-        for k, i in enumerate(range(0, len(part), cols)):
-            for j, d in enumerate(part[i:i + cols]):
-                p.pic(d['src'], X(j * span), y, cw,
-                      tag='w%02dp%02d' % (w['n'], pi * per + i + j))
+        idx = 0
+        for k, band in enumerate(bands):
+            roww = len(band) * cw + (len(band) - 1) * gaph
+            x = ML + (CONTENT_W - roww) / 2
+            for d in band:
+                p.pic(d['src'], x, y, cw,
+                      tag='w%02dp%02d' % (w['n'], pi * per + idx))
+                x += cw + gaph; idx += 1
                 c = CREDITS.get(d['src'].split('/')[-1])
                 if c: note = c
             y += hs[k] + gapv
@@ -651,12 +769,57 @@ def process_page(w, pages=1):
 
 
 def aside_page(w):
-    """Kokte duran calismalar: bir eserin etudu ya da baska bir hali."""
+    """Kokte duran calismalar: bir eserin etudu ya da baska bir hali. Bunlar
+       detay degil, ayri resimlerdir; kunyeleri de oyle yazar. Duzen dagilmaz:
+       sol kenara hizali bir yigin, karsisinda yazi sutunu."""
     if not w['aside']: return
-    scatter_page(w['run'], [(a['src'], a.get('label'), None) for a in w['aside']],
-                 head=('%02d &nbsp; %s' % (w['n'], e(w['title'])),
-                       'Studies and versions'),
-                 tag='w%02da' % w['n'])
+    items = w['aside']
+    n = len(items)
+    p = page(w['run'])
+    p.rule(ML, 15, CONTENT_W, True)
+    p.box(ML, 17.4, W(7), '%02d &nbsp; %s' % (w['n'], e(w['title'])), 'lab')
+    p.box(R(3), 17.4, W(3), 'Studies and versions', 'lab rt')
+    Y0, AGAP, FT = 32.0, 12.0, 14.0
+    avail = (FOOT - FT) - Y0
+    if n == 1:
+        a0 = items[0]
+        ar = ratio(a0['src'], a0.get('box'))
+        iw = min(CONTENT_W, (avail - 12.0) * ar)
+        ih = iw / ar
+        y = Y0 + (avail - ih - 12.0) / 2.0
+        path, _ = prep(a0['src'], iw, 'w%02da0' % w['n'], a0.get('box'))
+        p.raw('<img src="%s" style="left:%.2fmm;top:%.2fmm;width:%.2fmm;height:%.2fmm">'
+              % (path, ML, y, iw, ih))
+        p.box(ML, y + ih + 2.4, W(7), e(where(a0)), 'cap')
+        p.box(R(2), y + ih + 2.4, W(2), e(kind(a0)), 'cap rt')
+    else:
+        IMAX = W(6)
+        ars = [ratio(a0['src'], a0.get('box')) for a0 in items]
+        hs = [IMAX / a for a in ars]
+        room = avail - (n - 1) * AGAP
+        k0 = min(1.0, room / sum(hs))
+        hs = [h * k0 for h in hs]
+        pad = max(0.0, (room - sum(hs)) / n) / 2.0
+        y = Y0
+        for k, a0 in enumerate(items):
+            ar = ars[k]
+            ih = hs[k]
+            iw = ih * ar
+            bh = ih + 2 * pad
+            y += pad
+            path, _ = prep(a0['src'], iw, 'w%02da%d' % (w['n'], k), a0.get('box'))
+            p.raw('<img src="%s" style="left:%.2fmm;top:%.2fmm;width:%.2fmm;height:%.2fmm">'
+                  % (path, ML, y, iw, ih))
+            p.box(X(7), y - 1.0, W(4), e(where(a0)), 'note')
+            p.box(R(1), y - 1.0, W(1), e(kind(a0)), 'cap rt')
+            if k < n - 1:
+                p.rule(ML, y + ih + pad + AGAP / 2 - 1.0, CONTENT_W)
+            y += ih + pad + AGAP
+    p.rule(ML, 272, CONTENT_W)
+    p.box(ML, 274.2, W(8),
+          'Sheets and earlier states kept in the studio, shown here beside the work '
+          'they belong to', 'cap')
+    p.box(R(2), 274.2, W(2), '%d shown' % n, 'cap rt')
 
 
 # ══ eserler ════════════════════════════════════════════════════════
@@ -667,43 +830,33 @@ for w in WORKS:
     w['run'] = '%s &middot; %s' % (w['year'], w.get('place', ''))
 
 
-def painting_lead(w):
-    """Detayi olmayan bir ise de acilis sayfasi: tablonun kendisi, sayfa
-       genisligince, kirpilmadan."""
-    path, _ = prep(w['plate']['src'], 240, 'w%02dP' % w['n'], w['plate'].get('box'))
-    h = 240.0 / w['ar']
-    p = page(w['run'], 'plate')
-    if h > PH:                                   # dik tablo: yukseklige gore
-        wd = PH * w['ar']
-        path, _ = prep(w['plate']['src'], wd, 'w%02dQ' % w['n'], w['plate'].get('box'))
-        p.raw('<img src="%s" style="left:%.2fmm;top:0;width:%.2fmm;height:320mm">'
-              % (path, (PW - wd) / 2, wd))
-        p.box(ML, 292, CONTENT_W, '%02d &nbsp; %s' % (w['n'], e(w['title'])), 'cap')
-    else:
-        p.raw('<img src="%s" style="left:0;top:%.2fmm;width:240mm;height:%.2fmm">'
-              % (path, (PH - h) / 2, h))
-        p.box(ML, (PH - h) / 2 + h + 4, CONTENT_W,
-              '%02d &nbsp; %s' % (w['n'], e(w['title'])), 'cap')
+def quote_page(w):
+    """Tek kalan detayi olmayan bir isin karsi sayfasi. Ayni tabloyu ikinci
+       kez, ayni boyda basmanin anlami yok; onun yerine kendi yazisindan
+       bir cumle, buyuk."""
+    line = w['note'].split('. ')[0].strip()
+    if not line.endswith('.'): line += '.'
+    p = page(w['run'])
+    p.box(ML, 9.5, W(6), '%02d &nbsp; %s' % (w['n'], e(w['title'])), 'lab')
+    p.box(ML, 150, W(9), e(line), 'shout')
+    p.rule(ML, 272, CONTENT_W)
+    p.box(ML, 274, W(6), e(w['year']) + ' \u00b7 ' + e(w.get('place', '')), 'cap')
 
 
 def plan(w):
     """Acilistan sonraki sayfa sayisi cift olmak zorunda, yoksa sonraki is
-       bir baskasinin sayfasiyla ayni acilima duser. Bos sayfa acmak yerine
-       detaylarin kac sayfaya dagitilacagi ve surecin bir mi iki sayfa
-       tutacagi buna gore secilir."""
-    rest = max(0, len(w['details']) - 1)
+       bir baskasinin sayfasiyla ayni acilima duser. Bos sayfa acilmaz:
+       gereken tek sayfa, dortlu sutunlardan birinin yazi ya da ikili yuva
+       almasiyla kazanilir."""
+    up, wide = detail_plan(w)
+    base = len(up) + int(math.ceil(len(wide) / 4.0)) if wide else len(up)
     ap = 1 if w['aside'] else 0
-    sps = list(range(int(math.ceil(rest / 4.0)), rest + 1)) if rest else [0]
-    pref_sp = int(math.ceil(rest / 3.0)) if rest else 0
     pps = ([1, 2] if len(w['process']) >= 8 else [1]) if w['process'] else [0]
-    best = None
-    for sp in sps:
+    for extra in (0, 1):
         for pp in pps:
-            if (sp + pp + ap) % 2: continue
-            score = abs(sp - pref_sp) + (3 if pp != pps[0] else 0)
-            if best is None or score < best[0]: best = (score, sp, pp)
-    if best is None: return pref_sp, (pps[0] if pps else 0)
-    return best[1], best[2]
+            if (base + extra + ap + pp) % 2 == 0:
+                return extra, pp
+    return 0, (pps[0] if pps else 0)
 
 
 plain = []                      # detayi olmayan isler, ikiser ikiser
@@ -717,7 +870,7 @@ def flush_plain():
     align(plain[0]['run'], 0)
     if len(plain) % 2:
         w0 = plain.pop(0)
-        painting_lead(w0); work_open(w0)
+        quote_page(w0); work_open(w0)
     while plain:
         work_open(plain.pop(0))
 
@@ -725,16 +878,25 @@ def flush_plain():
 for w in (WORKS if not SHORT else [x for x in WORKS if x['n'] in SELECT]):
     if SHORT:
         work_open(w); continue
-    if not w['details']:
+    if not w['details'] and not w['aside']:
         plain.append(w); continue
     flush_plain()
     align(w['run'], 0)                    # acilis her zaman sag sayfada
-    sp, pp = plan(w)
+    if not w['details']:
+        # Detayi yok ama etudu ya da baska bir hali var: acilisin karsisina
+        # o gecer. Tabloyu ikinci kez basmaya gerek kalmaz.
+        aside_page(w)
+        work_open(w)
+        if len(PAGES) % 2 == 0: quote_page(w)     # ender: cift kalirsa
+        continue
+    extra, pp = plan(w)
     lead_in(w)
     work_open(w)
-    detail_pages(w, sp)
+    detail_pages(w, extra)
     aside_page(w)
     process_page(w, pp)
+    # Sayim yine de tutmazsa bos sayfa acilmaz: isin kendi cumlesi gecer.
+    if len(PAGES) % 2 == 0: quote_page(w)
 flush_plain()
 
 # ══ motif ═══════════════════════════════════════════════════════════
@@ -773,6 +935,19 @@ def motif_section(sec):
                 tag='m-' + sec['key'])
 
 
+# Once dizin: otuz besin hepsi bir arada, kendi bolumu olarak. Sonra
+# tekrar edenler: "bunlarin icinden su alti sey cikiyor".
+if not SHORT:
+    align('Index', 0)
+    p = page('Index')
+    p.rule(ML, 15, CONTENT_W, True)
+    p.box(ML, 17.4, W(6), 'Thirty-five works', 'lab')
+    p.box(R(3), 17.4, W(3), 'Index', 'lab rt')
+    p.box(ML, 150, W(9), 'The<br>thirty-five', 'shout')
+    p.rule(ML, 272, CONTENT_W)
+    p.box(ML, 274, W(9), 'Made since 2019 across Istanbul, Milan and Luxembourg', 'cap')
+    index_page('Index')
+
 # Kisa surumde alti bolumun yalniz ilki: gonderim icin bir ornek yeter.
 if not SHORT:
     align('The recurring', 0)
@@ -784,7 +959,36 @@ if not SHORT:
     p.rule(ML, 272, CONTENT_W)
     p.box(ML, 274, W(9), ' \u00b7 '.join(x['name'] for x in MOTIFS['sections']), 'cap')
     p.box(R(2), 274, W(2), '%d figures' % len(MOTIFS['sections']), 'cap rt')
-    index_page('The recurring')          # karsi sayfada otuz besinin hepsi, kucuk
+
+    # Karsi sayfa: alti seyin her birinden bir kesit, bolumun icindekileri.
+    # Butun satirlar ayni yukseklikte bir bant; kesit bandin icine oturur.
+    q = page('The recurring')
+    q.rule(ML, 15, CONTENT_W, True)
+    q.box(ML, 17.4, W(6), 'What comes back', 'lab')
+    q.box(R(3), 17.4, W(3), 'Contents', 'lab rt')
+    RY0, RGAP = 34.0, 12.0
+    nsec = len(MOTIFS['sections'])
+    ih = ((FOOT - 8.0 - RY0) - (nsec - 1) * RGAP) / nsec
+    y = RY0
+    for sec in MOTIFS['sections']:
+        c = sec['crops'][0]
+        wk = BY_N[c['n']]
+        bx = crop_of(wk, c['box'])
+        iw = min(W(5), ih * ratio(wk['plate']['src'], bx))
+        path, _ = prep(wk['plate']['src'], iw, 'rc-' + sec['key'], bx)
+        q.raw('<img src="%s" style="left:%.2fmm;top:%.2fmm;width:%.2fmm;height:%.2fmm">'
+              % (path, ML, y, iw, ih))
+        q.box(X(6), y - 1.0, W(4), e(sec['name']), 'ti')
+        q.box(X(6), y + 7.6, W(5), e(sec['lead']), 'cap')
+        q.box(R(1), y - 1.0, W(1), '%02d' % len(sec['crops']), 'cap rt')
+        if sec is not MOTIFS['sections'][-1]:
+            q.rule(ML, y + ih + RGAP / 2 - 1.0, CONTENT_W)
+        y += ih + RGAP
+    q.rule(ML, 272, CONTENT_W)
+    q.box(ML, 274.2, W(8), 'Each figure is shown in every painting it appears in, '
+          'on the pages that follow', 'cap')
+    q.box(R(3), 274.2, W(3), 'Pages 114&ndash;125', 'cap rt')
+
 for sec in (MOTIFS['sections'][:1] if SHORT else MOTIFS['sections']):
     motif_section(sec)
 
@@ -871,8 +1075,13 @@ for i, p in enumerate(PAGES, start=1):
 for w in WORKS:
     if w['n'] in first_page:
         marks.append(('%02d  %s' % (w['n'], w['title']), first_page[w['n']]))
-for name, i in (('The onlooker', None), ('Colophon', None), ('Index', None)):
-    pass
+back = ['Index', 'The recurring'] + [x['name'] for x in MOTIFS['sections']] \
+       + ['Colophon']
+first_run = {}
+for i, p in enumerate(PAGES, start=1):
+    if p.run and p.run not in first_run: first_run[p.run] = i
+for name in back:
+    if name in first_run: marks.append((name, first_run[name]))
 json.dump({'marks': marks, 'pages': len(PAGES), 'short': SHORT},
           open(os.path.join(HERE, 'outline-short.json' if SHORT else 'outline.json'),
                'w', encoding='utf-8'),

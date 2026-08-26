@@ -61,8 +61,14 @@ have their own heights, but they are chosen, not fallen into.
 - **Never cropped.** A width is given, the height follows from the picture's
   own proportion. A wide detail stays wide. If a wide picture will not sit
   where the layout wants it, the layout moves.
-- **Never bled**, except the cover. A picture sits inside the margins with
-  paper around it.
+- **Bled only when it costs nothing.** A full-page picture fills the sheet
+  edge to edge only when its proportion is within about two per cent of the
+  page's own 0.75; anything further from that is set to the page instead,
+  bleeding on one axis and leaving an even margin on the other. Nothing is
+  ever cut by more than a hair to make it fit.
+- **One caption line for a full page.** Number, middle dot, where in the
+  painting it is; always at the same height, always on paper, never in three
+  different formats on three different sheets.
 - Placed at the size its content asks for: a whole painting large, a detail
   large enough to read, a stage of the work small.
 - Files are cut to about 13 pixels per millimetre of placed width, capped at
@@ -129,6 +135,9 @@ Every page is built from its own material.
 4. Filling a page because it looks empty.
 5. Type between 8 pt and 26 pt.
 6. The same composition twice in a row.
+7. The same picture printed twice at the same size.
+8. A picture floated at a size the page did not ask for, with the rest of
+   the sheet left to fend for itself.
 
 ---
 
@@ -157,45 +166,69 @@ without being asked:
 
 **No blank pages.** A blank is an admission that the material was not
 arranged. Page counts are made to come out right by choosing how many sheets
-the details are spread over and whether the process runs to one sheet or
-two, not by opening an empty one.
+the details are spread over, whether the process runs to one sheet or two,
+and whether a spare slot on a detail sheet carries a line of the work's own
+text, not by opening an empty one. Where a work has no detail photography at
+all and would still leave a page over, that page takes one sentence of its
+own text set large; the painting is never printed twice at the same size.
 
 **No year dividers.** A year with one work in it made that work look like a
 mistake, and the year already stands at the foot of every page.
 
-**The opening of a work.** Left page: one of its own details, at the largest
-size it can be without being cut, edge to edge on at least one axis. Right
-page: the number, the plate, the strip, the title, the paragraph, the three
-notes. After that the remaining details, scattered.
+**The opening of a work.** Left page: one of its own details, full page,
+upright or wide alike. Right page: the number, the plate, the strip, the
+title, the paragraph, the three notes. Then the rest of the details.
 
-**Scattered, not gridded.** Detail sheets are two columns of unequal width,
-offset against each other, the wide column changing sides from sheet to
-sheet. A regular grid belongs on the process sheets and nowhere else: a
-process sheet is a sequence, a detail sheet is not a shelf.
+**Detail sheets: four slots, top to bottom.** A sheet carries at most four
+pictures, stacked, centred, with an equal margin left and right and nothing
+touching a corner. The slot count follows the number of pictures actually on
+that sheet, so three or two do not sit small in a four-slot rhythm; they
+grow. One slot may hold a line of the work's own text instead of a picture,
+and one may be split into a smaller pair. An upright detail is not squeezed
+into a slot: it takes a page to itself.
+
+**Never a grid outside the process sheets.** A regular grid belongs on the
+process sheets, where the pictures are a sequence, and on the three sheets
+that are lists by nature: the index of thirty-five, the contents of the
+recurring, and the figure sheets in that chapter. A detail sheet is not a
+shelf, and nothing is scattered anywhere.
 
 **Never two alike side by side.** Details are compared by a coarse
 fingerprint before they are placed, and near-identical ones are moved apart.
 
+**Studies and versions.** What is in the studio beside a work and is not a
+detail of it, a sheet of paper or an earlier painting of the same scene, is
+set on its own page in the same left-aligned stack: pictures down the left
+at a common height, what each one is on the right. The caption says what it
+is and what changed, never the word "detail".
+
 ## 10a. What the old rule was
 
 No spread carries two different works. A work with detail photography opens
-on a left page with one of its own details, full bleed where the proportion
-allows it exactly and a single large plate where it does not, and its
-information stands on the right page facing it. Which detail leads is set
-per work in `LEAD` and is never whatever happened to be first.
+on a left page with one of its own details and its information stands on the
+right page facing it. Which detail leads is set per work in `LEAD` and is
+never whatever happened to be first.
 
 The block that follows ends on a right page, so the next work starts clean.
-Where the count comes out wrong the fix is a page of content, not a blank:
-one detail is lifted out of its grid and given a sheet to itself. Works with
-no detail photography are set two to a spread, one page each.
+Where the count comes out wrong the fix is a page of content, not a blank.
+Works with no detail photography are set two to a spread, one page each.
 
-## 11. The recurring
+## 11. The back of the book
+
+The order is fixed: the works, then the index, then the recurring, then the
+colophon. The index is a chapter of its own, not a page that fell into
+another chapter. Its thirty-five plates are set to a common band: every
+picture sits on its row's baseline, so the numbers run in a straight line
+across the sheet and the page reads as one block rather than thirty-five
+accidents.
 
 Six things come back across the seven years: the onlooker, the chair, the
 crow, the cage, the body, the face. The chapter opens on a spread of its
-own, the title on the left and all thirty-five works small on the right.
-Then one spread each: **text on the left page, pictures on the right**,
-facing each other rather than following each other.
+own, the title on the left and a contents list on the right, one crop per
+figure at a common height. Then one spread each: **text on the left page,
+pictures on the right**, facing each other rather than following each other.
+The picture sheets are two columns, rows of a common height, each crop
+sitting on its row's baseline so the captions line up.
 
 Every crop was located in its painting and looked at before it was used. A
 thing that is not the thing does not go in: a pastel body with a long form

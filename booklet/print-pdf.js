@@ -1,5 +1,16 @@
-const { chromium } = require('playwright');
 const path = require('path');
+
+// playwright ya da playwright-core, hangisi bulunursa. Tarayici yolu
+// PLAYWRIGHT_CHROMIUM ile verilebilir; verilmezse paketin kendi indirdigi
+// tarayici kullanilir.
+function load() {
+  for (const m of ['playwright', 'playwright-core']) {
+    try { return require(m); } catch (e) { /* sonrakine bak */ }
+  }
+  throw new Error('playwright bulunamadi: npm i -D playwright-core');
+}
+const { chromium } = load();
+const EXE = process.env.PLAYWRIGHT_CHROMIUM || '';
 
 // booklet.html -> PDF. Kullanim: node print-pdf.js
 (async () => {
@@ -9,7 +20,8 @@ const path = require('path');
   const out = path.join(dir, short ? 'Yigit-Ozen-Artbooklet-Short.pdf'
                                    : 'Yigit-Ozen-Artbooklet.pdf');
 
-  const b = await chromium.launch();
+  const b = await chromium.launch(
+    EXE ? { executablePath: EXE, args: ['--no-sandbox'] } : {});
   const p = await b.newPage();
   await p.goto(src, { waitUntil: 'load', timeout: 180000 });
   await p.waitForFunction(

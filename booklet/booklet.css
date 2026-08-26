@@ -36,6 +36,8 @@ body {
 .b   { position: absolute }
 img  { position: absolute; display: block }
 img.full { left: 0; top: 0; width: 240mm; height: 320mm; object-fit: cover }
+/* tam sayfa dik detay: sayfa orani 0.75, fark kenardan alinir */
+img.cover { left: 0; top: 0; width: 240mm; height: 320mm; object-fit: cover }
 img.mk   { left: 50%; top: 50%; width: 46mm; height: auto; transform: translate(-50%,-50%) }
 
 /* cizgiler */
