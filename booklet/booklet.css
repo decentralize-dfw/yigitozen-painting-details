@@ -83,9 +83,51 @@ body {
 .pg.ink-t .bleed::before { background: linear-gradient(to bottom, rgba(255,255,255,.46), rgba(255,255,255,0)) }
 .pg.ink-b .bleed::after  { background: linear-gradient(to top, rgba(255,255,255,.5), rgba(255,255,255,0)) }
 .bleed.top { inset: 0 0 auto 0; height: 134mm; }
-/* tablonun butun durdugu bant: kirpilmaz, seridin uzerine oturur */
-.band-plate { height: 162mm; display: flex; align-items: flex-end; justify-content: center }
+/* ── eser sayfasi ───────────────────────────────────────────────────
+   Otuz bes eserin hepsi ayni sayfada durur. Ust cizgide numara ve yil,
+   altinda tablonun kendisi butun halde, seride teknik ve olcu, sonra ad ve
+   yazi, dipte renk, kurgu ve el uzerine uc not. Sayfa degismez; degisen
+   yalniz resimdir. */
+.wk { height: 100%; display: flex; flex-direction: column }
+.hdr {
+  display: flex; justify-content: space-between; align-items: baseline;
+  border-bottom: 1pt solid var(--ink); padding-bottom: 2.5mm;
+}
+.hdr .no { font-size: 19pt; font-weight: 700; letter-spacing: -.045em; line-height: .86 }
+.hdr .yr { font-size: 6.8pt; letter-spacing: .22em; text-transform: uppercase; color: var(--mid) }
+
+/* bandin yuksekligi acikca verilir: yoksa resmin kendi boyu bandi buyutur */
+.band-plate {
+  flex: 0 0 148mm; height: 148mm; min-height: 0; margin-top: 9mm;
+  display: flex; align-items: flex-end; justify-content: center;
+}
 .band-plate img { max-height: 100%; max-width: 100%; width: auto; display: block }
+
+.say { margin-top: 7mm; max-width: 116mm }
+.say h3 { font-size: 15pt; font-weight: 700; letter-spacing: -.032em; line-height: 1.06; margin: 0 0 3mm }
+.say p { font-size: 7.8pt; line-height: 1.55; margin: 0; color: #2f2b27; hyphens: auto; -webkit-hyphens: auto }
+
+/* ── ozgecmis ───────────────────────────────────────────────────────*/
+/* on sayfalarda duz yazi sayfanin dibine oturur, listeler ustten baslar */
+.bio { height: 100%; display: flex; flex-direction: column; justify-content: flex-end }
+.bio .por { margin-bottom: 9mm }
+.bio .por img { width: 78mm; height: auto; display: block }
+.bio h2 { font-size: 24pt; font-weight: 700; letter-spacing: -.04em; line-height: .95; margin: 0 0 6mm }
+.bio p { font-size: 8.2pt; line-height: 1.6; margin: 0 0 4.5mm; max-width: 104mm; color: #2f2b27 }
+.cv { height: 100%; display: flex; flex-direction: column }
+.cv h4 {
+  font-size: 6.8pt; letter-spacing: .24em; text-transform: uppercase; font-weight: 700;
+  margin: 0 0 2.5mm; border-bottom: 1pt solid var(--ink); padding-bottom: 2mm;
+}
+.cv section { margin-bottom: 9mm }
+.cv ul { list-style: none; margin: 0; padding: 0 }
+.cv li {
+  display: flex; gap: 4mm; align-items: baseline;
+  font-size: 7.2pt; line-height: 1.4; padding: 1.5mm 0;
+  border-bottom: .25pt solid var(--hair);
+}
+.cv li .w { flex: 1 }
+.cv li .y { color: var(--mid); font-variant-numeric: tabular-nums }
 .bleed.half { inset: 0 0 auto 0; height: 179mm; }
 /* ustte tasan bir gorsel varsa akan icerik onun bittigi yerden baslar */
 .pg.topimg  { padding-top: 139mm }
@@ -109,7 +151,7 @@ body {
   display: flex; justify-content: space-between; align-items: baseline;
   font-size: 6.6pt; letter-spacing: .16em; text-transform: uppercase;
   font-weight: 700; color: var(--ink);
-  padding-top: 4.5mm;
+  padding-top: 3mm; margin-top: 4mm; border-top: .5pt solid var(--ink);
 }
 .strip span { white-space: nowrap }
 .strip .q { text-transform: none; letter-spacing: .06em; font-weight: 700 }
@@ -203,30 +245,6 @@ body {
 .divider .ct { font-size: 6.8pt; letter-spacing: .2em; text-transform: uppercase; color: var(--mid); margin-top: 4mm }
 .divider .rule { height: 1pt; background: var(--ink); margin: 8mm 0 0 }
 
-/* ── tek eser sayfasi ───────────────────────────────────────────────
-   Gorsel ustte, kunye altinda, geri kalani bos. */
-.solo { height: 100%; display: flex; flex-direction: column }
-.solo .fr { flex: 0 0 auto; display: flex; align-items: flex-start }
-.pg.R .solo .fr { justify-content: flex-end }
-.solo .fr img { max-height: 166mm; max-width: 100%; width: auto; display: block }
-.solo .tomb { margin-top: 5mm; max-width: 92mm }
-.pg.R .solo .tomb { margin-left: auto; text-align: right }
-.solo .tomb h3 { font-size: 12pt; font-weight: 700; letter-spacing: -.02em; line-height: 1.1; margin: 0 0 2.5mm }
-.solo .tomb .mt { font-size: 6.6pt; letter-spacing: .16em; text-transform: uppercase; color: var(--mid) }
-.solo .note { margin-top: 6mm; max-width: 82mm; font-size: 7.4pt; line-height: 1.5; color: #37322d; hyphens: auto }
-.pg.R .solo .note { margin-left: auto; text-align: right }
-
-/* buyuk baslikli varyant: yazi once, gorsel sonra */
-.loud { height: 100%; display: flex; flex-direction: column }
-.loud h3 {
-  font-size: 27pt; font-weight: 700; line-height: .98; letter-spacing: -.035em;
-  margin: 0 0 6mm; max-width: 96%;
-}
-.loud .mt { font-size: 6.6pt; letter-spacing: .16em; text-transform: uppercase; color: var(--mid); margin-bottom: 8mm }
-.pg.R .loud h3, .pg.R .loud .mt { text-align: right; margin-left: auto }
-.loud .fr { margin-top: auto; display: flex }
-.pg.R .loud .fr { justify-content: flex-end }
-.loud .fr img { max-height: 168mm; max-width: 100%; width: auto; display: block }
 
 /* ── icindekiler ────────────────────────────────────────────────────*/
 .toc { height: 100%; display: flex; flex-direction: column }

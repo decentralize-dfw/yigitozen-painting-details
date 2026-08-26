@@ -22,17 +22,26 @@ e = lambda t: html.escape(str(t), quote=True)
 
 # ── gorsel hazirligi ─────────────────────────────────────────────────
 made = {}
-def prep(src, long_side, tag):
-    """site kokundeki bir dosyayi booklet/images altina indirger"""
-    key = (src, long_side)
+def prep(src, long_side, tag, box=None):
+    """Site kokundeki bir dosyayi booklet/images altina indirger.
+
+       Tablolarin bir cogunda saklanan fotograf duvari ve tuvalin disini da
+       tasiyor; kayittaki `box` tuvalin o fotograf icindeki yeridir, sol,
+       ust, genislik ve yukseklik olarak kesirle verilir. Once oradan
+       kesilir, sonra kucultulur; yoksa levhaya duvar da girer."""
+    key = (src, long_side, tuple(box) if box else None)
     if key in made: return made[key]
     path = os.path.join(ROOT, src.lstrip('/'))
     im = Image.open(path).convert('RGB')
+    if box:
+        W, H = im.size
+        x, y, bw, bh = box
+        im = im.crop((round(x * W), round(y * H), round((x + bw) * W), round((y + bh) * H)))
     w, h = im.size
     s = min(1.0, long_side / max(w, h))
     if s < 1.0: im = im.resize((round(w*s), round(h*s)), Image.LANCZOS)
     out = tag + '.jpg'
-    im.save(os.path.join(IMG, out), quality=84, subsampling=1, optimize=True)
+    im.save(os.path.join(IMG, out), quality=82, subsampling=1, optimize=True)
     made[key] = 'images/' + out
     return made[key]
 
@@ -43,11 +52,11 @@ for w in WORKS:
     w['details'] = [i for i in w['plates'][1:] if i.get('label') == 'Detail']
 
 BY_N = {w['n']: w for w in WORKS}
-BLEED, PLACED = 1900, 1400
+BLEED, PLACED = 1700, 1300
 
 def paint(w, big=False):
     return prep(w['images'][0]['src'], BLEED if big else PLACED,
-                'w%02d%s' % (w['n'], '-lg' if big else ''))
+                'w%02d%s' % (w['n'], '-lg' if big else ''), w['images'][0].get('box'))
 
 def det(w, k, big=False):
     d = w['details'][k % len(w['details'])]
@@ -81,16 +90,23 @@ BLURB = ('Thirty-five paintings made since 2019 across Istanbul, Milan and Luxem
          'of light and shadow.')
 
 # ── sayfa parcalari ──────────────────────────────────────────────────
-def strip(w, kind='Painting'):
-    return ('<div class="strip"><span>%s</span><span class="q">&ldquo;%s&rdquo;</span>'
-            '<span>%s</span><span class="y">&rsquo;%s</span></div>'
-            % (e(kind), e(w['title']), e(w['medium']), e(w['year'])))
+def strip(w, kind=None):
+    if kind:
+        return ('<div class="strip"><span>%s</span><span class="q">&ldquo;%s&rdquo;</span>'
+                '<span>%s</span><span class="y">&rsquo;%s</span></div>'
+                % (e(kind), e(w['title']), e(w['medium']), e(w['year'])))
+    return ('<div class="strip"><span>%s</span><span>%s</span><span class="y">%s</span></div>'
+            % (e(w['medium']), e(w['dim']), e(w.get('place', ''))))
 
 
-def ink(src):
+def ink(src, box=None):
     """Tam sayfa bir gorselin ust ve alt seridi acik mi koyu mu. Beyaz yazi
        acik bir boyanin uzerinde kayboluyor; o sayfada murekkep koyuya doner."""
     im = Image.open(os.path.join(ROOT, src.lstrip('/'))).convert('L')
+    if box:
+        W, H = im.size
+        x, y, bw, bh = box
+        im = im.crop((round(x * W), round(y * H), round((x + bw) * W), round((y + bh) * H)))
     w, h = im.size
     band = lambda b: sum(im.crop(b).resize((24, 6)).getdata()) / (24 * 6 * 255.0)  # noqa
     k = ''
@@ -109,9 +125,10 @@ def notes(facets):
             '</ul>')
 
 def bcap(w, kind='Detail'):
-    """tam sayfa gorselin ustundeki beyaz kunye"""
-    return ('<div class="bcap"><span>%s</span><span class="q">&ldquo;%s&rdquo;</span>'
-            '<span>&rsquo;%s</span></div>' % (e(kind), e(w['title']), e(w['year'])))
+    """tam sayfa gorselin ustundeki beyaz kunye; numara ciftin baginidir"""
+    return ('<div class="bcap"><span>%02d</span><span>%s</span>'
+            '<span class="q">&ldquo;%s&rdquo;</span><span>&rsquo;%s</span></div>'
+            % (w['n'], e(kind), e(w['title']), e(w['year'])))
 
 MARK = '<div class="mark"><img src="images/logo.svg" alt=""></div>'
 
@@ -123,9 +140,9 @@ def add(run, body, klass=''):
     pages.append((run, body, klass))
     return len(pages)
 
-def bleed_page(run, src, klass='dark', tag='', probe=None):
+def bleed_page(run, src, klass='dark', tag='', probe=None, box=None):
     return add(run, '<div class="bleed"><img src="%s" alt=""></div>%s' % (src, tag),
-               klass + (ink(probe) if probe else ''))
+               klass + (ink(probe, box) if probe else ''))
 
 # 1 ── kapak
 cover_img = prep('/img/full/detail/7famboardgame_detail_3.jpg', BLEED, 'cover')
@@ -156,7 +173,52 @@ add('On the work',
 bleed_page('On the work', det(BY_N[2], 4, True), tag=bcap(BY_N[2]),
            probe=BY_N[2]['details'][4 % len(BY_N[2]['details'])]['src'])
 
-# 6-7 ── icindekiler (numaralar sonra doldurulur)
+# 6-7 ── ozgecmis | calisma listesi
+BIO = ['Yiğit Özen was born in 1994 in Istanbul and trained as an architect.',
+       'The paintings date from 2018 onward and were made across Istanbul, Milan and '
+       'Luxembourg.',
+       'Alongside the paintings, Özen works as an XR and spatial web designer, and is the '
+       'founder of decentralize design in Milan and Virtually Ever After in Luxembourg. '
+       'That practice has been shown at Kunsthalle Zürich, the Royal Institution in '
+       'London, Holy Art Gallery London and Art Basel Miami.']
+CV = [('Awards and mentions', [
+        ('Creatorverse Buildathon by Parcel x PangeaDAO, Music Venue, Winner', '2022'),
+        ('Creatorverse Buildathon by Parcel x PangeaDAO, Meeting Space, Runner-up', '2022'),
+        ('Grant Program by EnterDAO’s Landworks, Fashion Venue, Winner', '2022'),
+        ('Grant Program by EnterDAO’s Landworks, Headquarters, Winner', '2022'),
+        ('Top 50 Creators of Metaverse by Metamundo', '2023'),
+        ('CryptoCubes by Han, Runner-up', '2023'),
+        ('VCA x Draup Virtual Fashion Residency, 1st Prize, selected by RedDAO', '2023'),
+        ('MONA 3D Objects Buildathon, Center Pieces, Honorable Mention', '2024')]),
+      ('Talks', [
+        ('Virtual Show &amp; Tell at Hyperfy, hosted by untitled, xyz', '2023'),
+        ('VCA Mentorship, 6th Cohort, Architecture in the Metaverse', '2023'),
+        ('Opening Keynote, Digital Fashion Summit, Creative Denmark', '2024')]),
+      ('Exhibitions', [
+        ('Power of the Nature, Fabbrica del Vapore, Milan', '2019'),
+        ('The Arts Special Projects, Fabbrica del Vapore, Milan', '2019'),
+        ('Communitas III by Kollektiv Kollektiv, Kunsthaus Steffisburg', '2021'),
+        ('New Freedom Think, Mads Gallery, Milan', '2022'),
+        ('Art Design, Holy Art Gallery, London', '2022'),
+        ('Klein Metaverse Event, BabylonsNFT, Yachtingverse', '2022'),
+        ('DYOR, Kunsthalle Zürich, Zurich', '2022'),
+        ('Creators of the Metaverse by Metamundo, Art Basel Miami', '2022'),
+        ('First Look Metaverse Watch Party, MONA', '2023'),
+        ('KODA by Polkadot, Factory Berlin, Berlin', '2023'),
+        ('New Codes by VCA, Draup and Mad Global, Royal Institution, London', '2023')])]
+
+add('Biography',
+    '<div class="bio"><div class="por"><img src="%s" alt="Yiğit Özen"></div>'
+    '<h2>Yiğit<br>Özen</h2>%s</div>'
+    % (prep('/img/portrait.jpg', 900, 'portrait'),
+       ''.join('<p>%s</p>' % e(x) for x in BIO)))
+add('Biography', '<div class="cv">' + ''.join(
+    '<section><h4>%s</h4><ul>%s</ul></section>'
+    % (h, ''.join('<li><span class="w">%s</span><span class="y">%s</span></li>' % (a, b)
+                  for a, b in rows))
+    for h, rows in CV) + '</div>')
+
+# 8-9 ── icindekiler (numaralar sonra doldurulur)
 toc_a = add('Contents', '@@TOC1@@')
 toc_b = add('Contents', '@@TOC2@@')
 
@@ -166,7 +228,19 @@ YEARS = []
 for w in WORKS:
     if w['year'] not in YEARS: YEARS.append(w['year'])
 
-RICH = {1, 2, 3, 6, 8, 15}                 # sekiz ya da daha cok detayi olanlar
+RICH = {1, 2, 3, 15}                       # detay fotografi en bol olanlar
+
+def wk_page(w):
+    """her eserin sayfasi. Otuz besinde de ayni."""
+    return ('<div class="wk">'
+            '<div class="hdr"><span class="no">%02d</span><span class="yr">%s</span></div>'
+            '<div class="band-plate"><img src="%s" alt=""></div>'
+            '%s'
+            '<div class="say"><h3>%s</h3><p>%s</p></div>'
+            '</div>%s'
+            % (w['n'], e(w['year']), paint(w), strip(w),
+               e(w['title']), e(w['note']), notes(w['facets'])))
+
 
 for yr in YEARS:
     group = [w for w in WORKS if w['year'] == yr]
@@ -174,50 +248,34 @@ for yr in YEARS:
     for w in group: places[w.get('place', '')] = places.get(w.get('place', ''), 0) + 1
     place = max(places, key=places.get)
     run = '%s &middot; %s' % (yr, place)
+    span = ('%02d' % group[0]['n']) if len(group) == 1 else \
+           ('%02d&ndash;%02d' % (group[0]['n'], group[-1]['n']))
 
     lead = group[0]
     add(run, '<div class="divider"><div class="yr">%s</div><div class="pl">%s</div>'
-             '<div class="ct">%d work%s</div><div class="rule"></div></div>'
-             % (e(yr), e(place), len(group), '' if len(group) == 1 else 's'))
+             '<div class="ct">%s &middot; %d work%s</div><div class="rule"></div></div>'
+             % (e(yr), e(place), span, len(group), '' if len(group) == 1 else 's'))
     lead_src = (lead['details'][0]['src'] if lead['details'] else lead['images'][0]['src'])
     bleed_page(run, det(lead, 0, True) if lead['details'] else paint(lead, True),
-               tag=bcap(lead, 'Detail' if lead['details'] else 'Painting'), probe=lead_src)
+               tag=bcap(lead, 'Detail' if lead['details'] else 'Painting'), probe=lead_src,
+               box=None if lead['details'] else lead['images'][0].get('box'))
 
-    queue = []
     for w in group:
-        if w['details']:
-            # tasan detay | kunyeli sayfa
-            first_page[w['n']] = bleed_page(
-                run, det(w, 1, True), tag=bcap(w),
-                probe=w['details'][1 % len(w['details'])]['src'])
-            add(run, '<div class="band-plate"><img src="%s" alt=""></div>%s%s%s'
-                     % (paint(w), strip(w), cap(w['title'], w['note']), notes(w['facets'])))
-            if w['n'] in RICH:
-                add(run, '<div class="bleed half"><img src="%s" alt=""></div>%s'
-                         % (det(w, 3, True), strip(w, 'Detail')), 'halfimg')
-                add(run, '<div class="bleed top"><img src="%s" alt=""></div>%s%s'
-                         % (det(w, 5, True), strip(w, 'Detail'),
-                            cap('In the hand', w['facets'][2])), 'topimg')
-        else:
-            queue.append(w)
+        # sol sayfa tasan gorsel, sag sayfa eserin kendisi. Detayi olmayanda
+        # tasan gorsel tablonun kendi icinden alinir; cift bozulmaz.
+        src  = (w['details'][1 % len(w['details'])]['src'] if w['details']
+                else w['images'][0]['src'])
+        pic  = det(w, 1, True) if w['details'] else paint(w, True)
+        bleed_page(run, pic, tag=bcap(w, 'Detail'), probe=src,
+                   box=None if w['details'] else w['images'][0].get('box'))
+        first_page[w['n']] = add(run, wk_page(w))
 
-    # detaysiz eserler ikiser ikiser, iki duzen sirayla
-    for i in range(0, len(queue), 2):
-        for j, w in enumerate(queue[i:i+2]):
-            loud = (i // 2) % 2 == 1
-            if loud:
-                body = ('<div class="loud"><h3>%s</h3><div class="mt">%s, %s &middot; %s</div>'
-                        '<div class="fr"><img src="%s" alt=""></div></div>'
-                        % (e(w['title']), e(w['medium']), e(w['dim']), e(w['year']), paint(w)))
-            else:
-                body = ('<div class="solo"><div class="fr"><img src="%s" alt=""></div>'
-                        '<div class="tomb"><h3>%s</h3><div class="mt">%s, %s &middot; %s</div></div>'
-                        '<p class="note">%s</p></div>'
-                        % (paint(w), e(w['title']), e(w['medium']), e(w['dim']),
-                           e(w['year']), e(w['note'])))
-            first_page[w['n']] = add(run, body)
-        if len(queue[i:i+2]) == 1:
-            add(run, '', 'blank')             # esini bekleyen sayfa bos kalir
+        if w['n'] in RICH:
+            add(run, '<div class="bleed half"><img src="%s" alt=""></div>%s'
+                     % (det(w, 3, True), strip(w, 'Detail')), 'halfimg')
+            add(run, '<div class="bleed top"><img src="%s" alt=""></div>%s%s'
+                     % (det(w, 5, True), strip(w, 'Detail'),
+                        cap('In the hand', w['facets'][2])), 'topimg')
 
 # ── kolofon ──────────────────────────────────────────────────────────
 add('Colophon', MARK +
@@ -241,8 +299,8 @@ def toc(items, head=None):
     h = '<h2>%s</h2>' % head if head else ''
     return '<div class="toc">%s<ol>%s</ol></div>' % (h, rows)
 
-pages[toc_a - 1] = (pages[toc_a - 1][0], toc(WORKS[:17], 'Contents'), '')
-pages[toc_b - 1] = (pages[toc_b - 1][0], toc(WORKS[17:]), '')
+pages[toc_a - 1] = (pages[toc_a - 1][0], toc(WORKS[:18], 'Contents'), '')
+pages[toc_b - 1] = (pages[toc_b - 1][0], toc(WORKS[18:]), '')
 
 # ── yaz ──────────────────────────────────────────────────────────────
 out = ['<!doctype html>', '<html lang="en">', '<head>', '<meta charset="utf-8">',
