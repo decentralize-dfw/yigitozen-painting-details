@@ -3,7 +3,7 @@
 The art book. Thirty-five paintings, one spread each, built from the site's
 `works.json` and the photographs in this repository.
 
-`Yigit-Ozen-Paintings-since-2019.pdf` — 151 pages, 240 × 320 mm, 23 MB.
+`Yigit-Ozen-Paintings-since-2019.pdf` — 163 pages, 240 × 320 mm.
 `Yigit-Ozen-Paintings-Short.pdf` — 24 pages, eight works and one recurring
 figure, for sending cold.
 
@@ -14,50 +14,47 @@ and are embedded in the PDF.
 
 Every work is a spread. The left page is writing and is nearly empty: the
 number and the medium on a rule at the head, the title under it, the
-paragraph low, the three notes on colour, composition and hand at the foot,
-and the page number set large in the outer corner. The right page is the
-painting, and it fills the sheet.
+dimensions, the paragraph, and the three notes on colour, composition and
+hand — all one block, with the leftover white collected at the foot. The
+right page is the painting, filling the sheet.
 
-All thirty-five paintings are reproduced inside one band, 20 mm from the
-head and 272 mm deep. An upright painting takes the height of that band; a
-wide one takes the width of the page and sits centred in it. That is the
-whole plate rule, and it means the reader compares the paintings honestly
-rather than comparing the layouts.
+All thirty-five paintings are reproduced inside one band, 18 mm from the
+head and 260 mm deep. An upright painting takes the band's height, a wide
+one the page's width. That is the whole plate rule, and it means the reader
+compares the paintings rather than the layouts.
 
-Nothing is cropped. A picture may lie against the edge of the sheet; it may
-not lose any of itself to get there. The cover is the only exception, and
-even there the plate is set to the width of the page rather than filled to
-it.
+The detail pages are not free. Six archetypes, a closed set, and six size
+steps with nothing between them; every spread carries one picture that
+takes more than half of it. `GUIDE.md` is the specification and `audit.js`
+checks it on the rendered file.
 
 ## What is in it
 
 - **35 spreads**, one to a work, all the same shape.
-- **71 details**, on sheets of one, two or three. Seven hand-built
-  compositions decide where they go, and no two sheets in a row use the
-  same one. Every detail carries one line: where in the painting it is.
-- **49 process stages** across five works, as contact sheets. The only
-  grid of that kind in the book.
+- **Detail sheets** allotted by what the work is — surface, recurring
+  figures, whether its making was photographed — not by what happened to be
+  in the camera. Where a work was never photographed in detail, its crops
+  come from its own plate at the places the recurring chapter marks.
+- **49 process stages** across five works, as contact sheets.
 - **10 studies and versions**, each captioned for what it is.
-- **An index** of all thirty-five, every plate on one baseline.
+- **An index** of all thirty-five, every plate at one width on one baseline.
 - **Six recurring figures**, a spread each: text on the left, and on the
-  right a crop from every painting the thing appears in.
+  right a crop from every painting the figure appears in. A crop marked with
+  a degree sign in the works section is printed again there, so the argument
+  can be checked against the painting it came from.
 - Cover, imprint, title, the essay, the biography, the exhibitions, a page
   on how the book is arranged, the contents on one sheet, the colophon.
 
-Where a work's note is a quotation it is set apart, italic, with its source
-directly beneath it, and the artist's own paragraph follows in roman. That
-is the only italic body text in the book.
-
-Where the page count would otherwise come out wrong, the spare page is not
-filler: it shows which of the six recurring figures appears in that
-painting, with the crop and the page the chapter on it begins. There are no
-blank pages.
+Where a work's sheets come out odd, the spare page is not filler: it shows
+which recurring figures are in that painting, with the crop and the page its
+chapter begins. There are no blank pages.
 
 ## Making it
 
 ```
 python3 book.py ../../yigit/works.json      # book.html + images/
-node print.js && python3 post.py            # the PDF, its metadata and 50 bookmarks
+node audit.js                               # the specification, checked
+node print.js && python3 post.py            # the PDF, its metadata and bookmarks
 
 python3 book.py ../../yigit/works.json --short
 node print.js --short && python3 post.py --short
@@ -74,14 +71,9 @@ pixels, above it the file grows for nothing.
 
 ## The rules it will not break
 
-1. No cropping, except the width of the cover plate.
-2. No gradient, veil, shadow or rounded corner anywhere.
-3. Three type sizes and nothing between them: 6.4 pt micro, 8.8 pt body,
-   and display from 19 pt up.
-4. One work to a spread; a work never shares a spread with another.
-5. No blank pages, and no picture printed twice at the same size.
-6. A grid only on the process sheets, the index, and the recurring.
-7. Titles keep the artist's own spelling and case, in the contents as well
-   as on the page. The name is set YİĞİT, never YIĞIT: CSS uppercase turns
-   a Turkish i into a dotless I, so the name is written out by hand
-   wherever it is set in capitals.
+The full list is in `GUIDE.md`. The short form: no cropping except on the
+full-page plates, which are always also printed small and whole; three type
+sizes and nothing between them; one work to a spread; no blank pages; six
+archetypes and six size steps; one picture over half of every detail spread;
+at least six bleeding pages in every 32; white in one block touching two
+edges; and no picture under three columns.
