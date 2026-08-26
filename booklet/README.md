@@ -4,29 +4,31 @@ The catalogue next door is a document: one work to a page, an index, a
 caption at a fixed height. This is not that. Same paintings, same details,
 same words, set as an art booklet.
 
-240 x 320 mm, 97 pages. The cover stands alone, so from page 2 on an even
-page is always the left of a spread and an odd page the right.
+240 x 320 mm, 123 pages. The cover stands alone, so a viewer that shows
+spreads pairs an even page on the left with an odd page on the right.
 
 ## The rule
 
-Every work gets one spread and every spread is built the same way.
+**Every work has one page and that page is the same for all thirty-five.**
+The number at the top, the painting whole in a band of fixed depth so that a
+wide canvas and a tall one end at the same height, a strip giving the medium
+and the year, the title and the note centred, and along the foot three notes
+on colour, composition and hand. Nothing else is allowed on it, and nothing
+is added or taken away because a work has more photographs or fewer.
 
-- **Left**: one picture, full bleed, edge to edge. A detail where there is
-  detail photography, otherwise a crop taken from the painting itself.
-  Across the top, in white, the catalogue number, the title and the year.
-- **Right**: the work page. A rule under the catalogue number and the year,
-  the painting whole in a band 148 mm deep, a strip giving medium,
-  dimensions and place, then the title and the note, and along the foot
-  three notes on colour, composition and hand.
+A work whose only photograph is of the whole painting stops there. Blowing
+that one photograph up to fill a facing page shows nothing the work page has
+not already shown, and shows it worse.
 
-The work page is identical for all thirty-five, whether the work has nine
-details or none. Nothing else is allowed on it. What changes from spread to
-spread is the painting.
+A work that was photographed in detail carries every one of those details
+after its page, each one full bleed and one to a page. The only thing
+written on a detail is the work's number and where in the painting it is:
+the mouth, the near corner of the board, the hands and the rod between them.
+Medium and year are not repeated, since the work's own page said them.
 
-Around that: an imprint and a line set large, the essay, the biography and
-the list of shows, the contents, a divider for each year, and for the four
-works with the most detail photography one extra spread of nothing but
-detail. Page numbers are the heaviest mark on a page, in the outer corner.
+Around all that: an imprint and a line set large, the essay, the biography
+and the list of shows, the contents, and a divider for each year. Page
+numbers are the heaviest mark on a page, in the outer corner.
 
 ## Making it
 
@@ -48,7 +50,16 @@ beside this one. Two things it does that are easy to miss:
   every picture is cut to it before it is reduced, so no plate shows a wall.
 - It measures the top and bottom band of every full-bleed picture. Where the
   paint underneath is pale the white type on that page turns dark by itself.
+- `where.json` holds the one line each detail carries. It is keyed by the
+  detail's file name, so a new photograph needs a line there and nothing
+  else. A detail with no line falls back to the word Detail.
 
-Pictures are reduced into `images/`: 1550 px on the long side for a full
-bleed, 1200 px for a plate. Layout lives in `booklet.css`; the sequence of
+Pictures are reduced into `images/`: 1300 px on the long side for a full
+bleed, 1250 px for a plate. Layout lives in `booklet.css`; the sequence of
 pages lives in `build.py`.
+
+## Reading it
+
+`yigitozen.xyz/artbook` reads the same file as a book, cover alone and then
+spreads, in a page-turning viewer carried over from veawork. The viewer
+takes `?pdf=` if another file needs to be read in it.
