@@ -124,6 +124,31 @@ for f in ('logo.svg',):
     sp = os.path.join(HERE, 'images', f)
     if os.path.isfile(sp): shutil.copyfile(sp, os.path.join(IMG, f))
 
+# ── baski seti: ayni kesitler 300 ppi'da, ayni adlarla ──────────────
+# Duzenleyici disari aktarirken yalniz klasoru degistirir. Set yoksa
+# once `python3 book.py <works.json> --print` calistirilir.
+PRINT_SRC = os.path.join(HERE, 'images-print')
+IMGP = os.path.join(OUT, 'img-print')
+printpx = {}
+if os.path.isdir(PRINT_SRC):
+    if not os.path.isdir(IMGP): os.makedirs(IMGP)
+    tg = lambda f: re.sub(r'-\d+\.jpg$', '', f)
+    hi = dict((tg(f), f) for f in os.listdir(PRINT_SRC) if f.endswith('.jpg'))
+    for f in os.listdir(IMG):
+        if not f.endswith('.jpg'): continue
+        h = hi.get(tg(f))
+        if not h: continue
+        shutil.copyfile(os.path.join(PRINT_SRC, h), os.path.join(IMGP, f))
+        printpx[f] = Image.open(os.path.join(PRINT_SRC, h)).size[0]
+    for extra in ('logo.svg',):
+        sp = os.path.join(IMG, extra)
+        if os.path.isfile(sp): shutil.copyfile(sp, os.path.join(IMGP, extra))
+    json.dump(printpx, open(os.path.join(OUT, 'printpx.json'), 'w'),
+              separators=(',', ':'))
+    print('print images: %d' % len(printpx))
+else:
+    print('print images: none (run book.py --print first)')
+
 # ── arsiv: ise gore gruplanmis, tam cozunurluklu kaynaklar ───────────
 works = json.load(open(os.path.join(ROOT, 'works.json'), encoding='utf-8'))
 
@@ -213,6 +238,8 @@ with open(os.path.join(OUT, 'data.js'), 'w', encoding='utf-8') as f:
     json.dump(model, f, ensure_ascii=False, separators=(',', ':'))
     f.write(',archive:')
     json.dump({'groups': groups}, f, ensure_ascii=False, separators=(',', ':'))
+    f.write(',printPx:')
+    json.dump(printpx, f, separators=(',', ':'))
     f.write('};\n')
 print('pages: %d  elements: %d' % (len(pages), sum(len(p['els']) for p in pages)))
 print('editor images copied: %d   thumbnails made: %d' % (n, made))
