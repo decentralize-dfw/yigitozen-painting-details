@@ -27,6 +27,7 @@ button.on{background:var(--acc);border-color:var(--acc);color:#fff}
 #bar .sp{flex:1}
 #bar b{font-weight:600;letter-spacing:.02em}
 #bar .muted{color:var(--dim)}
+#selcount{color:var(--acc);font-weight:600}
 
 #props{position:fixed;top:46px;left:0;right:0;height:38px;display:none;
   align-items:center;gap:6px;padding:0 12px;background:#31353f;
@@ -63,6 +64,11 @@ body.props #lib,body.props #stage,body.iprops #lib,body.iprops #stage{top:84px}
   overflow:hidden;text-overflow:ellipsis}
 
 #doc .pg,#print .pg{color:#111}
+/* Uzerinde calisilan sayfa gorunur: ekleme ve silme buna gore olur. */
+#doc .pg.cur{box-shadow:0 0 0 2px var(--acc)}
+#doc .pg.cur::after{content:attr(data-no);position:absolute;left:0;top:-19px;
+  background:var(--acc);color:#fff;font:600 10px/1 Inter,sans-serif;
+  padding:4px 7px;border-radius:3px;letter-spacing:.04em}
 #doc .pg.dark,#print .pg.dark{color:#fff}
 #stage{position:fixed;top:46px;left:242px;right:0;bottom:0;overflow:auto;padding:34px 34px 90px}
 #sizer{position:relative}
@@ -132,7 +138,11 @@ body.props #lib,body.props #stage,body.iprops #lib,body.iprops #stage{top:84px}
   <button id="tgGuide" class="on">Kılavuz</button>
   <button id="tgMar" class="on">Marj</button>
   <span class="sp"></span>
-  <button id="addPg">+ Sayfa</button><button id="delPg">− Sayfa</button>
+  <span id="pgnow" class="muted">sayfa —</span>
+  <button id="addBefore" title="Seçili sayfanın ÖNÜNE boş sayfa">+ önüne</button>
+  <button id="addAfter" title="Seçili sayfanın ARKASINA boş sayfa">+ arkasına</button>
+  <button id="delPg" title="Seçili sayfayı sil">− sayfa</button>
+  <span id="selcount"></span>
   <button id="dup">Kopyala</button>
   <button id="fwd">Öne</button><button id="bwd">Arkaya</button>
   <button id="del">Sil</button>
@@ -176,6 +186,7 @@ body.props #lib,body.props #stage,body.iprops #lib,body.iprops #stage{top:84px}
   <button id="fH" title="Levha bandına (260 mm)">Banda sığdır</button>
   <button id="fPH" title="Sayfa boyuna (320 mm)">Sayfa boyu</button>
   <button id="fBleed" title="Dört kenardan taşır (250 × 330 mm)">Tam taşma</button>
+  <button id="fSpan" title="Görseli karşı sayfaya uzatır; iki yarım birlikte hareket eder">Yan sayfaya uzat</button>
   <span style="width:8px"></span>
   <input id="fPct" type="number" step="5" min="5" max="400" placeholder="%" title="Yüzde ölçek">
   <button id="fCX" title="Yatayda ortala">↔ ortala</button>
@@ -230,7 +241,11 @@ const REGS = [18, 83, 148, 213];
 
 let model = null, arch = null;
 let zoom = 0.5, snap = true, showGuides = true, showMar = true;
-let sel = null;                  // {pi, ei}
+let sels = [];                   // secili ogeler: [{pi, ei}, ...]
+Object.defineProperty(window, 'sel', {   // birincil secim: dizinin sonuncusu
+  get() { return sels.length ? sels[sels.length - 1] : null; },
+  set(v) { sels = v ? [v] : []; }
+});
 let curPage = 0;                 // son dokunulan sayfa: araya ekleme buna gore
 let redoStack = [];
 const TIP = 'Sürükle: taşı · Çift tık: yazıyı düzenle · Alt+sürükle: serbest ölçek · Alt+çift tık: kılavuz · Delete: sil · Ctrl+Z / Ctrl+Shift+Z';
@@ -331,6 +346,8 @@ function drawPage(pi) {
   const p = model.pages[pi];
   const pg = el('section', 'pg ' + (p.cls || ''));
   pg.dataset.pi = pi;
+  pg.dataset.no = 'sayfa ' + (pi + 1);
+  if (pi === curPage) pg.classList.add('cur');
   const tp = el('div', 'tp');
   p.els.forEach((e, ei) => tp.appendChild(drawEl(e, pi, ei)));
   pg.appendChild(tp);
@@ -387,6 +404,9 @@ function drawEl(e, pi, ei) {
 function markSel() {
   document.querySelectorAll('.sel').forEach(x => x.classList.remove('sel'));
   document.querySelectorAll('.hnd').forEach(x => x.remove());
+  // Coklu secimde hepsi cerceveli, tutamaklar yalniz birincilde.
+  sels.slice(0, -1).forEach(s2 => { const nn = nodeOf(s2); if (nn) nn.classList.add('sel'); });
+  $('#selcount').textContent = sels.length > 1 ? sels.length + ' öğe' : '';
   if (!sel) {
     $('#hud').textContent = '';
     $('#props').classList.remove('on'); $('#iprops').classList.remove('on');
@@ -419,20 +439,40 @@ function nodeOf(s) {
 }
 
 /* ── tasima ───────────────────────────────────────────────────────── */
+function sameSel(a, b) { return a && b && a.pi === b.pi && a.ei === b.ei; }
+
 function onGrab(ev, pi, ei, node) {
   if (node.isContentEditable) return;
   ev.preventDefault(); ev.stopPropagation();
-  sel = { pi, ei }; markSel();
+  const here = { pi, ei };
+  if (ev.shiftKey) {
+    const i = sels.findIndex(x => sameSel(x, here));
+    if (i >= 0) sels.splice(i, 1); else sels.push(here);
+  } else if (!sels.some(x => sameSel(x, here))) {
+    sels = [here];
+  } else {
+    sels = sels.filter(x => !sameSel(x, here)).concat([here]);  // birincil yap
+  }
+  setCur(pi); markSel();
   const e = model.pages[pi].els[ei];
   if (e.t === 'shade') return;
   push();
+  // Secili her ogenin baslangic yeri: hepsi ayni kadar tasinir.
+  const grp = sels.map(s2 => ({ s: s2, e: model.pages[s2.pi].els[s2.ei] }))
+                  .filter(g => g.e && g.e.t !== 'shade');
+  const start = grp.map(g => ({ x: g.e.x, y: g.e.y }));
   const sx = ev.clientX, sy = ev.clientY, ox = e.x, oy = e.y;
   const move = m => {
     let nx = ox + (m.clientX - sx) / (MM * zoom);
     let ny = oy + (m.clientY - sy) / (MM * zoom);
     if (snap && !m.altKey) { nx = snapX(nx, e, pi); ny = snapY(ny, e, pi); }
-    e.x = nx; e.y = ny;
-    node.style.left = nx + 'mm'; node.style.top = ny + 'mm';
+    const dx = nx - ox, dy = ny - oy;
+    grp.forEach((g, i) => {
+      g.e.x = start[i].x + dx; g.e.y = start[i].y + dy;
+      const nn = nodeOf(g.s);
+      if (nn) { nn.style.left = g.e.x + 'mm'; nn.style.top = g.e.y + 'mm'; }
+      moveTwin(g.s, g.e);
+    });
     positionHandles(e, node);
     $('#hud').textContent = fmt(e);
   };
@@ -477,6 +517,7 @@ function onResize(ev, k) {
       .replace(/left:[^;]+/, `left:${e.x}mm`).replace(/top:[^;]+/, `top:${e.y}mm`)
       .replace(/width:[^;]+/, `width:${e.w}mm`).replace(/height:[^;]+/, `height:${e.h}mm`);
     positionHandles(e, node);
+    moveTwin(sel, e);
     $('#hud').textContent = fmt(e);
   };
   const up = () => {
@@ -677,17 +718,30 @@ $('#tgSnap').onclick = e => { snap = !snap; e.target.classList.toggle('on', snap
 $('#tgGuide').onclick = e => { showGuides = !showGuides; e.target.classList.toggle('on', showGuides); render(); };
 $('#tgMar').onclick = e => { showMar = !showMar; e.target.classList.toggle('on', showMar); render(); };
 $('#del').onclick = () => {
-  if (!sel) return;
-  push(); model.pages[sel.pi].els.splice(sel.ei, 1); sel = null; store(); render();
+  if (!sels.length) return;
+  push();
+  const all = [];
+  sels.forEach(s2 => {
+    all.push(s2);
+    const tw = twinOf(s2);                 // sirtta uzatilmis es de gider
+    if (tw) all.push(tw);
+  });
+  all.sort((a, b) => b.pi - a.pi || b.ei - a.ei).forEach(s2 => {
+    model.pages[s2.pi].els.splice(s2.ei, 1);
+  });
+  sels = []; store(); render();
 };
 $('#dup').onclick = () => {
-  if (!sel) return;
+  if (!sels.length) return;
   push();
-  const e = JSON.parse(JSON.stringify(model.pages[sel.pi].els[sel.ei]));
-  e.x += 6; e.y += 6;
-  model.pages[sel.pi].els.push(e);
-  sel = { pi: sel.pi, ei: model.pages[sel.pi].els.length - 1 };
-  store(); render();
+  const made = [];
+  sels.forEach(s2 => {
+    const e = JSON.parse(JSON.stringify(model.pages[s2.pi].els[s2.ei]));
+    e.x += 6; e.y += 6; delete e.link;
+    model.pages[s2.pi].els.push(e);
+    made.push({ pi: s2.pi, ei: model.pages[s2.pi].els.length - 1 });
+  });
+  sels = made; store(); render();
 };
 $('#fwd').onclick = () => moveZ(1);
 $('#bwd').onclick = () => moveZ(-1);
@@ -707,22 +761,30 @@ $('#redo').onclick = () => {
 };
 
 /* ── 1 · araya sayfa ekleme ve cikarma ─────────────────────────────── */
-$('#addPg').onclick = () => {
-  const at = (sel ? sel.pi : curPage) + 1;
+function addPage(where) {
+  const at = where === 'before' ? curPage : curPage + 1;
   push();
   model.pages.splice(at, 0, { cls: '', fam: 'A', els: [] });
-  sel = null; curPage = at; store(); render();
-  note('Boş sayfa eklendi: ' + (at + 1) + '. sayfa.');
+  sels = []; curPage = at; store(); render();
+  note('Boş sayfa ' + (at + 1) + '. sıraya eklendi.');
   const pg = document.querySelector('.pg[data-pi="' + at + '"]');
   if (pg) pg.scrollIntoView({ block: 'center', behavior: 'smooth' });
-};
+}
+$('#addBefore').onclick = () => addPage('before');
+$('#addAfter').onclick  = () => addPage('after');
 $('#delPg').onclick = () => {
-  const at = sel ? sel.pi : curPage;
   if (model.pages.length < 3) return;
-  if (!confirm((at + 1) + '. sayfa silinsin mi?')) return;
-  push(); model.pages.splice(at, 1);
-  sel = null; curPage = Math.max(0, at - 1); store(); render();
+  if (!confirm((curPage + 1) + '. sayfa, üzerindeki her şeyle silinsin mi?')) return;
+  push(); model.pages.splice(curPage, 1);
+  sels = []; curPage = Math.max(0, curPage - 1); store(); render();
 };
+function setCur(pi) {
+  curPage = pi;
+  document.querySelectorAll('#doc .pg.cur').forEach(x => x.classList.remove('cur'));
+  const pg = document.querySelector('#doc .pg[data-pi="' + pi + '"]');
+  if (pg) pg.classList.add('cur');
+  $('#pgnow').textContent = 'sayfa ' + (pi + 1);
+}
 $('#save').onclick = () => {
   // Bu bir PDF degil: sayfalarin duzeni. Geri yuklenince kaldigin yerden.
   const b = new Blob([JSON.stringify(model)], { type: 'application/json' });
@@ -773,9 +835,9 @@ document.addEventListener('keydown', ev => {
 });
 $('#stage').addEventListener('pointerdown', ev => {
   const pg = ev.target.closest('.pg');
-  if (pg && pg.dataset.pi) curPage = +pg.dataset.pi;
+  if (pg && pg.dataset.pi) setCur(+pg.dataset.pi);
   if (ev.target.closest('.el') || ev.target.closest('.hnd') || ev.target.closest('.guide')) return;
-  sel = null; markSel();
+  if (!ev.shiftKey) { sels = []; markSel(); }
 });
 
 /* ── 4 · yazi bicimi: punto, aile, kalinlik, italik, aralik, renk ─────
@@ -922,6 +984,56 @@ $('#fPct').oninput = ev => {
   e.x = cx - e.w / 2; e.y = cy - e.h / 2;
   round(e); store(); redrawEl(sel.pi, sel.ei);
   $('#fInfo').textContent = Math.round(e.w) + ' × ' + Math.round(e.h) + ' mm';
+};
+
+/* ── yan sayfaya uzatma ───────────────────────────────────────────────
+   Kagitta bir gorsel sirti gecemez: iki ayri yaprak vardir. Serime yayilan
+   bir bant, iki sayfaya konan ayni gorselin birbirini tamamlayan iki
+   yarimidir. Burada da oyle kurulur ve ikisi birbirine baglanir, boylece
+   biri kimildadiginda oteki de kimildar.                               */
+function facing(pi) {
+  if (pi === 0) return -1;                 // kapak tek yapraktir
+  return pi % 2 ? pi + 1 : pi - 1;         // (1,2) (3,4) (5,6) ...
+}
+function twinOf(s2) {
+  const e = model.pages[s2.pi] && model.pages[s2.pi].els[s2.ei];
+  if (!e || !e.link) return null;
+  const f = facing(s2.pi);
+  if (f < 0 || !model.pages[f]) return null;
+  const ei = model.pages[f].els.findIndex(x => x.link === e.link);
+  return ei < 0 ? null : { pi: f, ei: ei };
+}
+function moveTwin(s2, e) {
+  const tw = twinOf(s2);
+  if (!tw) return;
+  const t = model.pages[tw.pi].els[tw.ei];
+  t.x = e.x + (tw.pi > s2.pi ? -PW : PW);
+  t.y = e.y; t.w = e.w; t.h = e.h;
+  const nn = nodeOf(tw);
+  if (nn) {
+    nn.style.left = t.x + 'mm'; nn.style.top = t.y + 'mm';
+    nn.style.width = t.w + 'mm'; nn.style.height = t.h + 'mm';
+  }
+}
+$('#fSpan').onclick = () => {
+  const e = selImg(); if (!e) return;
+  const f = facing(sel.pi);
+  if (f < 0) return note('Kapak tek yapraktır, uzatacak karşı sayfa yok.');
+  if (e.link) return note('Bu görsel zaten karşı sayfaya uzanıyor.');
+  push();
+  const right = f > sel.pi;                // uzatma yonu
+  // Gorsel sirta degmiyorsa once oraya kadar buyutulur, yoksa uzatma
+  // gorunmez: yarimlardan biri bos kalir.
+  const ar = e.w / e.h;
+  if (right && e.x + e.w < PW + 10) { e.w = (PW + 60) - e.x; e.h = e.w / ar; }
+  if (!right && e.x > -10) { const r = e.x + e.w; e.w = r + 60; e.x = r - e.w; e.h = e.w / ar; }
+  const id = 'L' + Math.abs(Math.round(e.x * 7 + e.y * 13 + e.w * 3)) + '-' + sel.ei;
+  e.link = id; round(e);
+  const twin = JSON.parse(JSON.stringify(e));
+  twin.x = e.x + (right ? -PW : PW);
+  model.pages[f].els.push(twin);
+  store(); render();
+  note('Görsel karşı sayfaya uzatıldı — iki yarım birlikte hareket eder.');
 };
 
 /* ── export ───────────────────────────────────────────────────────────
