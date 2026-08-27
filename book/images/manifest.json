@@ -1,0 +1,1715 @@
+{
+"cover-1920.jpg": {
+"src": "/img/full/detail/7famboardgame_detail_3.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/detail/7famboardgame_detail_3.jpg",
+"srcpx": 1800,
+"px": 1800
+},
+"essay-2000.jpg": {
+"src": "/img/full/detail/viperella_detail_1.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/detail/viperella_detail_1.jpg",
+"srcpx": 1440,
+"px": 1440
+},
+"portrait-1216.jpg": {
+"src": "/img/portrait.jpg",
+"box": null,
+"from": "/home/user/yigit/img/portrait.jpg",
+"srcpx": 1400,
+"px": 1216
+},
+"p01-1632.jpg": {
+"src": "/img/full/7-fam-board-game.jpg",
+"box": null,
+"from": "7famboardgame/7fam-board-game.png",
+"srcpx": 4724,
+"px": 1632
+},
+"w01aD-2000.jpg": {
+"src": "/img/full/detail/7famboardgame_detail_2.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/detail/7famboardgame_detail_2.jpg",
+"srcpx": 1800,
+"px": 1800
+},
+"w01ac0-454.jpg": {
+"src": "/img/full/detail/7famboardgame_detail_5.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/detail/7famboardgame_detail_5.jpg",
+"srcpx": 1800,
+"px": 454
+},
+"w01sd-1632.jpg": {
+"src": "/img/full/process/7-fam-board-game-01.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/process/7-fam-board-game-01.jpg",
+"srcpx": 1500,
+"px": 1500
+},
+"w01s3-585.jpg": {
+"src": "/img/full/process/7-fam-board-game-03.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/process/7-fam-board-game-03.jpg",
+"srcpx": 1500,
+"px": 585
+},
+"w01s6-585.jpg": {
+"src": "/img/full/process/7-fam-board-game-06.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/process/7-fam-board-game-06.jpg",
+"srcpx": 1500,
+"px": 585
+},
+"w01s9-585.jpg": {
+"src": "/img/full/process/7-fam-board-game-09.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/process/7-fam-board-game-09.jpg",
+"srcpx": 1500,
+"px": 585
+},
+"w01s12-585.jpg": {
+"src": "/img/full/process/7-fam-board-game-12.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/process/7-fam-board-game-12.jpg",
+"srcpx": 1500,
+"px": 585
+},
+"w01s14-585.jpg": {
+"src": "/img/full/process/7-fam-board-game-14.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/process/7-fam-board-game-14.jpg",
+"srcpx": 1500,
+"px": 585
+},
+"p02-1306.jpg": {
+"src": "/img/full/virgil-on-virtual-cage-final-final-finalv9.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/virgil-on-virtual-cage-final-final-finalv9.jpg",
+"srcpx": 1601,
+"px": 1306
+},
+"w02aD-2000.jpg": {
+"src": "/img/full/detail/virgilonvirtualcage_detail_3.jpg",
+"box": null,
+"from": "virgilonvirtualcage/virgilonvirtualcage_detail_3.png",
+"srcpx": 2657,
+"px": 2000
+},
+"w02as-1487.jpg": {
+"src": "/img/full/detail/virgilonvirtualcage_detail_2.jpg",
+"box": null,
+"from": "virgilonvirtualcage/virgilonvirtualcage_detail_2.png",
+"srcpx": 2657,
+"px": 1487
+},
+"w02aB-3920.jpg": {
+"src": "/img/full/detail/virgilonvirtualcage_detail_7.jpg",
+"box": [
+0.0,
+0.06695529786127345,
+1.0,
+0.3304470213872655
+],
+"from": "virgilonvirtualcage/virgilonvirtualcage_detail_7.png",
+"srcpx": 2657,
+"px": 2657
+},
+"w02a1-800.jpg": {
+"src": "/img/full/detail/virgilonvirtualcage_detail_5.jpg",
+"box": null,
+"from": "virgilonvirtualcage/virgilonvirtualcage_detail_5.png",
+"srcpx": 2657,
+"px": 800
+},
+"w02sd-1632.jpg": {
+"src": "/img/full/process/virgil-on-virtual-cage-final-final-finalv9-02.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/process/virgil-on-virtual-cage-final-final-finalv9-02.jpg",
+"srcpx": 1200,
+"px": 1200
+},
+"w02ssrc-523.jpg": {
+"src": "/img/full/process/virgil-on-virtual-cage-final-final-finalv9-01.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/process/virgil-on-virtual-cage-final-final-finalv9-01.jpg",
+"srcpx": 1200,
+"px": 523
+},
+"w02s9-360.jpg": {
+"src": "/img/full/process/virgil-on-virtual-cage-final-final-finalv9-09.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/process/virgil-on-virtual-cage-final-final-finalv9-09.jpg",
+"srcpx": 1200,
+"px": 360
+},
+"w02s13-360.jpg": {
+"src": "/img/full/process/virgil-on-virtual-cage-final-final-finalv9-13.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/process/virgil-on-virtual-cage-final-final-finalv9-13.jpg",
+"srcpx": 1200,
+"px": 360
+},
+"w02sm-800.jpg": {
+"src": "/img/full/process/virgil-on-virtual-cage-final-final-finalv9-04.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/process/virgil-on-virtual-cage-final-final-finalv9-04.jpg",
+"srcpx": 1200,
+"px": 800
+},
+"p03-1060.jpg": {
+"src": "/img/full/gary-grills-cooper.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/gary-grills-cooper.jpg",
+"srcpx": 1467,
+"px": 1060
+},
+"w03aD-2000.jpg": {
+"src": "/img/full/detail/garlgrillscooper_detail_2.jpg",
+"box": null,
+"from": "garygrillscooper/garlgrillscooper_detail_2.png",
+"srcpx": 2657,
+"px": 2000
+},
+"w03ac0-454.jpg": {
+"src": "/img/full/detail/garlgrillscooper_detail_9.jpg",
+"box": null,
+"from": "garygrillscooper/garlgrillscooper_detail_9.png",
+"srcpx": 2657,
+"px": 454
+},
+"w03ac1-454.jpg": {
+"src": "/img/full/detail/garlgrillscooper_detail_6.jpg",
+"box": null,
+"from": "garygrillscooper/garlgrillscooper_detail_6.png",
+"srcpx": 2657,
+"px": 454
+},
+"w03sstill-880.jpg": {
+"src": "/img/full/process/gary-grills-cooper-01.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/process/gary-grills-cooper-01.jpg",
+"srcpx": 1100,
+"px": 880
+},
+"w03sd-1115.jpg": {
+"src": "/img/full/process/gary-grills-cooper-02.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/process/gary-grills-cooper-02.jpg",
+"srcpx": 1100,
+"px": 1100
+},
+"w03s3-360.jpg": {
+"src": "/img/full/process/gary-grills-cooper-03.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/process/gary-grills-cooper-03.jpg",
+"srcpx": 1100,
+"px": 360
+},
+"w03s6-360.jpg": {
+"src": "/img/full/process/gary-grills-cooper-06.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/process/gary-grills-cooper-06.jpg",
+"srcpx": 1100,
+"px": 360
+},
+"w03s8-360.jpg": {
+"src": "/img/full/process/gary-grills-cooper-08.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/process/gary-grills-cooper-08.jpg",
+"srcpx": 1100,
+"px": 360
+},
+"w03s12-360.jpg": {
+"src": "/img/full/process/gary-grills-cooper-12.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/process/gary-grills-cooper-12.jpg",
+"srcpx": 1100,
+"px": 360
+},
+"w04sk-480.jpg": {
+"src": "/img/full/process/walls-of-perception-01.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/process/walls-of-perception-01.jpg",
+"srcpx": 1200,
+"px": 480
+},
+"p04-1006.jpg": {
+"src": "/img/full/walls-of-perception.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/walls-of-perception.jpg",
+"srcpx": 1429,
+"px": 1006
+},
+"w04sD-2000.jpg": {
+"src": "/img/full/detail/wallofperception_detail_1.jpg",
+"box": null,
+"from": "wallsofperception/wallofperception_detail_1.png",
+"srcpx": 2551,
+"px": 2000
+},
+"w04s3-523.jpg": {
+"src": "/img/full/process/walls-of-perception-03.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/process/walls-of-perception-03.jpg",
+"srcpx": 1200,
+"px": 523
+},
+"w04s4-523.jpg": {
+"src": "/img/full/process/walls-of-perception-04.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/process/walls-of-perception-04.jpg",
+"srcpx": 1200,
+"px": 523
+},
+"w04s5-523.jpg": {
+"src": "/img/full/process/walls-of-perception-05.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/process/walls-of-perception-05.jpg",
+"srcpx": 1200,
+"px": 523
+},
+"p05-1483.jpg": {
+"src": "/img/full/articulo-attack-on-mandarin.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/articulo-attack-on-mandarin.jpg",
+"srcpx": 2000,
+"px": 1483
+},
+"w05aB-3920.jpg": {
+"src": "/img/full/detail/arcitul0_detail_1.jpg",
+"box": [
+0.0,
+0.23425677848033438,
+1.0,
+0.3306949186276161
+],
+"from": "articuloattackonmandarin/arcitul0_detail_1.png",
+"srcpx": 2126,
+"px": 2126
+},
+"w05a1-800.jpg": {
+"src": "/img/full/detail/arcitul0_detail_5.jpg",
+"box": null,
+"from": "articuloattackonmandarin/arcitul0_detail_5.png",
+"srcpx": 2126,
+"px": 800
+},
+"w05sd-1632.jpg": {
+"src": "/img/full/process/articulo-attack-on-mandarin-01.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/process/articulo-attack-on-mandarin-01.jpg",
+"srcpx": 1890,
+"px": 1632
+},
+"w05s2-384.jpg": {
+"src": "/img/full/process/articulo-attack-on-mandarin-02.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/process/articulo-attack-on-mandarin-02.jpg",
+"srcpx": 1890,
+"px": 384
+},
+"w05s3-384.jpg": {
+"src": "/img/full/process/articulo-attack-on-mandarin-03.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/process/articulo-attack-on-mandarin-03.jpg",
+"srcpx": 1890,
+"px": 384
+},
+"w05s4-384.jpg": {
+"src": "/img/full/process/articulo-attack-on-mandarin-04.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/process/articulo-attack-on-mandarin-04.jpg",
+"srcpx": 1890,
+"px": 384
+},
+"w05s5-384.jpg": {
+"src": "/img/full/process/articulo-attack-on-mandarin-05.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/process/articulo-attack-on-mandarin-05.jpg",
+"srcpx": 1890,
+"px": 384
+},
+"p06-1060.jpg": {
+"src": "/img/full/s-t-lop.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/s-t-lop.jpg",
+"srcpx": 1465,
+"px": 1060
+},
+"w06aD-2000.jpg": {
+"src": "/img/full/detail/stlop_detail_1.jpg",
+"box": null,
+"from": "stlop/stlop_detail_1.png",
+"srcpx": 2268,
+"px": 2000
+},
+"w06an-384.jpg": {
+"src": "/img/full/s-t-lop.jpg",
+"box": [
+0.7,
+0.02,
+0.26,
+0.96
+],
+"from": "/home/user/yigit/img/full/s-t-lop.jpg",
+"srcpx": 1465,
+"px": 381
+},
+"p07-1632.jpg": {
+"src": "/img/full/penguin-is-not-a-friend-only-a-sinner.jpg",
+"box": [
+0.0536,
+0.1243,
+0.8931,
+0.7866
+],
+"from": "/home/user/yigit/img/full/penguin-is-not-a-friend-only-a-sinner.jpg",
+"srcpx": 1761,
+"px": 1573
+},
+"p08-1100.jpg": {
+"src": "/img/full/ciao-capo-sono-squalo.jpg",
+"box": [
+0.1851,
+0.1243,
+0.6306,
+0.7866
+],
+"from": "/home/user/yigit/img/full/ciao-capo-sono-squalo.jpg",
+"srcpx": 1761,
+"px": 1100
+},
+"w08aD-2000.jpg": {
+"src": "/img/full/detail/ciaocapo_detail_1.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/detail/ciaocapo_detail_1.jpg",
+"srcpx": 1064,
+"px": 1064
+},
+"w08af0-768.jpg": {
+"src": "/img/full/detail/ciaocapo_detail_2.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/detail/ciaocapo_detail_2.jpg",
+"srcpx": 1440,
+"px": 768
+},
+"w08af1-544.jpg": {
+"src": "/img/full/detail/ciaocapo_detail_3.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/detail/ciaocapo_detail_3.jpg",
+"srcpx": 1440,
+"px": 544
+},
+"w08v0-1216.jpg": {
+"src": "/img/full/detail/ciaocapo_detail_8.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/detail/ciaocapo_detail_8.jpg",
+"srcpx": 1271,
+"px": 1216
+},
+"w08v1-800.jpg": {
+"src": "/img/full/detail/ciaocapo_detail_6.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/detail/ciaocapo_detail_6.jpg",
+"srcpx": 1271,
+"px": 800
+},
+"w08v2-523.jpg": {
+"src": "/img/full/detail/ciaocapo_detail_7.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/detail/ciaocapo_detail_7.jpg",
+"srcpx": 1271,
+"px": 523
+},
+"p09-1485.jpg": {
+"src": "/img/full/cellular-spleens.jpg",
+"box": [
+0.1274,
+0.1243,
+0.7448,
+0.7866
+],
+"from": "/home/user/yigit/img/full/cellular-spleens.jpg",
+"srcpx": 1761,
+"px": 1311
+},
+"w09aD-2000.jpg": {
+"src": "/img/full/detail/cellularspleens_detail_1.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/detail/cellularspleens_detail_1.jpg",
+"srcpx": 1440,
+"px": 1440
+},
+"w09ad0-800.jpg": {
+"src": "/img/full/detail/cellularspleens_detail_4.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/detail/cellularspleens_detail_4.jpg",
+"srcpx": 1440,
+"px": 800
+},
+"w09ad1-800.jpg": {
+"src": "/img/full/detail/cellularspleens_detail_3.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/detail/cellularspleens_detail_3.jpg",
+"srcpx": 1440,
+"px": 800
+},
+"p10k-794.jpg": {
+"src": "/img/full/cute-but-unemployed-cartoon-figure.jpg",
+"box": [
+0.179,
+0.1243,
+0.6415,
+0.7866
+],
+"from": "/home/user/yigit/img/full/cute-but-unemployed-cartoon-figure.jpg",
+"srcpx": 1761,
+"px": 794
+},
+"p11-1124.jpg": {
+"src": "/img/full/the-family-dinner-after-a-night-in-jail.jpg",
+"box": [
+0.177,
+0.1243,
+0.6448,
+0.7866
+],
+"from": "/home/user/yigit/img/full/the-family-dinner-after-a-night-in-jail.jpg",
+"srcpx": 1761,
+"px": 1124
+},
+"p12-1097.jpg": {
+"src": "/img/full/caprocorn-sister-war-plague-earthquake.jpg",
+"box": [
+0.1851,
+0.1243,
+0.629,
+0.7866
+],
+"from": "/home/user/yigit/img/full/caprocorn-sister-war-plague-earthquake.jpg",
+"srcpx": 1761,
+"px": 1097
+},
+"w12wla-1960.jpg": {
+"src": "/img/full/detail/capricorn_detail_3.jpg",
+"box": null,
+"from": "capricorn/capricorn_detail_3.jpg",
+"srcpx": 3024,
+"px": 1960
+},
+"w12wlb-1960.jpg": {
+"src": "/img/full/detail/capricorn_detail_4.jpg",
+"box": null,
+"from": "capricorn/capricorn_detail_4.jpg",
+"srcpx": 3024,
+"px": 1960
+},
+"p13-1483.jpg": {
+"src": "/img/full/baby-rights-101.jpg",
+"box": [
+0.0536,
+0.2475,
+0.8931,
+0.5426
+],
+"from": "/home/user/yigit/img/full/baby-rights-101.jpg",
+"srcpx": 1761,
+"px": 1483
+},
+"p14-1122.jpg": {
+"src": "/img/full/when-the-darkness-surrounds-be-among-those-who-burn-the-great-fire.jpg",
+"box": [
+0.1782,
+0.1243,
+0.6431,
+0.7866
+],
+"from": "/home/user/yigit/img/full/when-the-darkness-surrounds-be-among-those-who-burn-the-great-fire.jpg",
+"srcpx": 1761,
+"px": 1122
+},
+"w14pz-360.jpg": {
+"src": "/img/full/detail/greatfire_detail_2.jpg",
+"box": null,
+"from": "greatfire/greatfire_detail_2.jpg",
+"srcpx": 3024,
+"px": 360
+},
+"w15sig-504.jpg": {
+"src": "/img/full/detail/viperella_detail_8.jpg",
+"box": null,
+"from": "viperella/viperella_detail_8.jpg",
+"srcpx": 1536,
+"px": 504
+},
+"p15-998.jpg": {
+"src": "/img/full/viperella.jpg",
+"box": [
+0.1831,
+0.1243,
+0.6327,
+0.7866
+],
+"from": "/home/user/yigit/img/full/viperella.jpg",
+"srcpx": 1761,
+"px": 998
+},
+"w15ac0-576.jpg": {
+"src": "/img/full/detail/viperella_detail_5.jpg",
+"box": null,
+"from": "viperella/viperella_detail_5.JPEG",
+"srcpx": 1536,
+"px": 576
+},
+"w15ac1-704.jpg": {
+"src": "/img/full/detail/viperella_detail_3.jpg",
+"box": null,
+"from": "viperella/viperella_detail_3.jpg",
+"srcpx": 1536,
+"px": 704
+},
+"w15ac2-944.jpg": {
+"src": "/img/full/detail/viperella_detail_2.jpg",
+"box": null,
+"from": "viperella/viperella_detail_2.JPEG",
+"srcpx": 1536,
+"px": 944
+},
+"p17k-674.jpg": {
+"src": "/img/full/the-on-top-ruler.jpg",
+"box": [
+0.1782,
+0.1243,
+0.6431,
+0.7866
+],
+"from": "/home/user/yigit/img/full/the-on-top-ruler.jpg",
+"srcpx": 1761,
+"px": 674
+},
+"p16-940.jpg": {
+"src": "/img/full/bacchus-2.jpg",
+"box": [
+0.1847,
+0.1243,
+0.6315,
+0.7866
+],
+"from": "/home/user/yigit/img/full/bacchus-2.jpg",
+"srcpx": 1761,
+"px": 940
+},
+"w18v-523.jpg": {
+"src": "/img/full/study/sinoverblacmatter-v1.jpg",
+"box": null,
+"from": "sinoverblacmatter-v1.jpg",
+"srcpx": 2144,
+"px": 523
+},
+"p18-1372.jpg": {
+"src": "/img/full/sin-over-black-matter.jpg",
+"box": [
+0.0536,
+0.2358,
+0.8931,
+0.5639
+],
+"from": "/home/user/yigit/img/full/sin-over-black-matter.jpg",
+"srcpx": 1761,
+"px": 1372
+},
+"p19-1372.jpg": {
+"src": "/img/full/the-assassination-of-the-crow.jpg",
+"box": [
+0.0536,
+0.2386,
+0.8931,
+0.5575
+],
+"from": "/home/user/yigit/img/full/the-assassination-of-the-crow.jpg",
+"srcpx": 1761,
+"px": 1372
+},
+"w19aC-1555.jpg": {
+"src": "/img/full/the-assassination-of-the-crow.jpg",
+"box": [
+0.089324,
+0.31665,
+0.392964,
+0.462725
+],
+"from": "/home/user/yigit/img/full/the-assassination-of-the-crow.jpg",
+"srcpx": 1761,
+"px": 692
+},
+"p20-1520.jpg": {
+"src": "/img/full/despite-transgression.jpg",
+"box": [
+0.173,
+0.1243,
+0.6528,
+0.7866
+],
+"from": "/home/user/yigit/img/full/despite-transgression.jpg",
+"srcpx": 1761,
+"px": 1150
+},
+"p21-1119.jpg": {
+"src": "/img/full/duality-of-the-angelic-summarization.jpg",
+"box": [
+0.179,
+0.1243,
+0.6415,
+0.7866
+],
+"from": "/home/user/yigit/img/full/duality-of-the-angelic-summarization.jpg",
+"srcpx": 1761,
+"px": 1119
+},
+"p22k-974.jpg": {
+"src": "/img/full/victim-psycho-logique-ii-the-peachy-pharaoh-connects-with-the-chair.jpg",
+"box": [
+0.0536,
+0.2358,
+0.8931,
+0.5639
+],
+"from": "/home/user/yigit/img/full/victim-psycho-logique-ii-the-peachy-pharaoh-connects-with-the-chair.jpg",
+"srcpx": 1761,
+"px": 974
+},
+"p23-1372.jpg": {
+"src": "/img/full/guarding-holy-mountains-from-malice.jpg",
+"box": [
+0.0536,
+0.2262,
+0.8931,
+0.5778
+],
+"from": "/home/user/yigit/img/full/guarding-holy-mountains-from-malice.jpg",
+"srcpx": 1761,
+"px": 1372
+},
+"p24-1136.jpg": {
+"src": "/img/full/good-people-helping-bad-ones-thats-why-theyre-bad-too.jpg",
+"box": [
+0.1883,
+0.1243,
+0.6218,
+0.7866
+],
+"from": "/home/user/yigit/img/full/good-people-helping-bad-ones-thats-why-theyre-bad-too.jpg",
+"srcpx": 1761,
+"px": 1095
+},
+"w24st-1226.jpg": {
+"src": "/img/full/study/goodppl-v1.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/study/goodppl-v1.jpg",
+"srcpx": 1679,
+"px": 1226
+},
+"w24sa0-1002.jpg": {
+"src": "/img/full/good-people-helping-bad-ones-thats-why-theyre-bad-too.jpg",
+"box": [
+0.200736,
+0.1243,
+0.34199,
+0.35397
+],
+"from": "/home/user/yigit/img/full/good-people-helping-bad-ones-thats-why-theyre-bad-too.jpg",
+"srcpx": 1761,
+"px": 602
+},
+"p25k-826.jpg": {
+"src": "/img/full/amor-cathedra.jpg",
+"box": [
+0.1823,
+0.1243,
+0.6367,
+0.7866
+],
+"from": "/home/user/yigit/img/full/amor-cathedra.jpg",
+"srcpx": 1761,
+"px": 826
+},
+"p26-1409.jpg": {
+"src": "/img/full/burningman-fast.jpg",
+"box": [
+0.0536,
+0.2333,
+0.8931,
+0.5707
+],
+"from": "/home/user/yigit/img/full/burningman-fast.jpg",
+"srcpx": 1761,
+"px": 1409
+},
+"p27-1099.jpg": {
+"src": "/img/full/il-sbagliato-di-rompipalle.jpg",
+"box": [
+0.1851,
+0.1243,
+0.6302,
+0.7866
+],
+"from": "/home/user/yigit/img/full/il-sbagliato-di-rompipalle.jpg",
+"srcpx": 1761,
+"px": 1099
+},
+"w27aD-2000.jpg": {
+"src": "/img/full/detail/rompi_detail_1.jpg",
+"box": null,
+"from": "rompi/rompi_detail_1.jpg",
+"srcpx": 3024,
+"px": 2000
+},
+"w27a0-800.jpg": {
+"src": "/img/full/il-sbagliato-di-rompipalle.jpg",
+"box": [
+0.1851,
+0.17149599999999998,
+0.226872,
+0.31464000000000003
+],
+"from": "/home/user/yigit/img/full/il-sbagliato-di-rompipalle.jpg",
+"srcpx": 1761,
+"px": 400
+},
+"p28-1229.jpg": {
+"src": "/img/full/morbid-forebodings-triggered-by-childish-landscape.jpg",
+"box": [
+0.129,
+0.1243,
+0.7399,
+0.7866
+],
+"from": "/home/user/yigit/img/full/morbid-forebodings-triggered-by-childish-landscape.jpg",
+"srcpx": 1761,
+"px": 1229
+},
+"p29-1115.jpg": {
+"src": "/img/full/wings-of-abyss.jpg",
+"box": [
+0.1802,
+0.1243,
+0.6395,
+0.7866
+],
+"from": "/home/user/yigit/img/full/wings-of-abyss.jpg",
+"srcpx": 1761,
+"px": 1115
+},
+"w29pz-1216.jpg": {
+"src": "/img/full/study/wingsofabbyss-v1.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/study/wingsofabbyss-v1.jpg",
+"srcpx": 1791,
+"px": 1216
+},
+"p31k-654.jpg": {
+"src": "/img/full/society-screwing-balance.jpg",
+"box": [
+0.1903,
+0.1243,
+0.619,
+0.7866
+],
+"from": "/home/user/yigit/img/full/society-screwing-balance.jpg",
+"srcpx": 1761,
+"px": 654
+},
+"w31st-377.jpg": {
+"src": "/img/full/study/societyscrewingbalance-v1.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/study/societyscrewingbalance-v1.jpg",
+"srcpx": 1626,
+"px": 377
+},
+"p30-1330.jpg": {
+"src": "/img/full/see-u-in-the-other-side.jpg",
+"box": [
+0.0536,
+0.2418,
+0.8931,
+0.5476
+],
+"from": "/home/user/yigit/img/full/see-u-in-the-other-side.jpg",
+"srcpx": 1761,
+"px": 1330
+},
+"p32k-974.jpg": {
+"src": "/img/full/how-to-materialize-your-loneliness-by-using-an-animal-in-somewhere-concrete-or-technologic.jpg",
+"box": [
+0.0536,
+0.2287,
+0.8931,
+0.5771
+],
+"from": "/home/user/yigit/img/full/how-to-materialize-your-loneliness-by-using-an-animal-in-somewhere-concrete-or-technologic.jpg",
+"srcpx": 1761,
+"px": 974
+},
+"p33-1372.jpg": {
+"src": "/img/full/century-of-0-1-transhumanism.jpg",
+"box": [
+0.0536,
+0.2298,
+0.8931,
+0.5714
+],
+"from": "/home/user/yigit/img/full/century-of-0-1-transhumanism.jpg",
+"srcpx": 1761,
+"px": 1372
+},
+"p34-1372.jpg": {
+"src": "/img/full/remixed-execution-of-lucid-drowning.jpg",
+"box": [
+0.0536,
+0.2262,
+0.8931,
+0.5778
+],
+"from": "/home/user/yigit/img/full/remixed-execution-of-lucid-drowning.jpg",
+"srcpx": 1761,
+"px": 1372
+},
+"w34st-1632.jpg": {
+"src": "/img/full/study/luciddrowning-v1.jpg",
+"box": null,
+"from": "luciddrowning-v1.png",
+"srcpx": 2213,
+"px": 1632
+},
+"w34sa0-1268.jpg": {
+"src": "/img/full/study/lucid-drowning-v2.jpg",
+"box": [
+0.053,
+0.2259,
+0.8935,
+0.5777
+],
+"from": "lucid-drowning-v2.png",
+"srcpx": 2480,
+"px": 1268
+},
+"p35-1372.jpg": {
+"src": "/img/full/two-woman-figures-sitting-at-the-back-of-the-canvas.jpg",
+"box": [
+0.0536,
+0.2596,
+0.8931,
+0.5288
+],
+"from": "/home/user/yigit/img/full/two-woman-figures-sitting-at-the-back-of-the-canvas.jpg",
+"srcpx": 1761,
+"px": 1372
+},
+"ix01-360.jpg": {
+"src": "/img/full/7-fam-board-game.jpg",
+"box": null,
+"from": "7famboardgame/7fam-board-game.png",
+"srcpx": 4724,
+"px": 360
+},
+"ix02-360.jpg": {
+"src": "/img/full/virgil-on-virtual-cage-final-final-finalv9.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/virgil-on-virtual-cage-final-final-finalv9.jpg",
+"srcpx": 1601,
+"px": 360
+},
+"ix03-360.jpg": {
+"src": "/img/full/gary-grills-cooper.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/gary-grills-cooper.jpg",
+"srcpx": 1467,
+"px": 360
+},
+"ix04-360.jpg": {
+"src": "/img/full/walls-of-perception.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/walls-of-perception.jpg",
+"srcpx": 1429,
+"px": 360
+},
+"ix05-360.jpg": {
+"src": "/img/full/articulo-attack-on-mandarin.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/articulo-attack-on-mandarin.jpg",
+"srcpx": 2000,
+"px": 360
+},
+"ix06-360.jpg": {
+"src": "/img/full/s-t-lop.jpg",
+"box": null,
+"from": "/home/user/yigit/img/full/s-t-lop.jpg",
+"srcpx": 1465,
+"px": 360
+},
+"ix07-360.jpg": {
+"src": "/img/full/penguin-is-not-a-friend-only-a-sinner.jpg",
+"box": [
+0.0536,
+0.1243,
+0.8931,
+0.7866
+],
+"from": "/home/user/yigit/img/full/penguin-is-not-a-friend-only-a-sinner.jpg",
+"srcpx": 1761,
+"px": 360
+},
+"ix08-360.jpg": {
+"src": "/img/full/ciao-capo-sono-squalo.jpg",
+"box": [
+0.1851,
+0.1243,
+0.6306,
+0.7866
+],
+"from": "/home/user/yigit/img/full/ciao-capo-sono-squalo.jpg",
+"srcpx": 1761,
+"px": 360
+},
+"ix09-360.jpg": {
+"src": "/img/full/cellular-spleens.jpg",
+"box": [
+0.1274,
+0.1243,
+0.7448,
+0.7866
+],
+"from": "/home/user/yigit/img/full/cellular-spleens.jpg",
+"srcpx": 1761,
+"px": 360
+},
+"ix10-360.jpg": {
+"src": "/img/full/cute-but-unemployed-cartoon-figure.jpg",
+"box": [
+0.179,
+0.1243,
+0.6415,
+0.7866
+],
+"from": "/home/user/yigit/img/full/cute-but-unemployed-cartoon-figure.jpg",
+"srcpx": 1761,
+"px": 360
+},
+"ix11-360.jpg": {
+"src": "/img/full/the-family-dinner-after-a-night-in-jail.jpg",
+"box": [
+0.177,
+0.1243,
+0.6448,
+0.7866
+],
+"from": "/home/user/yigit/img/full/the-family-dinner-after-a-night-in-jail.jpg",
+"srcpx": 1761,
+"px": 360
+},
+"ix12-360.jpg": {
+"src": "/img/full/caprocorn-sister-war-plague-earthquake.jpg",
+"box": [
+0.1851,
+0.1243,
+0.629,
+0.7866
+],
+"from": "/home/user/yigit/img/full/caprocorn-sister-war-plague-earthquake.jpg",
+"srcpx": 1761,
+"px": 360
+},
+"ix13-360.jpg": {
+"src": "/img/full/baby-rights-101.jpg",
+"box": [
+0.0536,
+0.2475,
+0.8931,
+0.5426
+],
+"from": "/home/user/yigit/img/full/baby-rights-101.jpg",
+"srcpx": 1761,
+"px": 360
+},
+"ix14-360.jpg": {
+"src": "/img/full/when-the-darkness-surrounds-be-among-those-who-burn-the-great-fire.jpg",
+"box": [
+0.1782,
+0.1243,
+0.6431,
+0.7866
+],
+"from": "/home/user/yigit/img/full/when-the-darkness-surrounds-be-among-those-who-burn-the-great-fire.jpg",
+"srcpx": 1761,
+"px": 360
+},
+"ix15-360.jpg": {
+"src": "/img/full/viperella.jpg",
+"box": [
+0.1831,
+0.1243,
+0.6327,
+0.7866
+],
+"from": "/home/user/yigit/img/full/viperella.jpg",
+"srcpx": 1761,
+"px": 360
+},
+"ix16-360.jpg": {
+"src": "/img/full/bacchus-2.jpg",
+"box": [
+0.1847,
+0.1243,
+0.6315,
+0.7866
+],
+"from": "/home/user/yigit/img/full/bacchus-2.jpg",
+"srcpx": 1761,
+"px": 360
+},
+"ix17-360.jpg": {
+"src": "/img/full/the-on-top-ruler.jpg",
+"box": [
+0.1782,
+0.1243,
+0.6431,
+0.7866
+],
+"from": "/home/user/yigit/img/full/the-on-top-ruler.jpg",
+"srcpx": 1761,
+"px": 360
+},
+"ix18-360.jpg": {
+"src": "/img/full/sin-over-black-matter.jpg",
+"box": [
+0.0536,
+0.2358,
+0.8931,
+0.5639
+],
+"from": "/home/user/yigit/img/full/sin-over-black-matter.jpg",
+"srcpx": 1761,
+"px": 360
+},
+"ix19-360.jpg": {
+"src": "/img/full/the-assassination-of-the-crow.jpg",
+"box": [
+0.0536,
+0.2386,
+0.8931,
+0.5575
+],
+"from": "/home/user/yigit/img/full/the-assassination-of-the-crow.jpg",
+"srcpx": 1761,
+"px": 360
+},
+"ix20-360.jpg": {
+"src": "/img/full/despite-transgression.jpg",
+"box": [
+0.173,
+0.1243,
+0.6528,
+0.7866
+],
+"from": "/home/user/yigit/img/full/despite-transgression.jpg",
+"srcpx": 1761,
+"px": 360
+},
+"ix21-360.jpg": {
+"src": "/img/full/duality-of-the-angelic-summarization.jpg",
+"box": [
+0.179,
+0.1243,
+0.6415,
+0.7866
+],
+"from": "/home/user/yigit/img/full/duality-of-the-angelic-summarization.jpg",
+"srcpx": 1761,
+"px": 360
+},
+"ix22-360.jpg": {
+"src": "/img/full/victim-psycho-logique-ii-the-peachy-pharaoh-connects-with-the-chair.jpg",
+"box": [
+0.0536,
+0.2358,
+0.8931,
+0.5639
+],
+"from": "/home/user/yigit/img/full/victim-psycho-logique-ii-the-peachy-pharaoh-connects-with-the-chair.jpg",
+"srcpx": 1761,
+"px": 360
+},
+"ix23-360.jpg": {
+"src": "/img/full/guarding-holy-mountains-from-malice.jpg",
+"box": [
+0.0536,
+0.2262,
+0.8931,
+0.5778
+],
+"from": "/home/user/yigit/img/full/guarding-holy-mountains-from-malice.jpg",
+"srcpx": 1761,
+"px": 360
+},
+"ix24-360.jpg": {
+"src": "/img/full/good-people-helping-bad-ones-thats-why-theyre-bad-too.jpg",
+"box": [
+0.1883,
+0.1243,
+0.6218,
+0.7866
+],
+"from": "/home/user/yigit/img/full/good-people-helping-bad-ones-thats-why-theyre-bad-too.jpg",
+"srcpx": 1761,
+"px": 360
+},
+"ix25-360.jpg": {
+"src": "/img/full/amor-cathedra.jpg",
+"box": [
+0.1823,
+0.1243,
+0.6367,
+0.7866
+],
+"from": "/home/user/yigit/img/full/amor-cathedra.jpg",
+"srcpx": 1761,
+"px": 360
+},
+"ix26-360.jpg": {
+"src": "/img/full/burningman-fast.jpg",
+"box": [
+0.0536,
+0.2333,
+0.8931,
+0.5707
+],
+"from": "/home/user/yigit/img/full/burningman-fast.jpg",
+"srcpx": 1761,
+"px": 360
+},
+"ix27-360.jpg": {
+"src": "/img/full/il-sbagliato-di-rompipalle.jpg",
+"box": [
+0.1851,
+0.1243,
+0.6302,
+0.7866
+],
+"from": "/home/user/yigit/img/full/il-sbagliato-di-rompipalle.jpg",
+"srcpx": 1761,
+"px": 360
+},
+"ix28-360.jpg": {
+"src": "/img/full/morbid-forebodings-triggered-by-childish-landscape.jpg",
+"box": [
+0.129,
+0.1243,
+0.7399,
+0.7866
+],
+"from": "/home/user/yigit/img/full/morbid-forebodings-triggered-by-childish-landscape.jpg",
+"srcpx": 1761,
+"px": 360
+},
+"ix29-360.jpg": {
+"src": "/img/full/wings-of-abyss.jpg",
+"box": [
+0.1802,
+0.1243,
+0.6395,
+0.7866
+],
+"from": "/home/user/yigit/img/full/wings-of-abyss.jpg",
+"srcpx": 1761,
+"px": 360
+},
+"ix30-360.jpg": {
+"src": "/img/full/see-u-in-the-other-side.jpg",
+"box": [
+0.0536,
+0.2418,
+0.8931,
+0.5476
+],
+"from": "/home/user/yigit/img/full/see-u-in-the-other-side.jpg",
+"srcpx": 1761,
+"px": 360
+},
+"ix31-360.jpg": {
+"src": "/img/full/society-screwing-balance.jpg",
+"box": [
+0.1903,
+0.1243,
+0.619,
+0.7866
+],
+"from": "/home/user/yigit/img/full/society-screwing-balance.jpg",
+"srcpx": 1761,
+"px": 360
+},
+"ix32-360.jpg": {
+"src": "/img/full/how-to-materialize-your-loneliness-by-using-an-animal-in-somewhere-concrete-or-technologic.jpg",
+"box": [
+0.0536,
+0.2287,
+0.8931,
+0.5771
+],
+"from": "/home/user/yigit/img/full/how-to-materialize-your-loneliness-by-using-an-animal-in-somewhere-concrete-or-technologic.jpg",
+"srcpx": 1761,
+"px": 360
+},
+"ix33-360.jpg": {
+"src": "/img/full/century-of-0-1-transhumanism.jpg",
+"box": [
+0.0536,
+0.2298,
+0.8931,
+0.5714
+],
+"from": "/home/user/yigit/img/full/century-of-0-1-transhumanism.jpg",
+"srcpx": 1761,
+"px": 360
+},
+"ix34-360.jpg": {
+"src": "/img/full/remixed-execution-of-lucid-drowning.jpg",
+"box": [
+0.0536,
+0.2262,
+0.8931,
+0.5778
+],
+"from": "/home/user/yigit/img/full/remixed-execution-of-lucid-drowning.jpg",
+"srcpx": 1761,
+"px": 360
+},
+"ix35-360.jpg": {
+"src": "/img/full/two-woman-figures-sitting-at-the-back-of-the-canvas.jpg",
+"box": [
+0.0536,
+0.2596,
+0.8931,
+0.5288
+],
+"from": "/home/user/yigit/img/full/two-woman-figures-sitting-at-the-back-of-the-canvas.jpg",
+"srcpx": 1761,
+"px": 360
+},
+"recur-open-2000.jpg": {
+"src": "/img/full/7-fam-board-game.jpg",
+"box": [
+0.42,
+0.52,
+0.46,
+0.34
+],
+"from": "7famboardgame/7fam-board-game.png",
+"srcpx": 4724,
+"px": 2000
+},
+"mon31r-523.jpg": {
+"src": "/img/full/society-screwing-balance.jpg",
+"box": [
+0.45028,
+0.5962599999999999,
+0.29712,
+0.267444
+],
+"from": "/home/user/yigit/img/full/society-screwing-balance.jpg",
+"srcpx": 1761,
+"px": 523
+},
+"mon20g-624.jpg": {
+"src": "/img/full/despite-transgression.jpg",
+"box": [
+0.512456,
+0.20296,
+0.22195200000000004,
+0.23597999999999997
+],
+"from": "/home/user/yigit/img/full/despite-transgression.jpg",
+"srcpx": 1761,
+"px": 391
+},
+"mon22g-432.jpg": {
+"src": "/img/full/victim-psycho-logique-ii-the-peachy-pharaoh-connects-with-the-chair.jpg",
+"box": [
+0.062531,
+0.252717,
+0.232206,
+0.191726
+],
+"from": "/home/user/yigit/img/full/victim-psycho-logique-ii-the-peachy-pharaoh-connects-with-the-chair.jpg",
+"srcpx": 1761,
+"px": 409
+},
+"mon23g-496.jpg": {
+"src": "/img/full/guarding-holy-mountains-from-malice.jpg",
+"box": [
+0.44656399999999996,
+0.5613239999999999,
+0.375102,
+0.184896
+],
+"from": "/home/user/yigit/img/full/guarding-holy-mountains-from-malice.jpg",
+"srcpx": 1761,
+"px": 496
+},
+"mon24d-1216.jpg": {
+"src": "/img/full/good-people-helping-bad-ones-thats-why-theyre-bad-too.jpg",
+"box": [
+0.225608,
+0.6749199999999999,
+0.534748,
+0.220248
+],
+"from": "/home/user/yigit/img/full/good-people-helping-bad-ones-thats-why-theyre-bad-too.jpg",
+"srcpx": 1761,
+"px": 941
+},
+"mon05g-432.jpg": {
+"src": "/img/full/articulo-attack-on-mandarin.jpg",
+"box": [
+0.3,
+0.5,
+0.55,
+0.28
+],
+"from": "/home/user/yigit/img/full/articulo-attack-on-mandarin.jpg",
+"srcpx": 2000,
+"px": 432
+},
+"mon29g-434.jpg": {
+"src": "/img/full/wings-of-abyss.jpg",
+"box": [
+0.186595,
+0.218692,
+0.19185,
+0.298908
+],
+"from": "/home/user/yigit/img/full/wings-of-abyss.jpg",
+"srcpx": 1761,
+"px": 338
+},
+"mon01g-384.jpg": {
+"src": "/img/full/7-fam-board-game.jpg",
+"box": [
+0.305,
+0.43500000000000005,
+0.6900000000000001,
+0.51
+],
+"from": "7famboardgame/7fam-board-game.png",
+"srcpx": 4724,
+"px": 384
+},
+"mch35b-560.jpg": {
+"src": "/img/full/two-woman-figures-sitting-at-the-back-of-the-canvas.jpg",
+"box": [
+0.14291,
+0.534576,
+0.26793,
+0.23267200000000002
+],
+"from": "/home/user/yigit/img/full/two-woman-figures-sitting-at-the-back-of-the-canvas.jpg",
+"srcpx": 1761,
+"px": 472
+},
+"mch22a-384.jpg": {
+"src": "/img/full/victim-psycho-logique-ii-the-peachy-pharaoh-connects-with-the-chair.jpg",
+"box": [
+0.67877,
+0.39369200000000004,
+0.250068,
+0.24811599999999998
+],
+"from": "/home/user/yigit/img/full/victim-psycho-logique-ii-the-peachy-pharaoh-connects-with-the-chair.jpg",
+"srcpx": 1761,
+"px": 384
+},
+"mch02c-832.jpg": {
+"src": "/img/full/virgil-on-virtual-cage-final-final-finalv9.jpg",
+"box": [
+0.09,
+0.11,
+0.19,
+0.16
+],
+"from": "/home/user/yigit/img/full/virgil-on-virtual-cage-final-final-finalv9.jpg",
+"srcpx": 1601,
+"px": 304
+},
+"mch23d-384.jpg": {
+"src": "/img/full/guarding-holy-mountains-from-malice.jpg",
+"box": [
+0.42870199999999997,
+0.23775600000000002,
+0.26793,
+0.161784
+],
+"from": "/home/user/yigit/img/full/guarding-holy-mountains-from-malice.jpg",
+"srcpx": 1761,
+"px": 384
+},
+"mcr19-1216.jpg": {
+"src": "/img/full/the-assassination-of-the-crow.jpg",
+"box": [
+0.50015,
+0.27205,
+0.428688,
+0.47945
+],
+"from": "/home/user/yigit/img/full/the-assassination-of-the-crow.jpg",
+"srcpx": 1761,
+"px": 755
+},
+"mcr16a-429.jpg": {
+"src": "/img/full/bacchus-2.jpg",
+"box": [
+0.44992999999999994,
+0.45467199999999997,
+0.29048999999999997,
+0.31464000000000003
+],
+"from": "/home/user/yigit/img/full/bacchus-2.jpg",
+"srcpx": 1761,
+"px": 429
+},
+"mcr05b-496.jpg": {
+"src": "/img/full/articulo-attack-on-mandarin.jpg",
+"box": [
+0.52,
+0.03,
+0.45,
+0.36
+],
+"from": "/home/user/yigit/img/full/articulo-attack-on-mandarin.jpg",
+"srcpx": 2000,
+"px": 496
+},
+"mcr29c-448.jpg": {
+"src": "/img/full/wings-of-abyss.jpg",
+"box": [
+0.35926,
+0.132166,
+0.39648999999999995,
+0.251712
+],
+"from": "/home/user/yigit/img/full/wings-of-abyss.jpg",
+"srcpx": 1761,
+"px": 448
+},
+"mcg15-716.jpg": {
+"src": "/img/full/viperella.jpg",
+"box": [
+0.1831,
+0.17149599999999998,
+0.21511800000000003,
+0.5506199999999999
+],
+"from": "/home/user/yigit/img/full/viperella.jpg",
+"srcpx": 1761,
+"px": 379
+},
+"mca02a-800.jpg": {
+"src": "/img/full/virgil-on-virtual-cage-final-final-finalv9.jpg",
+"box": [
+0.02,
+0.01,
+0.96,
+0.28
+],
+"from": "/home/user/yigit/img/full/virgil-on-virtual-cage-final-final-finalv9.jpg",
+"srcpx": 1601,
+"px": 800
+},
+"mca06d-661.jpg": {
+"src": "/img/full/s-t-lop.jpg",
+"box": [
+0.62,
+0.02,
+0.34,
+0.2
+],
+"from": "/home/user/yigit/img/full/s-t-lop.jpg",
+"srcpx": 1465,
+"px": 498
+},
+"mca35b-427.jpg": {
+"src": "/img/full/two-woman-figures-sitting-at-the-back-of-the-canvas.jpg",
+"box": [
+0.37511599999999995,
+0.27017599999999997,
+0.250068,
+0.48649600000000004
+],
+"from": "/home/user/yigit/img/full/two-woman-figures-sitting-at-the-back-of-the-canvas.jpg",
+"srcpx": 1761,
+"px": 427
+},
+"mca20c-661.jpg": {
+"src": "/img/full/despite-transgression.jpg",
+"box": [
+0.30356,
+0.17149599999999998,
+0.40473600000000004,
+0.361836
+],
+"from": "/home/user/yigit/img/full/despite-transgression.jpg",
+"srcpx": 1761,
+"px": 661
+},
+"mbd03-680.jpg": {
+"src": "/img/full/gary-grills-cooper.jpg",
+"box": [
+0.14,
+0.28,
+0.72,
+0.32
+],
+"from": "/home/user/yigit/img/full/gary-grills-cooper.jpg",
+"srcpx": 1467,
+"px": 680
+},
+"mbd08-480.jpg": {
+"src": "/img/full/ciao-capo-sono-squalo.jpg",
+"box": [
+0.222936,
+0.34454799999999997,
+0.27746400000000004,
+0.361836
+],
+"from": "/home/user/yigit/img/full/ciao-capo-sono-squalo.jpg",
+"srcpx": 1761,
+"px": 480
+},
+"mbd17-800.jpg": {
+"src": "/img/full/the-on-top-ruler.jpg",
+"box": [
+0.21035500000000001,
+0.20296,
+0.546635,
+0.43263
+],
+"from": "/home/user/yigit/img/full/the-on-top-ruler.jpg",
+"srcpx": 1761,
+"px": 800
+},
+"mbd24-800.jpg": {
+"src": "/img/full/good-people-helping-bad-ones-thats-why-theyre-bad-too.jpg",
+"box": [
+0.238044,
+0.187228,
+0.52853,
+0.43263
+],
+"from": "/home/user/yigit/img/full/good-people-helping-bad-ones-thats-why-theyre-bad-too.jpg",
+"srcpx": 1761,
+"px": 800
+},
+"mbd09-600.jpg": {
+"src": "/img/full/cellular-spleens.jpg",
+"box": [
+0.27636000000000005,
+0.28162,
+0.40964000000000006,
+0.35397
+],
+"from": "/home/user/yigit/img/full/cellular-spleens.jpg",
+"srcpx": 1761,
+"px": 600
+},
+"mbd27-560.jpg": {
+"src": "/img/full/il-sbagliato-di-rompipalle.jpg",
+"box": [
+0.31113999999999997,
+0.45467199999999997,
+0.42853600000000003,
+0.298908
+],
+"from": "/home/user/yigit/img/full/il-sbagliato-di-rompipalle.jpg",
+"srcpx": 1761,
+"px": 560
+},
+"mfc18-1355.jpg": {
+"src": "/img/full/sin-over-black-matter.jpg",
+"box": [
+0.17863400000000001,
+0.326024,
+0.517998,
+0.349618
+],
+"from": "/home/user/yigit/img/full/sin-over-black-matter.jpg",
+"srcpx": 1761,
+"px": 912
+},
+"mfc32-1632.jpg": {
+"src": "/img/full/how-to-materialize-your-loneliness-by-using-an-animal-in-somewhere-concrete-or-technologic.jpg",
+"box": [
+0.09825500000000001,
+0.274868,
+0.375102,
+0.30009199999999997
+],
+"from": "/home/user/yigit/img/full/how-to-materialize-your-loneliness-by-using-an-animal-in-somewhere-concrete-or-technologic.jpg",
+"srcpx": 1761,
+"px": 660
+},
+"mfcp01-360.jpg": {
+"src": "/img/full/7-fam-board-game.jpg",
+"box": [
+0.02,
+0.02,
+0.42,
+0.4
+],
+"from": "7famboardgame/7fam-board-game.png",
+"srcpx": 4724,
+"px": 360
+},
+"mfcp12-360.jpg": {
+"src": "/img/full/caprocorn-sister-war-plague-earthquake.jpg",
+"box": [
+0.19768,
+0.45467199999999997,
+0.1887,
+0.23597999999999997
+],
+"from": "/home/user/yigit/img/full/caprocorn-sister-war-plague-earthquake.jpg",
+"srcpx": 1761,
+"px": 332
+},
+"mfcp21-360.jpg": {
+"src": "/img/full/duality-of-the-angelic-summarization.jpg",
+"box": [
+0.28164,
+0.140032,
+0.37206999999999996,
+0.23597999999999997
+],
+"from": "/home/user/yigit/img/full/duality-of-the-angelic-summarization.jpg",
+"srcpx": 1761,
+"px": 360
+},
+"mfcp27-519.jpg": {
+"src": "/img/full/il-sbagliato-di-rompipalle.jpg",
+"box": [
+0.197704,
+0.140032,
+0.579784,
+0.23597999999999997
+],
+"from": "/home/user/yigit/img/full/il-sbagliato-di-rompipalle.jpg",
+"srcpx": 1761,
+"px": 519
+},
+"closep01-1077.jpg": {
+"src": "/img/full/7-fam-board-game.jpg",
+"box": null,
+"from": "7famboardgame/7fam-board-game.png",
+"srcpx": 4724,
+"px": 1077
+}
+}

@@ -1,19 +1,23 @@
 /* ══════════════════════════════════════════════════════════════════════
-   YIĞIT ÖZEN — PAINTINGS SINCE 2019
+   YIĞIT ÖZEN — PAINTINGS SINCE 2019 · ikinci basim
    Kitabin olculeri. Kurallar GUIDE.md'de, konumlar book.py'da; burada
    yalniz yazinin boyu, cizginin kalinligi ve kagidin rengi var.
 
-   Uc yazi kademesi vardir ve arasinda hicbir sey yoktur:
-     micro   6.4 pt   buyuk harf, aralikli   — kunye, alt yazi, folyo yazisi
-     body    8.8 pt   duz                    — paragraf
-     display 22-64 pt kalin, siki            — baslik, sayfa numarasi
+   Iki aile, dort kademe:
+     caption  7.6 pt  Inter, buyuk harf   — kunye, altyazi, folyo
+     body    10.8 pt  Newsreader          — not, deneme, uzun okuma
+     display 15-108pt Inter kalin         — baslik, yil rakami
+     pause   27-44 pt Newsreader italik   — durak serimlerindeki soz
+
+   Boyutlar kagida gore secilir: 100% olcekte basilan sayfa okunacak,
+   ekranda zarif gorunecek diye kucultulmeyecek.
    ══════════════════════════════════════════════════════════════════════ */
 
 @page { size: 240mm 320mm; margin: 0 }
 * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact }
 
 html, body { margin: 0; padding: 0; background: #fff }
-/* Inter, SIL Open Font License 1.1. Dosyalar fonts/ icinde. */
+/* Inter ve Newsreader, SIL Open Font License 1.1. Dosyalar fonts/ icinde. */
 @font-face { font-family: Inter; font-style: normal; font-weight: 400;
              src: url(fonts/Inter-400.ttf) format('truetype') }
 @font-face { font-family: Inter; font-style: normal; font-weight: 500;
@@ -26,6 +30,12 @@ html, body { margin: 0; padding: 0; background: #fff }
              src: url(fonts/Inter-Italic-400.ttf) format('truetype') }
 @font-face { font-family: Inter; font-style: italic; font-weight: 700;
              src: url(fonts/Inter-Italic-700.ttf) format('truetype') }
+@font-face { font-family: Newsreader; font-style: normal; font-weight: 400;
+             src: url(fonts/Newsreader-400.ttf) format('truetype') }
+@font-face { font-family: Newsreader; font-style: normal; font-weight: 500;
+             src: url(fonts/Newsreader-500.ttf) format('truetype') }
+@font-face { font-family: Newsreader; font-style: italic; font-weight: 400;
+             src: url(fonts/Newsreader-Italic-400.ttf) format('truetype') }
 
 body {
   font-family: Inter, "Liberation Sans", Helvetica, Arial, sans-serif;
@@ -34,7 +44,7 @@ body {
 
 :root {
   --ink:  #111;
-  --grey: #8c8c8c;
+  --grey: #6e6e6e;      /* ofset baskida ayakta kalacak kadar koyu */
   --hair: #d8d8d8;
 }
 
@@ -48,45 +58,77 @@ body {
 
 .b  { position: absolute }
 img { position: absolute; display: block }
-img.bleed { left: 0; top: 0; width: 240mm; height: 320mm; object-fit: cover }
-/* tam sayfa levha ve blok izgara: kesit kendi kenarindan kesilir */
-img.cut   { object-fit: cover; object-position: 50% 45% }
-img.mark  { left: 50%; top: 50%; width: 42mm; height: auto; transform: translate(-50%,-50%) }
+/* tam sayfa tasan kesit: kadraj object-position ile tutulur */
+img.cut  { object-fit: cover; object-position: 50% 45% }
+img.mark { position: absolute }
+/* film seridi gibi kesim cizgisinden cikan kare: kasitli, denetim bilir */
+img.bl   { position: absolute }
 
-/* cizgiler: sac teli ve kural */
+/* Baski ustasi: sayfa 246 x 326 mm, icerik 3 mm iceri kayar, boylece
+   tasan her gorsel kesim cizgisinin 3 mm disina gercekten uzanir. */
+.tp { position: absolute; left: 0; top: 0; width: 240mm; height: 320mm }
+body.bleed .pg { width: 246mm; height: 326mm }
+body.bleed .tp { left: 3mm; top: 3mm }
+
+/* kapanista kapagin yerini gosteren cizgi cerceve */
+.fr { position: absolute; border: .5pt solid #fff; outline: .35pt solid var(--ink);
+      mix-blend-mode: normal }
+
+/* bolum acilisinda yazinin altina giren koyultma */
+.shade { position: absolute; left: 0; right: 0; bottom: 0; height: 130mm;
+         background: linear-gradient(to top, rgba(0,0,0,.44), rgba(0,0,0,0)) }
+
+/* cizgiler: sac teli, kural ve dikme */
 .r      { position: absolute; height: .35pt; background: var(--hair) }
 .r.t    { height: .9pt; background: var(--ink) }
+.r.v    { width: .35pt }
 .pg.dark .r   { background: rgba(255,255,255,.3) }
 .pg.dark .r.t { background: #fff }
 
 /* ── micro ──────────────────────────────────────────────────────────*/
 .m {
-  font-size: 6.4pt; letter-spacing: .085em; text-transform: uppercase;
-  font-weight: 600; line-height: 1.62;
+  font-size: 7.6pt; letter-spacing: .07em; text-transform: uppercase;
+  font-weight: 600; line-height: 1.46;
 }
 .m.g   { color: var(--grey); font-weight: 500 }
 .pg.dark .m.g { color: rgba(255,255,255,.74) }
 .m.rt  { text-align: right }
 .m.ct  { text-align: center }
+.m.wh  { color: #fff }
 .m i   { font-style: normal; color: var(--grey); font-weight: 500 }
+.m.wh i { color: rgba(255,255,255,.7) }
 .m b   { font-weight: 700 }
+.m.wn  { font-size: 10.4pt; letter-spacing: .05em }
 
-/* alintiya ayrilan blok: kitaptaki tek italik gövde */
-.q     { font-size: 10.4pt; line-height: 1.42; font-style: italic; font-weight: 400 }
-.src   { font-size: 6.4pt; letter-spacing: .085em; text-transform: uppercase;
-         font-weight: 600; line-height: 1.5 }
-
-/* ── body ───────────────────────────────────────────────────────────*/
+/* ── body: okuma yazisi serif ───────────────────────────────────────*/
 .t {
-  font-size: 8.8pt; line-height: 1.52; letter-spacing: .002em;
+  font-family: Newsreader, Georgia, "Times New Roman", serif;
+  font-size: 10.8pt; line-height: 1.4; letter-spacing: .004em;
   font-weight: 400; color: var(--ink);
 }
-.t.j   { text-align: justify; hyphens: auto }
-.t.ct  { text-align: center }
-.t.g   { color: #4a4a4a }
-.t p   { margin: 0 0 3.4mm }
+.t p   { margin: 0 0 3.2mm }
 .t p:last-child { margin-bottom: 0 }
 .t em  { font-style: italic }
+
+/* grotesk govde: kolofon, sergi listesi, icindekiler */
+.sans {
+  font-size: 9.6pt; line-height: 1.44; letter-spacing: .002em;
+  font-weight: 400; color: var(--ink);
+}
+.sans p { margin: 0 0 3.4mm }
+.sans p:last-child { margin-bottom: 0 }
+.sans em { font-style: italic }
+
+/* acilimdaki alinti: kitapta serif italigin ilk sesi */
+.q     { font-family: Newsreader, Georgia, serif; font-size: 13.4pt;
+         line-height: 1.38; font-style: italic; font-weight: 400 }
+
+/* durak serimlerindeki soz: resim boyunda yazi */
+.pq    { font-family: Newsreader, Georgia, serif; font-style: italic;
+         font-size: 27pt; line-height: 1.3; font-weight: 400;
+         letter-spacing: -.005em }
+.pq.big { font-size: 44pt; line-height: 1.1 }
+.pq.mid { font-size: 20pt; line-height: 1.34 }
 
 /* ── display ────────────────────────────────────────────────────────*/
 .d {
@@ -96,10 +138,16 @@ img.mark  { left: 50%; top: 50%; width: 42mm; height: auto; transform: translate
 .d.s   { font-size: 19pt; letter-spacing: -.016em }
 .d.l   { font-size: 44pt; letter-spacing: -.03em; line-height: .98 }
 .d.xl  { font-size: 64pt; letter-spacing: -.035em; line-height: .94 }
+.d.wh  { color: #fff }
 .d em  { font-style: italic }
 
-/* sayfa numarasi: referanslardaki gibi iri, disa hizali */
+/* yil rakami: esigin tek isareti */
+.d.yr  { font-size: 108pt; letter-spacing: -.045em; line-height: .86 }
+
+/* folyo: kucuk, dista; cift sayfada yaninda yil ve yer */
 .f {
-  font-size: 21pt; font-weight: 700; letter-spacing: -.03em; line-height: 1;
+  font-size: 8.2pt; font-weight: 600; letter-spacing: .04em; line-height: 1;
 }
+.f span { font-weight: 500; color: var(--grey); font-size: 7.2pt;
+          letter-spacing: .07em; text-transform: uppercase }
 .f.rt { text-align: right }
