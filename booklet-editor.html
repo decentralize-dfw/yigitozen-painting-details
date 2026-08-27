@@ -28,6 +28,23 @@ button.on{background:var(--acc);border-color:var(--acc);color:#fff}
 #bar b{font-weight:600;letter-spacing:.02em}
 #bar .muted{color:var(--dim)}
 
+#props{position:fixed;top:46px;left:0;right:0;height:38px;display:none;
+  align-items:center;gap:6px;padding:0 12px;background:#31353f;
+  border-bottom:1px solid var(--line);z-index:39}
+#props.on{display:flex}
+#iprops{position:fixed;top:46px;left:0;right:0;height:38px;display:none;
+  align-items:center;gap:6px;padding:0 12px;background:#31353f;
+  border-bottom:1px solid var(--line);z-index:39}
+#iprops.on{display:flex}
+#iprops input[type=number]{width:70px;padding:4px 6px;background:#343841;
+  border:1px solid var(--line);border-radius:5px;color:inherit}
+#props .lbl2{color:var(--dim);font-size:10.5px;letter-spacing:.06em;
+  text-transform:uppercase;margin-right:4px}
+#props input[type=number]{width:74px;padding:4px 6px;background:#343841;
+  border:1px solid var(--line);border-radius:5px;color:inherit}
+#props input[type=color]{width:34px;height:26px;padding:1px;background:#343841;
+  border:1px solid var(--line);border-radius:5px}
+body.props #lib,body.props #stage,body.iprops #lib,body.iprops #stage{top:84px}
 #lib{position:fixed;top:46px;left:0;bottom:0;width:242px;overflow:auto;
   background:var(--pan);border-right:1px solid var(--line);z-index:30}
 #lib h4{margin:0;padding:9px 10px;font-size:11px;letter-spacing:.06em;
@@ -45,6 +62,8 @@ button.on{background:var(--acc);border-color:var(--acc);color:#fff}
 .thumbs figcaption{font-size:9px;color:var(--dim);padding:2px 4px;white-space:nowrap;
   overflow:hidden;text-overflow:ellipsis}
 
+#doc .pg,#print .pg{color:#111}
+#doc .pg.dark,#print .pg.dark{color:#fff}
 #stage{position:fixed;top:46px;left:242px;right:0;bottom:0;overflow:auto;padding:34px 34px 90px}
 #sizer{position:relative}
 #doc{transform-origin:0 0;position:absolute;left:0;top:0}
@@ -110,21 +129,59 @@ button.on{background:var(--acc);border-color:var(--acc);color:#fff}
   <button id="tgGuide" class="on">Kılavuz</button>
   <button id="tgMar" class="on">Marj</button>
   <span class="sp"></span>
+  <button id="addPg">+ Sayfa</button><button id="delPg">− Sayfa</button>
   <button id="dup">Kopyala</button>
   <button id="fwd">Öne</button><button id="bwd">Arkaya</button>
   <button id="del">Sil</button>
   <span style="width:10px"></span>
-  <button id="undo">Geri</button>
+  <button id="undo">Geri</button><button id="redo">İleri</button>
   <button id="save">Kaydet</button><button id="load">Yükle</button>
   <button id="reset">Sıfırla</button>
   <button id="exp" class="on">Export</button>
 </div>
 
+<div id="props">
+  <span class="lbl2">Yazı</span>
+  <select id="pFam" title="Yazı ailesi">
+    <option value="">— aile —</option>
+    <option value="Inter">Inter (grotesk)</option>
+    <option value="Newsreader">Newsreader (serif)</option>
+  </select>
+  <input id="pSize" type="number" step="0.5" min="4" max="200" title="Punto" placeholder="pt">
+  <select id="pW" title="Kalınlık">
+    <option value="">— kalınlık —</option>
+    <option value="400">400 normal</option><option value="500">500 orta</option>
+    <option value="600">600 yarı kalın</option><option value="700">700 kalın</option>
+  </select>
+  <button id="pI" title="İtalik"><i>I</i></button>
+  <button id="pU" title="BÜYÜK HARF">AA</button>
+  <input id="pLs" type="number" step="0.005" title="Harf aralığı (em)" placeholder="aralık">
+  <input id="pLh" type="number" step="0.02" title="Satır aralığı" placeholder="satır">
+  <select id="pAl" title="Hiza">
+    <option value="">— hiza —</option><option value="left">sola</option>
+    <option value="center">ortaya</option><option value="right">sağa</option>
+    <option value="justify">iki yana</option>
+  </select>
+  <input id="pCol" type="color" title="Renk" value="#111111">
+  <button id="pClr" title="Biçimi temizle">Sıfırla</button>
+</div>
+<div id="iprops">
+  <span class="lbl2">Görsel</span>
+  <button id="fW" title="Ölçü genişliğine sığdır (204 mm)">Ölçüye sığdır</button>
+  <button id="fPW" title="Sayfa enine (240 mm)">Sayfa eni</button>
+  <button id="fH" title="Levha bandına (260 mm)">Banda sığdır</button>
+  <button id="fPH" title="Sayfa boyuna (320 mm)">Sayfa boyu</button>
+  <button id="fBleed" title="Dört kenardan taşır (250 × 330 mm)">Tam taşma</button>
+  <span style="width:8px"></span>
+  <input id="fPct" type="number" step="5" min="5" max="400" placeholder="%" title="Yüzde ölçek">
+  <button id="fCX" title="Yatayda ortala">↔ ortala</button>
+  <button id="fCY" title="Dikeyde ortala">↕ ortala</button>
+  <span id="fInfo" class="lbl2"></span>
+</div>
 <aside id="lib"><h4>Arşiv — 35 iş</h4><div id="groups"></div></aside>
-<div id="stage"><div id="sizer"><div id="doc"></div></div></div>
-<div id="print"></div>
-<div id="tip">Sürükle: taşı · Çift tık: yazıyı düzenle · Alt+sürükle: serbest ölçek ·
-  Cetvelden çek: kılavuz · Delete: sil</div>
+<div id="stage"><div id="sizer"><div id="doc" lang="en"></div></div></div>
+<div id="print" lang="en"></div>
+<div id="tip"></div>
 <div id="hud"></div>
 
 <div id="dlg"><div class="box">
@@ -138,6 +195,9 @@ button.on{background:var(--acc);border-color:var(--acc);color:#fff}
     <button class="opt" data-mode="double"><b>Çift sayfa</b>
       <small>Açılım · 480 × 320 mm · kapak tek başına</small></button>
   </div>
+  <div class="row"><input id="dlgRange" placeholder="Sayfa aralığı — boş bırak: hepsi · örn 10-15"
+    style="flex:1;padding:8px 10px;background:#343841;border:1px solid var(--line);
+           border-radius:5px;color:inherit"></div>
   <div class="row"><button id="dlgX" style="flex:1">Vazgeç</button></div>
 </div></div>
 
@@ -155,6 +215,9 @@ const REGS = [18, 83, 148, 213];
 let model = null, arch = null;
 let zoom = 0.5, snap = true, showGuides = true, showMar = true;
 let sel = null;                  // {pi, ei}
+let curPage = 0;                 // son dokunulan sayfa: araya ekleme buna gore
+let redoStack = [];
+const TIP = 'Sürükle: taşı · Çift tık: yazıyı düzenle · Alt+sürükle: serbest ölçek · Alt+çift tık: kılavuz · Delete: sil · Ctrl+Z / Ctrl+Shift+Z';
 let guides = { v: [], h: [] };   // serim koordinatinda (0..480, 0..320)
 let undoStack = [];
 
@@ -305,7 +368,12 @@ function drawEl(e, pi, ei) {
 function markSel() {
   document.querySelectorAll('.sel').forEach(x => x.classList.remove('sel'));
   document.querySelectorAll('.hnd').forEach(x => x.remove());
-  if (!sel) { $('#hud').textContent = ''; return; }
+  if (!sel) {
+    $('#hud').textContent = '';
+    $('#props').classList.remove('on'); $('#iprops').classList.remove('on');
+    document.body.classList.remove('props', 'iprops');
+    return;
+  }
   const n = nodeOf(sel);
   if (!n) return;
   n.classList.add('sel');
@@ -320,6 +388,7 @@ function markSel() {
     });
   }
   $('#hud').textContent = fmt(e);
+  fillProps(); fillImgProps();
 }
 function fmt(e) {
   const r = v => Math.round(v * 10) / 10;
@@ -459,24 +528,41 @@ function editText(ev, pi, ei, node) {
 /* ── arsivden birakma ─────────────────────────────────────────────── */
 function onDrop(ev, pi) {
   ev.preventDefault();
+  const pg0 = ev.currentTarget.getBoundingClientRect();
+  const dx = (ev.clientX - pg0.left) / (MM * zoom);
+  const dy = (ev.clientY - pg0.top) / (MM * zoom);
+  // Bilgisayardan surukleyip birakilan dosyalar: sayfaya gomulur, boylece
+  // baskiya da gider ve kaydedilen duzenle birlikte tasinir.
+  const files = [...(ev.dataTransfer.files || [])].filter(f => /^image\//.test(f.type));
+  if (files.length) {
+    files.forEach((f, k) => {
+      const rd = new FileReader();
+      rd.onload = () => placeImage(pi, rd.result, dx + k * 6, dy + k * 6);
+      rd.readAsDataURL(f);
+    });
+    return;
+  }
   let data;
   try { data = JSON.parse(ev.dataTransfer.getData('text/plain')); } catch (_) { return; }
   if (!data || !data.src) return;
-  const pg = ev.currentTarget.getBoundingClientRect();
-  const x = (ev.clientX - pg.left) / (MM * zoom);
-  const y = (ev.clientY - pg.top) / (MM * zoom);
+  const x = dx, y = dy;
+  placeImage(pi, data.src, x, y);
+}
+
+function placeImage(pi, src, x, y) {
   const probe = new Image();
   probe.onload = () => {
     const ar = probe.naturalWidth / probe.naturalHeight;
     const w = 90, h = w / ar;
     push();
-    model.pages[pi].els.push({ t: 'img', cls: '', src: data.src,
+    model.pages[pi].els.push({ t: 'img', cls: '', src: src,
       x: Math.round((x - w / 2) * 10) / 10, y: Math.round((y - h / 2) * 10) / 10,
       w: w, h: h, pos: '' });
     sel = { pi, ei: model.pages[pi].els.length - 1 };
     store(); render();
   };
-  probe.src = data.src;
+  probe.onerror = () => note('Bu dosya okunamadı.');
+  probe.src = src;
 }
 
 /* ── kilavuzlar: cetvelden cekilir, serim boyunca uzanir ──────────── */
@@ -539,13 +625,29 @@ function fit() {
 }
 
 /* ── gecmis ve kayit ──────────────────────────────────────────────── */
+function snapshot() { return JSON.stringify({ pages: model.pages, guides }); }
 function push() {
-  undoStack.push(JSON.stringify({ pages: model.pages, guides }));
-  if (undoStack.length > 40) undoStack.shift();
+  undoStack.push(snapshot());
+  redoStack.length = 0;                  // yeni bir hamle, ileri yolu kapatir
+  if (undoStack.length > 60) undoStack.shift();
+}
+function restore(js) {
+  const s2 = JSON.parse(js);
+  model.pages = s2.pages; guides = s2.guides; model.guides = guides;
+  sel = null; store(); render();
 }
 function store() {
   model.guides = guides;
-  localStorage.setItem(KEY, JSON.stringify(model));
+  try { localStorage.setItem(KEY, JSON.stringify(model)); }
+  catch (err) {
+    // Kendi dosyalarini birakinca yer dolabilir; is kaybolmasin diye soyle.
+    note('Tarayıcı belleği doldu — çalışmanı “Kaydet” ile dosyaya al.');
+  }
+}
+function note(t) {
+  const b = $('#tip'); b.textContent = t; b.style.color = '#ffb02e';
+  clearTimeout(note._t);
+  note._t = setTimeout(() => { b.textContent = TIP; b.style.color = ''; }, 6000);
 }
 
 /* ── dugmeler ─────────────────────────────────────────────────────── */
@@ -577,10 +679,30 @@ function moveZ(d) {
   push(); [a[i], a[j]] = [a[j], a[i]]; sel.ei = j; store(); render();
 }
 $('#undo').onclick = () => {
-  if (!undoStack.length) return;
-  const s = JSON.parse(undoStack.pop());
-  model.pages = s.pages; guides = s.guides; model.guides = guides;
-  sel = null; store(); render();
+  if (!undoStack.length) return note('Geri alınacak bir şey yok.');
+  redoStack.push(snapshot()); restore(undoStack.pop());
+};
+$('#redo').onclick = () => {
+  if (!redoStack.length) return note('İleri alınacak bir şey yok.');
+  undoStack.push(snapshot()); restore(redoStack.pop());
+};
+
+/* ── 1 · araya sayfa ekleme ve cikarma ─────────────────────────────── */
+$('#addPg').onclick = () => {
+  const at = (sel ? sel.pi : curPage) + 1;
+  push();
+  model.pages.splice(at, 0, { cls: '', fam: 'A', els: [] });
+  sel = null; curPage = at; store(); render();
+  note('Boş sayfa eklendi: ' + (at + 1) + '. sayfa.');
+  const pg = document.querySelector('.pg[data-pi="' + at + '"]');
+  if (pg) pg.scrollIntoView({ block: 'center', behavior: 'smooth' });
+};
+$('#delPg').onclick = () => {
+  const at = sel ? sel.pi : curPage;
+  if (model.pages.length < 3) return;
+  if (!confirm((at + 1) + '. sayfa silinsin mi?')) return;
+  push(); model.pages.splice(at, 1);
+  sel = null; curPage = Math.max(0, at - 1); store(); render();
 };
 $('#save').onclick = () => {
   const b = new Blob([JSON.stringify(model)], { type: 'application/json' });
@@ -610,7 +732,13 @@ document.addEventListener('keydown', ev => {
   if (document.activeElement && document.activeElement.isContentEditable) return;
   if (ev.key === 'Delete' || ev.key === 'Backspace') { ev.preventDefault(); $('#del').click(); }
   if (ev.key === 'Escape') { sel = null; markSel(); }
-  if ((ev.ctrlKey || ev.metaKey) && ev.key === 'z') { ev.preventDefault(); $('#undo').click(); }
+  if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === 'z') {
+    ev.preventDefault();
+    (ev.shiftKey ? $('#redo') : $('#undo')).click(); return;
+  }
+  if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === 'y') {
+    ev.preventDefault(); $('#redo').click(); return;
+  }
   if (!sel) return;
   const step = ev.shiftKey ? 5 : (ev.altKey ? 0.1 : 1);
   const e = model.pages[sel.pi].els[sel.ei];
@@ -623,9 +751,150 @@ document.addEventListener('keydown', ev => {
   positionHandles(e, n); $('#hud').textContent = fmt(e); store();
 });
 $('#stage').addEventListener('pointerdown', ev => {
+  const pg = ev.target.closest('.pg');
+  if (pg && pg.dataset.pi) curPage = +pg.dataset.pi;
   if (ev.target.closest('.el') || ev.target.closest('.hnd') || ev.target.closest('.guide')) return;
   sel = null; markSel();
 });
+
+/* ── 4 · yazi bicimi: punto, aile, kalinlik, italik, aralik, renk ─────
+   Degerler ogenin kendi stiline yazilir, yani hem ekranda hem baskida
+   gecerlidir. Alanlar, sinifindan gelen gercek degeri gosterir.       */
+function styObj(s2) {
+  const o = {};
+  (s2 || '').split(';').forEach(k => {
+    const i = k.indexOf(':');
+    if (i > 0) o[k.slice(0, i).trim()] = k.slice(i + 1).trim();
+  });
+  return o;
+}
+function styStr(o) {
+  return Object.keys(o).filter(k => o[k] !== '' && o[k] != null)
+    .map(k => k + ':' + o[k]).join(';');
+}
+function redrawEl(pi, ei) {
+  const old = nodeOf({ pi, ei });
+  if (!old) return render();
+  const fresh = drawEl(model.pages[pi].els[ei], pi, ei);
+  old.parentNode.replaceChild(fresh, old);
+  markSel();
+}
+function setSty(prop, val) {
+  if (!sel) return;
+  const e = model.pages[sel.pi].els[sel.ei];
+  const o = styObj(e.style);
+  if (val === '' || val == null) delete o[prop]; else o[prop] = val;
+  push(); e.style = styStr(o); store(); redrawEl(sel.pi, sel.ei); fillProps();
+}
+function fillProps() {
+  const on = sel && model.pages[sel.pi].els[sel.ei].t === 'txt';
+  $('#props').classList.toggle('on', !!on);
+  document.body.classList.toggle('props', !!on);
+  if (!on) return;
+  const n2 = nodeOf(sel); if (!n2) return;
+  const c = getComputedStyle(n2);
+  const pt = v => Math.round(parseFloat(v) * 0.75 * 10) / 10;    // px -> punto
+  $('#pSize').value = pt(c.fontSize);
+  $('#pW').value = ['400', '500', '600', '700'].indexOf(c.fontWeight) >= 0 ? c.fontWeight : '';
+  $('#pFam').value = /Newsreader/.test(c.fontFamily) ? 'Newsreader'
+                   : (/Inter/.test(c.fontFamily) ? 'Inter' : '');
+  $('#pI').classList.toggle('on', c.fontStyle === 'italic');
+  $('#pU').classList.toggle('on', c.textTransform === 'uppercase');
+  const ls = parseFloat(c.letterSpacing);
+  $('#pLs').value = isNaN(ls) ? '' : Math.round(ls / parseFloat(c.fontSize) * 1000) / 1000;
+  const lh = parseFloat(c.lineHeight);
+  $('#pLh').value = isNaN(lh) ? '' : Math.round(lh / parseFloat(c.fontSize) * 100) / 100;
+  $('#pAl').value = ['left', 'center', 'right', 'justify'].indexOf(c.textAlign) >= 0
+                    ? c.textAlign : '';
+  $('#pCol').value = rgbHex(c.color);
+}
+function rgbHex(v) {
+  const m = /rgba?\((\d+),\s*(\d+),\s*(\d+)/.exec(v || '');
+  if (!m) return '#111111';
+  return '#' + [1, 2, 3].map(i => (+m[i]).toString(16).padStart(2, '0')).join('');
+}
+$('#pSize').oninput = e => setSty('font-size', e.target.value ? e.target.value + 'pt' : '');
+$('#pW').onchange   = e => setSty('font-weight', e.target.value);
+$('#pFam').onchange = e => setSty('font-family',
+  e.target.value === 'Newsreader' ? 'Newsreader, Georgia, serif'
+  : (e.target.value ? 'Inter, Helvetica, sans-serif' : ''));
+$('#pI').onclick = () => {
+  const it = $('#pI').classList.contains('on');
+  setSty('font-style', it ? 'normal' : 'italic');
+};
+$('#pU').onclick = () => {
+  const up = $('#pU').classList.contains('on');
+  setSty('text-transform', up ? 'none' : 'uppercase');
+};
+$('#pLs').oninput = e => setSty('letter-spacing', e.target.value ? e.target.value + 'em' : '');
+$('#pLh').oninput = e => setSty('line-height', e.target.value || '');
+$('#pAl').onchange = e => {
+  setSty('text-align', e.target.value);
+  // Iki yana yaslanan bir sutun tirelemesiz calismaz: bosluklar acilir.
+  setSty('hyphens', e.target.value === 'justify' ? 'auto' : '');
+};
+$('#pCol').oninput = e => setSty('color', e.target.value);
+$('#pClr').onclick = () => {
+  if (!sel) return;
+  push(); model.pages[sel.pi].els[sel.ei].style = '';
+  store(); redrawEl(sel.pi, sel.ei); fillProps();
+};
+
+/* ── gorseli sayfaya sigdirma ────────────────────────────────────────
+   Her secenek bir kenari verir, oteki kenar orandan cikar. Resim asla
+   esnetilmez; kirpma istiyorsan tam tasmayi secip elle tasirsin.     */
+function selImg() {
+  if (!sel) return null;
+  const e = model.pages[sel.pi].els[sel.ei];
+  return e.t === 'img' ? e : null;
+}
+function fitTo(kind) {
+  const e = selImg(); if (!e) return;
+  const verso = (sel.pi + 1) % 2 === 0;
+  const ml = verso ? OUT_M : IN_M;
+  const ar = e.w / e.h;
+  push();
+  if (kind === 'w')      { e.w = MEASURE;      e.h = e.w / ar; e.x = ml; }
+  else if (kind === 'pw'){ e.w = PW;           e.h = e.w / ar; e.x = 0; }
+  else if (kind === 'h') { e.h = 260;          e.w = e.h * ar; e.y = 18; }
+  else if (kind === 'ph'){ e.h = PH;           e.w = e.h * ar; e.y = 0; }
+  else if (kind === 'bleed') {
+    const s2 = Math.max((PW + 10) / e.w, (PH + 10) / e.h);   // dort kenari orter
+    e.w *= s2; e.h *= s2;
+    e.x = (PW - e.w) / 2; e.y = (PH - e.h) / 2;
+  }
+  round(e); store(); redrawEl(sel.pi, sel.ei); fillImgProps();
+}
+function round(e) {
+  ['x', 'y', 'w', 'h'].forEach(k => { e[k] = Math.round(e[k] * 100) / 100; });
+}
+function fillImgProps() {
+  const e = selImg();
+  $('#iprops').classList.toggle('on', !!e);
+  document.body.classList.toggle('iprops', !!e);
+  if (!e) return;
+  $('#fInfo').textContent = Math.round(e.w) + ' × ' + Math.round(e.h) + ' mm';
+  $('#fPct').value = '';
+}
+$('#fW').onclick = () => fitTo('w');
+$('#fPW').onclick = () => fitTo('pw');
+$('#fH').onclick = () => fitTo('h');
+$('#fPH').onclick = () => fitTo('ph');
+$('#fBleed').onclick = () => fitTo('bleed');
+$('#fCX').onclick = () => { const e = selImg(); if (!e) return;
+  push(); e.x = (PW - e.w) / 2; round(e); store(); redrawEl(sel.pi, sel.ei); };
+$('#fCY').onclick = () => { const e = selImg(); if (!e) return;
+  push(); e.y = (PH - e.h) / 2; round(e); store(); redrawEl(sel.pi, sel.ei); };
+$('#fPct').oninput = ev => {
+  const e = selImg(), v = parseFloat(ev.target.value); if (!e || !v) return;
+  const cx = e.x + e.w / 2, cy = e.y + e.h / 2, ar = e.w / e.h;
+  e.w = (e.w) * 1;                       // taban: mevcut olcu
+  const base = e._base || (e._base = { w: e.w, h: e.h });
+  e.w = base.w * v / 100; e.h = e.w / ar;
+  e.x = cx - e.w / 2; e.y = cy - e.h / 2;
+  round(e); store(); redrawEl(sel.pi, sel.ei);
+  $('#fInfo').textContent = Math.round(e.w) + ' × ' + Math.round(e.h) + ' mm';
+};
 
 /* ── export ───────────────────────────────────────────────────────────
    Sayfalar oldugu gibi baskiya kopyalanir: yazi yazi kalir, gorsel
@@ -637,7 +906,16 @@ document.querySelectorAll('#dlg .opt').forEach(b => {
   b.onclick = () => { $('#dlg').style.display = 'none'; doExport(b.dataset.mode); };
 });
 
-function doExport(mode) {
+function parseRange(v) {
+  v = (v || '').trim();
+  if (!v) return null;
+  const m = /^(\d+)\s*[-–]\s*(\d+)$/.exec(v);
+  if (m) return [+m[1] - 1, +m[2] - 1];
+  if (/^\d+$/.test(v)) return [+v - 1, +v - 1];
+  return null;
+}
+
+async function doExport(mode) {
   const host = $('#print');
   host.innerHTML = '';
   const double = mode === 'double';
@@ -646,7 +924,10 @@ function doExport(mode) {
   if (!st) { st = el('style'); st.id = 'pgsize'; document.head.appendChild(st); }
   st.textContent = `@page{size:${sw}mm ${PH}mm;margin:0}` +
                    `.sheet{width:${sw}mm;height:${PH}mm}`;
-  const groups = double ? spreads() : model.pages.map((_, i) => [i]);
+  const rg = parseRange($('#dlgRange').value);
+  let groups = double ? spreads() : model.pages.map((_, i) => [i]);
+  if (rg) groups = groups.filter(g => g.some(pi => pi >= rg[0] && pi <= rg[1]));
+  if (!groups.length) { note('O aralıkta sayfa yok.'); return; }
   groups.forEach(g => {
     const sh = el('div', 'sheet');
     if (double && g.length === 1) {          // kapak: sag yaprakta tek basina
@@ -657,7 +938,33 @@ function doExport(mode) {
     g.forEach(pi => sh.appendChild(drawPrintPage(pi)));
     host.appendChild(sh);
   });
-  setTimeout(() => { window.print(); }, 120);
+  // Tarayici, gorselleri cozmeden yazdirma penceresini acarsa uzun uzun
+  // bekler ve bazen hic acilmaz. Once hepsini cozup sonra aciyoruz.
+  const imgs = [...host.querySelectorAll('img')];
+  let done = 0;
+  busy('Görseller hazırlanıyor… 0 / ' + imgs.length);
+  await Promise.all(imgs.map(im => {
+    const ready = (im.complete && im.naturalWidth) ? Promise.resolve()
+      : new Promise(r => { im.onload = im.onerror = r; });
+    return ready
+      .then(() => im.decode ? im.decode().catch(() => {}) : null)
+      .then(() => { done++; busy('Görseller hazırlanıyor… ' + done + ' / ' + imgs.length); });
+  }));
+  busy('Yazdırma penceresi açılıyor…');
+  await new Promise(r => setTimeout(r, 400));
+  busy(null);
+  window.print();
+}
+function busy(t) {
+  let b = document.getElementById('busy');
+  if (!t) { if (b) b.remove(); return; }
+  if (!b) {
+    b = el('div'); b.id = 'busy';
+    b.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.62);z-index:90;' +
+      'display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff';
+    document.body.appendChild(b);
+  }
+  b.textContent = t;
 }
 function drawPrintPage(pi) {
   const p = model.pages[pi];
@@ -673,6 +980,7 @@ function drawPrintPage(pi) {
 }
 window.addEventListener('afterprint', () => { $('#print').innerHTML = ''; });
 window.addEventListener('resize', () => applyZoom());
+$('#tip').textContent = TIP;
 boot();
 </script>
 </body>
