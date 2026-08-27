@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Paintings since 2019 — booklet editor</title>
+<link rel="stylesheet" href="editor/book.css">
+<script src="editor/data.js"></script>
+<style>
+/* ══════════════════════════════════════════════════════════════════════
+   Kitabin duzenleyicisi. Sayfa book.css ile cizilir, yani ekranda
+   gordugun olcu basilacak olcudur. Buradaki her sey yalnizca tezgahtir
+   ve baskiya girmez.
+   ══════════════════════════════════════════════════════════════════════ */
+:root{--bg:#22242a;--pan:#2b2e36;--line:#3a3e48;--txt:#e7e8ea;--dim:#9aa0ab;
+      --acc:#4f8cff;--gd:#00c2a8}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--txt);
+     font:12px/1.45 Inter,system-ui,sans-serif;overflow:hidden}
+button,select{font:inherit;color:inherit;background:#343841;border:1px solid var(--line);
+  border-radius:5px;padding:5px 9px;cursor:pointer}
+button:hover{background:#3d424d}
+button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+
+#bar{position:fixed;inset:0 0 auto 0;height:46px;display:flex;align-items:center;
+  gap:8px;padding:0 12px;background:var(--pan);border-bottom:1px solid var(--line);z-index:40}
+#bar .sp{flex:1}
+#bar b{font-weight:600;letter-spacing:.02em}
+#bar .muted{color:var(--dim)}
+
+#lib{position:fixed;top:46px;left:0;bottom:0;width:242px;overflow:auto;
+  background:var(--pan);border-right:1px solid var(--line);z-index:30}
+#lib h4{margin:0;padding:9px 10px;font-size:11px;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--dim);position:sticky;top:0;background:var(--pan)}
+.grp>summary{cursor:pointer;padding:6px 10px;list-style:none;border-top:1px solid var(--line);
+  font-size:11.5px;display:flex;gap:6px;align-items:baseline}
+.grp>summary::-webkit-details-marker{display:none}
+.grp>summary:hover{background:#333742}
+.grp .num{color:var(--dim);font-variant-numeric:tabular-nums}
+.grp .yr{margin-left:auto;color:var(--dim);font-size:10px}
+.thumbs{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:6px 8px 10px}
+.thumbs figure{margin:0;cursor:grab;border:1px solid var(--line);border-radius:4px;
+  overflow:hidden;background:#1b1d22}
+.thumbs img{width:100%;height:64px;object-fit:cover;display:block}
+.thumbs figcaption{font-size:9px;color:var(--dim);padding:2px 4px;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis}
+
+#stage{position:fixed;top:46px;left:242px;right:0;bottom:0;overflow:auto;padding:34px 34px 90px}
+#sizer{position:relative}
+#doc{transform-origin:0 0;position:absolute;left:0;top:0}
+.spread{position:relative;margin:0 auto 26px;background:#15171b;
+  box-shadow:0 3px 26px rgba(0,0,0,.45);display:flex}
+.spread .pg{flex:none;position:relative}
+.spread.solo{width:240mm}
+.lbl{position:absolute;left:0;top:-19px;font-size:10px;color:var(--dim);
+  letter-spacing:.05em;white-space:nowrap}
+
+/* secim ve tutamaklar */
+.pg .el{outline:0}
+.sel{outline:1px solid var(--acc)!important;outline-offset:0}
+.hnd{position:absolute;width:9px;height:9px;background:#fff;border:1.5px solid var(--acc);
+  border-radius:2px;z-index:60}
+.hnd.nw{cursor:nwse-resize}.hnd.ne{cursor:nesw-resize}
+.hnd.sw{cursor:nesw-resize}.hnd.se{cursor:nwse-resize}
+.editing{outline:1px dashed var(--acc)!important;background:rgba(79,140,255,.07)}
+
+/* kilavuz cizgileri */
+.guide{position:absolute;background:var(--gd);z-index:55}
+.guide.v{width:1px;top:0;bottom:0;cursor:ew-resize}
+.guide.h{height:1px;left:0;right:0;cursor:ns-resize}
+.snapline{position:absolute;background:#ff3b6b;z-index:58;pointer-events:none}
+.margins{position:absolute;inset:0;pointer-events:none;z-index:5}
+.margins i{position:absolute;background:rgba(79,140,255,.28)}
+
+#dlg{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;
+  align-items:center;justify-content:center;z-index:80}
+#dlg .box{background:var(--pan);border:1px solid var(--line);border-radius:10px;
+  padding:20px 22px;width:390px}
+#dlg h3{margin:0 0 6px;font-size:15px}
+#dlg p{margin:0 0 14px;color:var(--dim);font-size:11.5px;line-height:1.5}
+#dlg .row{display:flex;gap:8px;margin-top:14px}
+#dlg .opt{flex:1;text-align:left;padding:10px;line-height:1.35}
+#dlg .opt small{display:block;color:var(--dim);font-size:10px;margin-top:3px}
+
+#tip{position:fixed;left:250px;bottom:8px;color:var(--dim);font-size:10.5px;z-index:35}
+#hud{position:fixed;right:10px;bottom:8px;color:var(--dim);font-size:10.5px;z-index:35;
+  font-variant-numeric:tabular-nums}
+
+/* ── baski: tezgah gider, yalniz sayfalar kalir ────────────────────── */
+#print{display:none}
+@media print{
+  #bar,#lib,#stage,#tip,#hud,#dlg{display:none!important}
+  #print{display:block}
+  .sheet{position:relative;display:flex;page-break-after:always;break-after:page;
+    background:#fff}
+  .sheet:last-child{page-break-after:auto;break-after:auto}
+  .sheet .pg{page-break-after:auto;break-after:auto}
+  .hnd,.guide,.snapline,.margins,.lbl{display:none!important}
+}
+</style>
+</head>
+<body>
+
+<div id="bar">
+  <b>Paintings since 2019</b><span class="muted" id="pgcount"></span>
+  <span style="width:10px"></span>
+  <button id="zo">−</button><span id="zl" class="muted">50%</span><button id="zi">+</button>
+  <button id="zf">Sığdır</button>
+  <button id="tgSnap" class="on">Yapış</button>
+  <button id="tgGuide" class="on">Kılavuz</button>
+  <button id="tgMar" class="on">Marj</button>
+  <span class="sp"></span>
+  <button id="dup">Kopyala</button>
+  <button id="fwd">Öne</button><button id="bwd">Arkaya</button>
+  <button id="del">Sil</button>
+  <span style="width:10px"></span>
+  <button id="undo">Geri</button>
+  <button id="save">Kaydet</button><button id="load">Yükle</button>
+  <button id="reset">Sıfırla</button>
+  <button id="exp" class="on">Export</button>
+</div>
+
+<aside id="lib"><h4>Arşiv — 35 iş</h4><div id="groups"></div></aside>
+<div id="stage"><div id="sizer"><div id="doc"></div></div></div>
+<div id="print"></div>
+<div id="tip">Sürükle: taşı · Çift tık: yazıyı düzenle · Alt+sürükle: serbest ölçek ·
+  Cetvelden çek: kılavuz · Delete: sil</div>
+<div id="hud"></div>
+
+<div id="dlg"><div class="box">
+  <h3>Export</h3>
+  <p>Tarayıcının yazdırma penceresi açılır. <b>Hedef: PDF olarak kaydet</b>,
+     kenar boşlukları <b>Yok</b>, <b>Arka plan grafikleri</b> açık olmalı.
+     Yazılar yazı olarak, görseller tam çözünürlükte gider.</p>
+  <div class="row">
+    <button class="opt" data-mode="single"><b>Tek sayfa</b>
+      <small>129 sayfa · 240 × 320 mm</small></button>
+    <button class="opt" data-mode="double"><b>Çift sayfa</b>
+      <small>Açılım · 480 × 320 mm · kapak tek başına</small></button>
+  </div>
+  <div class="row"><button id="dlgX" style="flex:1">Vazgeç</button></div>
+</div></div>
+
+<script>
+'use strict';
+/* ── olcu ─────────────────────────────────────────────────────────────
+   Her sey milimetredir. Tarayici 1mm'yi 96/25.4 piksel cizer; zoom
+   yalnizca bir transform'dur, sayilara dokunmaz. Baskiya giden de bu
+   sayilardir, yani ekranda tasidigin yer kagitta o yerdir.            */
+const MM = 96 / 25.4;
+const PW = 240, PH = 320, MEASURE = 204, OUT_M = 16, IN_M = 20;
+const COLW = (MEASURE - 11 * 4) / 12, GUT = 4;
+const REGS = [18, 83, 148, 213];
+
+let model = null, arch = null;
+let zoom = 0.5, snap = true, showGuides = true, showMar = true;
+let sel = null;                  // {pi, ei}
+let guides = { v: [], h: [] };   // serim koordinatinda (0..480, 0..320)
+let undoStack = [];
+
+const $ = s => document.querySelector(s);
+const el = (t, c) => { const e = document.createElement(t); if (c) e.className = c; return e; };
+const KEY = 'yo-booklet-editor-v1';
+
+/* ── yukleme ───────────────────────────────────────────────────────── */
+async function boot() {
+  // Veri bir betik olarak gelir; boylece dosya cift tiklanarak da acilir.
+  let m, a;
+  if (window.BOOKLET) { m = window.BOOKLET.model; a = window.BOOKLET.archive; }
+  else {
+    [m, a] = await Promise.all([
+      fetch('editor/model.json').then(r => r.json()),
+      fetch('editor/archive.json').then(r => r.json())
+    ]);
+  }
+  arch = a;
+  const saved = localStorage.getItem(KEY);
+  model = saved ? JSON.parse(saved) : m;
+  if (!model.guides) model.guides = { v: [], h: [] };
+  guides = model.guides;
+  $('#pgcount').textContent = ' · ' + model.pages.length + ' sayfa';
+  buildLib(); render(); fit();
+}
+
+/* ── arsiv paneli: is is, acilip kapanan ──────────────────────────── */
+function buildLib() {
+  const box = $('#groups');
+  arch.groups.forEach(g => {
+    const d = el('details', 'grp');
+    const s = el('summary');
+    s.innerHTML = '<span class="num">' + String(g.n).padStart(2, '0') + '</span>' +
+                  '<span>' + esc(g.title) + '</span><span class="yr">' + g.year + '</span>';
+    d.appendChild(s);
+    const t = el('div', 'thumbs');
+    g.items.forEach(it => {
+      if (!it.thumb && !it.full) return;
+      const f = el('figure');
+      f.draggable = true;
+      const im = el('img');
+      im.src = it.thumb || it.full;
+      im.loading = 'lazy';
+      f.appendChild(im);
+      const cap = el('figcaption');
+      cap.textContent = it.name + (it.px ? ' · ' + it.px + 'px' : '');
+      f.appendChild(cap);
+      f.title = it.file + (it.px ? '  ' + it.px + ' px' : '');
+      f.addEventListener('dragstart', ev => {
+        ev.dataTransfer.setData('text/plain',
+          JSON.stringify({ src: it.full || it.thumb }));
+      });
+      t.appendChild(f);
+    });
+    d.appendChild(t);
+    box.appendChild(d);
+  });
+}
+function esc(s) { return String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])); }
+
+/* ── serimler ─────────────────────────────────────────────────────────
+   Kitap tek sayfalik bir kapakla acilir, sonrasi ciftler halinde gider:
+   (2,3), (4,5)... Bu, kitabin kendi kuruluşudur.                      */
+function spreads() {
+  const out = [[0]];
+  for (let i = 1; i < model.pages.length; i += 2) {
+    out.push(i + 1 < model.pages.length ? [i, i + 1] : [i]);
+  }
+  return out;
+}
+
+function render() {
+  const doc = $('#doc');
+  doc.innerHTML = '';
+  spreads().forEach((sp, si) => {
+    const w = el('div', 'spread' + (sp.length === 1 ? ' solo' : ''));
+    w.style.width = (sp.length * PW) + 'mm';
+    w.dataset.si = si;
+    const lab = el('div', 'lbl');
+    lab.textContent = sp.map(i => 'p' + (i + 1)).join(' – ');
+    w.appendChild(lab);
+    sp.forEach(pi => w.appendChild(drawPage(pi)));
+    drawGuides(w, sp.length);
+    doc.appendChild(w);
+  });
+  applyZoom();
+  if (sel) markSel();
+}
+
+function drawPage(pi) {
+  const p = model.pages[pi];
+  const pg = el('section', 'pg ' + (p.cls || ''));
+  pg.dataset.pi = pi;
+  const tp = el('div', 'tp');
+  p.els.forEach((e, ei) => tp.appendChild(drawEl(e, pi, ei)));
+  pg.appendChild(tp);
+  if (showMar) pg.appendChild(marginBox(pi));
+  pg.addEventListener('dragover', ev => ev.preventDefault());
+  pg.addEventListener('drop', ev => onDrop(ev, pi));
+  return pg;
+}
+
+function marginBox(pi) {
+  const verso = (pi + 1) % 2 === 0;
+  const ml = verso ? OUT_M : IN_M, mr = verso ? IN_M : OUT_M;
+  const m = el('div', 'margins');
+  const add = (x, y, w, h) => {
+    const i = el('i');
+    i.style.cssText = `left:${x}mm;top:${y}mm;width:${w}mm;height:${h}mm`;
+    m.appendChild(i);
+  };
+  add(ml, 0, .2, PH); add(PW - mr, 0, .2, PH);
+  add(0, 18, PW, .2); add(0, PH - 22, PW, .2);
+  REGS.slice(1).forEach(r => add(ml, r, MEASURE, .1));
+  return m;
+}
+
+function drawEl(e, pi, ei) {
+  let n;
+  if (e.t === 'img') {
+    n = el('img', 'el ' + (e.cls || ''));
+    n.src = e.src;
+    n.style.cssText = `left:${e.x}mm;top:${e.y}mm;width:${e.w}mm;height:${e.h}mm` +
+      (e.pos ? `;object-position:${e.pos}` : '');
+    n.draggable = false;
+  } else if (e.t === 'txt') {
+    n = el('div', 'el b ' + (e.cls || ''));
+    n.style.cssText = `left:${e.x}mm;top:${e.y}mm;width:${e.w}mm;` + (e.style || '');
+    n.innerHTML = e.html;
+  } else if (e.t === 'rule') {
+    n = el('div', 'el ' + e.cls);
+    n.style.cssText = `left:${e.x}mm;top:${e.y}mm` +
+      (e.w ? `;width:${e.w}mm` : '') + (e.h ? `;height:${e.h}mm;width:.35pt` : '');
+  } else if (e.t === 'frame') {
+    n = el('div', 'el fr');
+    n.style.cssText = `left:${e.x}mm;top:${e.y}mm;width:${e.w}mm;height:${e.h}mm`;
+  } else {
+    n = el('div', 'el shade');
+  }
+  n.dataset.pi = pi; n.dataset.ei = ei;
+  if (e.t !== 'shade') n.addEventListener('pointerdown', ev => onGrab(ev, pi, ei, n));
+  if (e.t === 'txt') n.addEventListener('dblclick', ev => editText(ev, pi, ei, n));
+  return n;
+}
+
+/* ── secim ────────────────────────────────────────────────────────── */
+function markSel() {
+  document.querySelectorAll('.sel').forEach(x => x.classList.remove('sel'));
+  document.querySelectorAll('.hnd').forEach(x => x.remove());
+  if (!sel) { $('#hud').textContent = ''; return; }
+  const n = nodeOf(sel);
+  if (!n) return;
+  n.classList.add('sel');
+  const e = model.pages[sel.pi].els[sel.ei];
+  if (e.t === 'img' || e.t === 'frame') {
+    ['nw', 'ne', 'sw', 'se'].forEach(k => {
+      const h = el('div', 'hnd ' + k);
+      const x = (k[1] === 'w' ? e.x : e.x + e.w), y = (k[0] === 'n' ? e.y : e.y + e.h);
+      h.style.left = `calc(${x}mm - 4.5px)`; h.style.top = `calc(${y}mm - 4.5px)`;
+      h.addEventListener('pointerdown', ev => onResize(ev, k));
+      n.parentNode.appendChild(h);
+    });
+  }
+  $('#hud').textContent = fmt(e);
+}
+function fmt(e) {
+  const r = v => Math.round(v * 10) / 10;
+  return e.t.toUpperCase() + '  x ' + r(e.x) + '  y ' + r(e.y) +
+    (e.w ? '  w ' + r(e.w) : '') + (e.h ? '  h ' + r(e.h) : '');
+}
+function nodeOf(s) {
+  return document.querySelector(`.el[data-pi="${s.pi}"][data-ei="${s.ei}"]`);
+}
+
+/* ── tasima ───────────────────────────────────────────────────────── */
+function onGrab(ev, pi, ei, node) {
+  if (node.isContentEditable) return;
+  ev.preventDefault(); ev.stopPropagation();
+  sel = { pi, ei }; markSel();
+  const e = model.pages[pi].els[ei];
+  if (e.t === 'shade') return;
+  push();
+  const sx = ev.clientX, sy = ev.clientY, ox = e.x, oy = e.y;
+  const move = m => {
+    let nx = ox + (m.clientX - sx) / (MM * zoom);
+    let ny = oy + (m.clientY - sy) / (MM * zoom);
+    if (snap && !m.altKey) { nx = snapX(nx, e, pi); ny = snapY(ny, e, pi); }
+    e.x = nx; e.y = ny;
+    node.style.left = nx + 'mm'; node.style.top = ny + 'mm';
+    positionHandles(e, node);
+    $('#hud').textContent = fmt(e);
+  };
+  const up = () => {
+    document.removeEventListener('pointermove', move);
+    document.removeEventListener('pointerup', up);
+    store();
+  };
+  document.addEventListener('pointermove', move);
+  document.addEventListener('pointerup', up);
+}
+
+function positionHandles(e, node) {
+  const hs = node.parentNode.querySelectorAll('.hnd');
+  if (!hs.length) return;
+  const ks = ['nw', 'ne', 'sw', 'se'];
+  hs.forEach((h, i) => {
+    const k = ks[i];
+    const x = (k[1] === 'w' ? e.x : e.x + e.w), y = (k[0] === 'n' ? e.y : e.y + e.h);
+    h.style.left = `calc(${x}mm - 4.5px)`; h.style.top = `calc(${y}mm - 4.5px)`;
+  });
+}
+
+/* ── olcekleme: gorselin orani korunur, Alt basiliysa serbest ─────── */
+function onResize(ev, k) {
+  ev.preventDefault(); ev.stopPropagation();
+  push();
+  const e = model.pages[sel.pi].els[sel.ei];
+  const node = nodeOf(sel);
+  const sx = ev.clientX, sy = ev.clientY;
+  const o = { x: e.x, y: e.y, w: e.w, h: e.h }, ar = e.w / e.h;
+  const move = m => {
+    const dx = (m.clientX - sx) / (MM * zoom), dy = (m.clientY - sy) / (MM * zoom);
+    let w = o.w + (k[1] === 'e' ? dx : -dx);
+    let h = o.h + (k[0] === 's' ? dy : -dy);
+    if (e.t === 'img' && !m.altKey) h = w / ar;      // oran bozulmaz
+    w = Math.max(6, w); h = Math.max(6, h);
+    e.w = w; e.h = h;
+    e.x = k[1] === 'e' ? o.x : o.x + o.w - w;
+    e.y = k[0] === 's' ? o.y : o.y + o.h - h;
+    node.style.cssText = node.style.cssText
+      .replace(/left:[^;]+/, `left:${e.x}mm`).replace(/top:[^;]+/, `top:${e.y}mm`)
+      .replace(/width:[^;]+/, `width:${e.w}mm`).replace(/height:[^;]+/, `height:${e.h}mm`);
+    positionHandles(e, node);
+    $('#hud').textContent = fmt(e);
+  };
+  const up = () => {
+    document.removeEventListener('pointermove', move);
+    document.removeEventListener('pointerup', up); store();
+  };
+  document.addEventListener('pointermove', move);
+  document.addEventListener('pointerup', up);
+}
+
+/* ── yapisma: marj, register, kolon, kilavuz ve komsu kenarlar ────── */
+function targetsX(pi, self) {
+  const verso = (pi + 1) % 2 === 0;
+  const ml = verso ? OUT_M : IN_M;
+  const t = [ml, ml + MEASURE, PW / 2];
+  for (let i = 0; i <= 12; i++) t.push(ml + i * (COLW + GUT));
+  guides.v.forEach(g => { const local = g - (verso ? 0 : PW); t.push(local); });
+  model.pages[pi].els.forEach(e => {
+    if (e === self || e.t === 'shade') return;
+    t.push(e.x); if (e.w) t.push(e.x + e.w);
+  });
+  return t;
+}
+function targetsY(pi, self) {
+  const t = [18, PH - 22, PH / 2].concat(REGS);
+  guides.h.forEach(g => t.push(g));
+  model.pages[pi].els.forEach(e => {
+    if (e === self || e.t === 'shade') return;
+    t.push(e.y); if (e.h) t.push(e.y + e.h);
+  });
+  return t;
+}
+function nearest(v, list, tol) {
+  let best = v, d = tol;
+  list.forEach(t => { const k = Math.abs(t - v); if (k < d) { d = k; best = t; } });
+  return best;
+}
+function snapX(v, e, pi) {
+  const tol = 1.6, t = targetsX(pi, e);
+  const a = nearest(v, t, tol);
+  if (a !== v) return a;
+  if (e.w) { const b = nearest(v + e.w, t, tol); if (b !== v + e.w) return b - e.w; }
+  return v;
+}
+function snapY(v, e, pi) {
+  const tol = 1.6, t = targetsY(pi, e);
+  const a = nearest(v, t, tol);
+  if (a !== v) return a;
+  if (e.h) { const b = nearest(v + e.h, t, tol); if (b !== v + e.h) return b - e.h; }
+  return v;
+}
+
+/* ── yazi duzenleme: yerinde, gercek yazi olarak ──────────────────── */
+function editText(ev, pi, ei, node) {
+  ev.stopPropagation();
+  node.contentEditable = 'true';
+  node.classList.add('editing');
+  node.focus();
+  const done = () => {
+    node.contentEditable = 'false';
+    node.classList.remove('editing');
+    push(); model.pages[pi].els[ei].html = node.innerHTML; store();
+    node.removeEventListener('blur', done);
+  };
+  node.addEventListener('blur', done);
+}
+
+/* ── arsivden birakma ─────────────────────────────────────────────── */
+function onDrop(ev, pi) {
+  ev.preventDefault();
+  let data;
+  try { data = JSON.parse(ev.dataTransfer.getData('text/plain')); } catch (_) { return; }
+  if (!data || !data.src) return;
+  const pg = ev.currentTarget.getBoundingClientRect();
+  const x = (ev.clientX - pg.left) / (MM * zoom);
+  const y = (ev.clientY - pg.top) / (MM * zoom);
+  const probe = new Image();
+  probe.onload = () => {
+    const ar = probe.naturalWidth / probe.naturalHeight;
+    const w = 90, h = w / ar;
+    push();
+    model.pages[pi].els.push({ t: 'img', cls: '', src: data.src,
+      x: Math.round((x - w / 2) * 10) / 10, y: Math.round((y - h / 2) * 10) / 10,
+      w: w, h: h, pos: '' });
+    sel = { pi, ei: model.pages[pi].els.length - 1 };
+    store(); render();
+  };
+  probe.src = data.src;
+}
+
+/* ── kilavuzlar: cetvelden cekilir, serim boyunca uzanir ──────────── */
+function drawGuides(wrap, npg) {
+  if (!showGuides) return;
+  const span = npg * PW;
+  guides.v.forEach((g, i) => {
+    if (g > span) return;
+    const d = el('div', 'guide v'); d.style.left = g + 'mm';
+    d.addEventListener('pointerdown', ev => dragGuide(ev, 'v', i));
+    wrap.appendChild(d);
+  });
+  guides.h.forEach((g, i) => {
+    const d = el('div', 'guide h'); d.style.top = g + 'mm';
+    d.addEventListener('pointerdown', ev => dragGuide(ev, 'h', i));
+    wrap.appendChild(d);
+  });
+}
+function dragGuide(ev, axis, i) {
+  ev.preventDefault(); ev.stopPropagation();
+  push();
+  const s = axis === 'v' ? ev.clientX : ev.clientY, o = guides[axis][i];
+  const move = m => {
+    const d = ((axis === 'v' ? m.clientX : m.clientY) - s) / (MM * zoom);
+    guides[axis][i] = Math.round((o + d) * 10) / 10;
+    render();
+  };
+  const up = () => {
+    document.removeEventListener('pointermove', move);
+    document.removeEventListener('pointerup', up);
+    if (guides[axis][i] < -12) guides[axis].splice(i, 1);   // disari at, sil
+    store(); render();
+  };
+  document.addEventListener('pointermove', move);
+  document.addEventListener('pointerup', up);
+}
+$('#stage').addEventListener('dblclick', ev => {
+  if (!ev.altKey) return;
+  const sp = ev.target.closest('.spread'); if (!sp) return;
+  const r = sp.getBoundingClientRect();
+  guides.v.push(Math.round((ev.clientX - r.left) / (MM * zoom) * 10) / 10);
+  store(); render();
+});
+
+/* ── zoom ─────────────────────────────────────────────────────────── */
+function applyZoom() {
+  // Olcek bir transform'dur; kaydirma alani, olceklenmis olcuyu tasiyan
+  // bir kapsayiciyla bildirilir. Sayilara dokunulmaz.
+  const doc = $('#doc'), sizer = $('#sizer');
+  doc.style.transform = 'scale(' + zoom + ')';
+  doc.style.width = (Math.max(...spreads().map(s => s.length)) * PW * MM) + 'px';
+  sizer.style.width  = doc.offsetWidth  * zoom + 'px';
+  sizer.style.height = doc.offsetHeight * zoom + 'px';
+  $('#zl').textContent = Math.round(zoom * 100) + '%';
+}
+function fit() {
+  const avail = $('#stage').clientWidth - 80;
+  zoom = Math.min(1.1, avail / (2 * PW * MM));
+  applyZoom();
+}
+
+/* ── gecmis ve kayit ──────────────────────────────────────────────── */
+function push() {
+  undoStack.push(JSON.stringify({ pages: model.pages, guides }));
+  if (undoStack.length > 40) undoStack.shift();
+}
+function store() {
+  model.guides = guides;
+  localStorage.setItem(KEY, JSON.stringify(model));
+}
+
+/* ── dugmeler ─────────────────────────────────────────────────────── */
+$('#zi').onclick = () => { zoom = Math.min(2, zoom * 1.25); applyZoom(); };
+$('#zo').onclick = () => { zoom = Math.max(.12, zoom / 1.25); applyZoom(); };
+$('#zf').onclick = fit;
+$('#tgSnap').onclick = e => { snap = !snap; e.target.classList.toggle('on', snap); };
+$('#tgGuide').onclick = e => { showGuides = !showGuides; e.target.classList.toggle('on', showGuides); render(); };
+$('#tgMar').onclick = e => { showMar = !showMar; e.target.classList.toggle('on', showMar); render(); };
+$('#del').onclick = () => {
+  if (!sel) return;
+  push(); model.pages[sel.pi].els.splice(sel.ei, 1); sel = null; store(); render();
+};
+$('#dup').onclick = () => {
+  if (!sel) return;
+  push();
+  const e = JSON.parse(JSON.stringify(model.pages[sel.pi].els[sel.ei]));
+  e.x += 6; e.y += 6;
+  model.pages[sel.pi].els.push(e);
+  sel = { pi: sel.pi, ei: model.pages[sel.pi].els.length - 1 };
+  store(); render();
+};
+$('#fwd').onclick = () => moveZ(1);
+$('#bwd').onclick = () => moveZ(-1);
+function moveZ(d) {
+  if (!sel) return;
+  const a = model.pages[sel.pi].els, i = sel.ei, j = i + d;
+  if (j < 0 || j >= a.length) return;
+  push(); [a[i], a[j]] = [a[j], a[i]]; sel.ei = j; store(); render();
+}
+$('#undo').onclick = () => {
+  if (!undoStack.length) return;
+  const s = JSON.parse(undoStack.pop());
+  model.pages = s.pages; guides = s.guides; model.guides = guides;
+  sel = null; store(); render();
+};
+$('#save').onclick = () => {
+  const b = new Blob([JSON.stringify(model)], { type: 'application/json' });
+  const a = el('a'); a.href = URL.createObjectURL(b);
+  a.download = 'booklet-layout.json'; a.click();
+};
+$('#load').onclick = () => {
+  const inp = el('input'); inp.type = 'file'; inp.accept = '.json';
+  inp.onchange = () => {
+    const f = inp.files[0]; if (!f) return;
+    f.text().then(t => {
+      push(); model = JSON.parse(t); guides = model.guides || { v: [], h: [] };
+      sel = null; store(); render();
+    });
+  };
+  inp.click();
+};
+$('#reset').onclick = async () => {
+  if (!confirm('Bütün değişiklikler silinsin ve kitabın basılmış hali geri gelsin mi?')) return;
+  localStorage.removeItem(KEY);
+  model = window.BOOKLET ? JSON.parse(JSON.stringify(window.BOOKLET.model))
+                         : await fetch('editor/model.json').then(r => r.json());
+  guides = model.guides = { v: [], h: [] }; sel = null; render();
+};
+
+document.addEventListener('keydown', ev => {
+  if (document.activeElement && document.activeElement.isContentEditable) return;
+  if (ev.key === 'Delete' || ev.key === 'Backspace') { ev.preventDefault(); $('#del').click(); }
+  if (ev.key === 'Escape') { sel = null; markSel(); }
+  if ((ev.ctrlKey || ev.metaKey) && ev.key === 'z') { ev.preventDefault(); $('#undo').click(); }
+  if (!sel) return;
+  const step = ev.shiftKey ? 5 : (ev.altKey ? 0.1 : 1);
+  const e = model.pages[sel.pi].els[sel.ei];
+  const d = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] }[ev.key];
+  if (!d) return;
+  ev.preventDefault(); push();
+  e.x += d[0]; e.y += d[1];
+  const n = nodeOf(sel);
+  n.style.left = e.x + 'mm'; n.style.top = e.y + 'mm';
+  positionHandles(e, n); $('#hud').textContent = fmt(e); store();
+});
+$('#stage').addEventListener('pointerdown', ev => {
+  if (ev.target.closest('.el') || ev.target.closest('.hnd') || ev.target.closest('.guide')) return;
+  sel = null; markSel();
+});
+
+/* ── export ───────────────────────────────────────────────────────────
+   Sayfalar oldugu gibi baskiya kopyalanir: yazi yazi kalir, gorsel
+   kaynagindaki cozunurlukle gider. Tek sayfa 240x320, cift sayfa
+   480x320; kapak cift sayfada kendi yapragininin saginda durur.      */
+$('#exp').onclick = () => { $('#dlg').style.display = 'flex'; };
+$('#dlgX').onclick = () => { $('#dlg').style.display = 'none'; };
+document.querySelectorAll('#dlg .opt').forEach(b => {
+  b.onclick = () => { $('#dlg').style.display = 'none'; doExport(b.dataset.mode); };
+});
+
+function doExport(mode) {
+  const host = $('#print');
+  host.innerHTML = '';
+  const double = mode === 'double';
+  const sw = double ? PW * 2 : PW;
+  let st = document.getElementById('pgsize');
+  if (!st) { st = el('style'); st.id = 'pgsize'; document.head.appendChild(st); }
+  st.textContent = `@page{size:${sw}mm ${PH}mm;margin:0}` +
+                   `.sheet{width:${sw}mm;height:${PH}mm}`;
+  const groups = double ? spreads() : model.pages.map((_, i) => [i]);
+  groups.forEach(g => {
+    const sh = el('div', 'sheet');
+    if (double && g.length === 1) {          // kapak: sag yaprakta tek basina
+      const blank = el('div', 'pg');
+      blank.style.background = '#fff';
+      sh.appendChild(blank);
+    }
+    g.forEach(pi => sh.appendChild(drawPrintPage(pi)));
+    host.appendChild(sh);
+  });
+  setTimeout(() => { window.print(); }, 120);
+}
+function drawPrintPage(pi) {
+  const p = model.pages[pi];
+  const pg = el('section', 'pg ' + (p.cls || ''));
+  const tp = el('div', 'tp');
+  p.els.forEach((e, ei) => {
+    const n = drawEl(e, pi, ei);
+    n.classList.remove('el');
+    tp.appendChild(n);
+  });
+  pg.appendChild(tp);
+  return pg;
+}
+window.addEventListener('afterprint', () => { $('#print').innerHTML = ''; });
+window.addEventListener('resize', () => applyZoom());
+boot();
+</script>
+</body>
+</html>
