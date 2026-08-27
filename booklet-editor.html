@@ -100,6 +100,9 @@ body.props #lib,body.props #stage,body.iprops #lib,body.iprops #stage{top:84px}
 #dlg .row{display:flex;gap:8px;margin-top:14px}
 #dlg .opt{flex:1;text-align:left;padding:10px;line-height:1.35}
 #dlg .opt small{display:block;color:var(--dim);font-size:10px;margin-top:3px}
+#dlg .qopt{border-color:var(--line)}
+#dlg .qopt.on{background:var(--acc);border-color:var(--acc);color:#fff}
+#dlg .qopt.on small{color:rgba(255,255,255,.8)}
 
 #tip{position:fixed;left:250px;bottom:8px;color:var(--dim);font-size:10.5px;z-index:35}
 #hud{position:fixed;right:10px;bottom:8px;color:var(--dim);font-size:10.5px;z-index:35;
@@ -187,17 +190,26 @@ body.props #lib,body.props #stage,body.iprops #lib,body.iprops #stage{top:84px}
 
 <div id="dlg"><div class="box">
   <h3>Export</h3>
-  <p>Baskı, editörden ayrı temiz bir pencerede açılır — önizleme orada
+  <p><b>Baskı kalitesi</b> görselleri 300 ppi'lık setten alır ve sayfayı
+     246 × 326 mm basar: kesim 240 × 320, her kenarda 3 mm taşma payı.
+     <b>Web kalitesi</b> ekrandaki hafif seti kesim ölçüsünde basar.<br>
+     Baskı, editörden ayrı temiz bir pencerede açılır — önizleme orada
      kilitlenmez. Açılan pencerede <b>Hedef: PDF olarak kaydet</b>,
      <b>Kenar boşlukları: Yok</b>, <b>Arka plan grafikleri: açık</b>.
      Yazılar yazı olarak, görseller tam çözünürlükte gider.<br>
      <b>129 sayfanın hepsi ağırdır.</b> Chrome takılırsa aralık vererek
      parça parça al: 1-30, 31-60, 61-90, 91-129.</p>
   <div class="row">
+    <button class="opt qopt on" data-q="print"><b>Baskı kalitesi</b>
+      <small>300 ppi görsel · 3 mm taşma payı · matbaaya verilir</small></button>
+    <button class="opt qopt" data-q="web"><b>Web kalitesi</b>
+      <small>137 ppi · kesim ölçüsünde · hafif dosya, ekran için</small></button>
+  </div>
+  <div class="row">
     <button class="opt" data-mode="single"><b>Tek sayfa</b>
-      <small>129 sayfa · 240 × 320 mm</small></button>
+      <small>129 sayfa · sırayla</small></button>
     <button class="opt" data-mode="double"><b>Çift sayfa</b>
-      <small>Açılım · 480 × 320 mm · kapak tek başına</small></button>
+      <small>Açılım · kapak tek başına</small></button>
   </div>
   <div class="row"><input id="dlgRange" placeholder="Sayfa aralığı — boş bırak: hepsi · örn 10-15"
     style="flex:1;padding:8px 10px;background:#343841;border:1px solid var(--line);
@@ -882,7 +894,14 @@ function fillImgProps() {
   $('#iprops').classList.toggle('on', !!e);
   document.body.classList.toggle('iprops', !!e);
   if (!e) return;
-  $('#fInfo').textContent = Math.round(e.w) + ' × ' + Math.round(e.h) + ' mm';
+  const px = (window.BOOKLET && window.BOOKLET.printPx || {})[e.src.split('/').pop()];
+  let ppi = '';
+  if (px && e.w) {
+    const v = Math.round(px / (e.w / 25.4));
+    ppi = ' · ' + v + ' ppi' + (v < 240 ? ' ⚠' : '');
+  }
+  $('#fInfo').textContent = Math.round(e.w) + ' × ' + Math.round(e.h) + ' mm' + ppi;
+  $('#fInfo').style.color = (px && Math.round(px / (e.w / 25.4)) < 240) ? '#ffb02e' : '';
   $('#fPct').value = '';
 }
 $('#fW').onclick = () => fitTo('w');
@@ -911,7 +930,14 @@ $('#fPct').oninput = ev => {
    480x320; kapak cift sayfada kendi yapragininin saginda durur.      */
 $('#exp').onclick = () => { $('#dlg').style.display = 'flex'; };
 $('#dlgX').onclick = () => { $('#dlg').style.display = 'none'; };
-document.querySelectorAll('#dlg .opt').forEach(b => {
+let quality = 'print';
+document.querySelectorAll('#dlg .qopt').forEach(b => {
+  b.onclick = () => {
+    quality = b.dataset.q;
+    document.querySelectorAll('#dlg .qopt').forEach(x => x.classList.toggle('on', x === b));
+  };
+});
+document.querySelectorAll('#dlg .opt[data-mode]').forEach(b => {
   b.onclick = () => { $('#dlg').style.display = 'none'; doExport(b.dataset.mode); };
 });
 
@@ -929,22 +955,30 @@ async function doExport(mode) {
   host.innerHTML = '';
   const double = mode === 'double';
   const sw = double ? PW * 2 : PW;
+  const hq = quality === 'print';
+  const BL = hq ? 3 : 0;                       // her kenarda tasma payi
   let st = document.getElementById('pgsize');
   if (!st) { st = el('style'); st.id = 'pgsize'; document.head.appendChild(st); }
-  st.textContent = `@page{size:${sw}mm ${PH}mm;margin:0}` +
-                   `.sheet{width:${sw}mm;height:${PH}mm}`;
+  st.textContent = `@page{size:${sw + 2 * BL}mm ${PH + 2 * BL}mm;margin:0}` +
+                   `.sheet{width:${sw + 2 * BL}mm;height:${PH + 2 * BL}mm}`;
   const rg = parseRange($('#dlgRange').value);
   let groups = double ? spreads() : model.pages.map((_, i) => [i]);
   if (rg) groups = groups.filter(g => g.some(pi => pi >= rg[0] && pi <= rg[1]));
   if (!groups.length) { note('O aralıkta sayfa yok.'); return; }
   groups.forEach(g => {
     const sh = el('div', 'sheet');
+    // Tasma payinda icerik 3 mm iceri kayar; kenardan tasan gorsel boylece
+    // kesim cizgisinin disina gercekten uzanir.
+    const inner = el('div', 'sheetin');
+    inner.style.cssText = `position:absolute;left:${BL}mm;top:${BL}mm;` +
+      `width:${sw}mm;height:${PH}mm;display:flex`;
     if (double && g.length === 1) {          // kapak: sag yaprakta tek basina
       const blank = el('div', 'pg');
       blank.style.background = '#fff';
-      sh.appendChild(blank);
+      inner.appendChild(blank);
     }
-    g.forEach(pi => sh.appendChild(drawPrintPage(pi)));
+    g.forEach(pi => inner.appendChild(drawPrintPage(pi, hq)));
+    sh.appendChild(inner);
     host.appendChild(sh);
   });
   // Tarayici, gorselleri cozmeden yazdirma penceresini acarsa uzun uzun
@@ -969,8 +1003,9 @@ async function doExport(mode) {
     '<title>Paintings since 2019 — export</title>' +
     '<link rel="stylesheet" href="' + CSSHREF + '">' +
     '<style>html,body{margin:0;padding:0;background:#fff}' +
-    '@page{size:' + sw + 'mm ' + PH + 'mm;margin:0}' +
-    '.sheet{width:' + sw + 'mm;height:' + PH + 'mm;display:flex;position:relative;' +
+    '@page{size:' + (sw + 2 * BL) + 'mm ' + (PH + 2 * BL) + 'mm;margin:0}' +
+    '.sheet{width:' + (sw + 2 * BL) + 'mm;height:' + (PH + 2 * BL) + 'mm;' +
+    'display:block;position:relative;' +
     'page-break-after:always;break-after:page;background:#fff;overflow:hidden}' +
     '.sheet:last-child{page-break-after:auto;break-after:auto}' +
     '.pg{color:#111}.pg.dark{color:#fff}' +
@@ -1003,17 +1038,23 @@ function busy(t) {
   }
   b.textContent = t;
 }
-function drawPrintPage(pi) {
+function drawPrintPage(pi, hq) {
   const p = model.pages[pi];
   const pg = el('section', 'pg ' + (p.cls || ''));
   const tp = el('div', 'tp');
   p.els.forEach((e, ei) => {
     const n = drawEl(e, pi, ei);
     n.classList.remove('el');
+    // Baski kalitesinde ayni kesitin 300 ppi'lik dosyasi kullanilir;
+    // adlari ayni oldugu icin klasor degistirmek yeter.
+    if (hq && n.tagName === 'IMG') n.src = hiSrc(e.src);
     tp.appendChild(n);
   });
   pg.appendChild(tp);
   return pg;
+}
+function hiSrc(src) {
+  return src.replace(/(^|\/)img\//, '$1img-print/');
 }
 window.addEventListener('afterprint', () => { $('#print').innerHTML = ''; });
 window.addEventListener('resize', () => applyZoom());
