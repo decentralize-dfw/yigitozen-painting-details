@@ -73,7 +73,7 @@ SECONDARY = 0.300      # ikincil: karsisindakiyle konusacak kadar buyuk
 # ── gorsel hazirligi ─────────────────────────────────────────────────
 # Basilacak genislige gore kesilir. Serit gibi cok genis basilan parcalar
 # icin tavan yukselir; kaynakta olmayan piksel uydurulmaz, buyutme yoktur.
-CACHE, MADE = {}, set()
+CACHE, MADE, MANIFEST = {}, set(), {}
 
 # Kagit icin milimetreye 11.81 piksel, yani 300 ppi; ekran icin 8.0, yani
 # 203 ppi. Ekran sayisi bir zamanlar 5.4 idi, 137 ppi: ekranda yeterli,
@@ -169,6 +169,7 @@ def prep(src, mm, tag, box=None, hi=1360):
     if key in CACHE: return CACHE[key]
     path = best_src(src) or os.path.join(ROOT, src.lstrip('/'))
     im = Image.open(path)
+    src_w = im.size[0]
     if im.mode not in ('RGB', 'L'): im = im.convert('RGB')
     if box:
         w, h = im.size
@@ -182,6 +183,14 @@ def prep(src, mm, tag, box=None, hi=1360):
                            quality=QUAL, optimize=True,
                            subsampling=0 if PRINT else 2)
     MADE.add(name)
+    # Kunye: bu kesitin nereden, hangi kadrajla ve kaynakta kac pikselle
+    # alindigi. Duzenleyicide bir gorsel buyutulunce onceden kesilmis
+    # dosya yetmez; layout-export.py bunu okuyup kaynaktan yeniden keser.
+    MANIFEST[name] = {'src': src, 'box': list(box) if box else None,
+                      'from': os.path.relpath(path, os.path.dirname(HERE))
+                              if path.startswith(os.path.dirname(HERE))
+                              else path,
+                      'srcpx': src_w, 'px': im.size[0]}
     CACHE[key] = (os.path.basename(OUT) + '/' + name, ar)
     return CACHE[key]
 
@@ -1950,6 +1959,13 @@ for name in ['Index', 'What comes back'] + [x['name'] for x in MOTIFS['sections'
 json.dump({'marks': marks, 'pages': len(PAGES), 'short': SHORT},
           open(os.path.join(HERE, 'outline-short.json' if SHORT else 'outline.json'),
                'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+
+# Kesitlerin kunyesi, uretildikleri klasorun yaninda durur. Duzeni disari
+# aktaran betik bunu okur: bir gorsel sayfada buyutulmusse onceden kesilmis
+# dosya yetmez, kaynaga donup yeniden keser.
+if not SHORT:
+    json.dump(MANIFEST, open(os.path.join(OUT, 'manifest.json'), 'w',
+                             encoding='utf-8'), ensure_ascii=False, indent=0)
 
 # Kullanilmayan gorseller ayiklanir; kisa basim ayni adlari kullanir.
 if not SHORT:

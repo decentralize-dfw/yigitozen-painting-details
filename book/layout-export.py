@@ -5,71 +5,155 @@ booklet-layout.json -> iki PDF
 Duzenleyicide "Düzeni indir" dedigin dosyayi alir ve kitabi ayni duzenle
 iki kez basar:
 
-  Yigit-Ozen-Paintings-Print-Master.pdf   246 x 326 mm, 300 ppi'lik set,
-                                          her kenarda 3 mm tasma payi
+  Yigit-Ozen-Paintings-Print-Master.pdf   246 x 326 mm, 3 mm tasma payi,
+                                          her gorsel yerlestirildigi
+                                          olcude 300 ppi hedefiyle
   Yigit-Ozen-Paintings-Web.pdf            240 x 320 mm, ekran seti
 
-Tarayicinin yazdir penceresinden gecmez: dosyalar burada, her seferinde
-ayni bicimde uretilir. Yazi yazi olarak kalir, gorsel buyutulmez.
+Onemli olan sudur: onceden kesilmis dosyalari oldugu gibi kullanmaz.
+Duzeni okur, her gorselin sayfada kac milimetre oldugunu gorur, kunyeden
+o kesitin hangi kaynaktan hangi kadrajla alindigini bulur ve kaynak
+yetiyorsa o olcu icin yeniden keser. Boylece editorde bir resmi
+buyuttugunde cikti da buyur; kucultursen dosya kucultulur. Kaynakta
+olmayan piksel hicbir kosulda uydurulmaz.
 
     python3 layout-export.py booklet-layout.json
-    python3 layout-export.py booklet-layout.json --double   # web dosyasi acilim
+    python3 layout-export.py booklet-layout.json --double   # web acilim
     python3 layout-export.py booklet-layout.json --only web
-
-Duzeni sitedeki duzenleyiciden de, depodakinden de alabilirsin: gorsel
-yollari iki bicimde de taninir.
+    python3 layout-export.py booklet-layout.json --ppi 400  # baski hedefi
 """
-import os, sys, json, re, subprocess
+import os, sys, json, re, subprocess, hashlib
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, os.pardir))
+SITE = os.path.abspath(os.path.join(REPO, os.pardir, 'yigit'))
 ARGS = [a for a in sys.argv[1:] if not a.startswith('--')]
 DOUBLE = '--double' in sys.argv
 ONLY = None
+TARGET = 300.0
 for i, a in enumerate(sys.argv):
     if a == '--only' and i + 1 < len(sys.argv): ONLY = sys.argv[i + 1]
+    if a == '--ppi' and i + 1 < len(sys.argv): TARGET = float(sys.argv[i + 1])
 
 SRC = ARGS[0] if ARGS else os.path.join(REPO, 'editor', 'model.json')
 PW, PH = 240.0, 320.0
+WEB_PPI = 203.0
 
-# ── gorsel klasorleri: duzen sitedeki kopyadan da gelebilir ─────────
-# Sitede yollar 'img/x.jpg', depoda 'editor/img/x.jpg'. Ikisi de ayni
-# dosyayi gosterir; burada mutlak yola cevrilir ki HTML nerede durursa
-# dursun gorsel bulunsun.
+from PIL import Image
+Image.MAX_IMAGE_PIXELS = None
+
+# ── nerede ne var ───────────────────────────────────────────────────
+# Duzen sitedeki kopyadan da gelebilir: orada yollar 'img/x.jpg',
+# depoda 'editor/img/x.jpg'. Ikisi de ayni dosyayi gosterir.
 CAND = [os.path.join(REPO, 'editor'), os.path.join(REPO, 'book'),
-        os.path.abspath(os.path.join(REPO, os.pardir, 'yigit', 'booklet-editor'))]
+        os.path.join(SITE, 'booklet-editor')]
 ROOTS = [d for d in CAND if os.path.isdir(os.path.join(d, 'img'))]
-if not ROOTS:
-    sys.exit('gorsel klasoru bulunamadi: editor/img aranan yerlerde yok')
+SETS = [os.path.join(HERE, 'images-print'), os.path.join(HERE, 'images')]
+if not ROOTS and not any(os.path.isdir(d) for d in SETS):
+    sys.exit('gorsel klasoru bulunamadi')
 
-CSS = None
-for d in ROOTS + [HERE]:
-    if os.path.isfile(os.path.join(d, 'book.css')):
-        CSS = os.path.join(d, 'book.css'); break
+CSS = next((os.path.join(d, 'book.css') for d in ROOTS + [HERE]
+            if os.path.isfile(os.path.join(d, 'book.css'))), None)
 if not CSS: sys.exit('book.css bulunamadi')
 
+# ── kunye: hangi kesit hangi kaynaktan, hangi kadrajla ──────────────
+MAN = {}
+for d in SETS:
+    p = os.path.join(d, 'manifest.json')
+    if os.path.isfile(p):
+        for k, v in json.load(open(p, encoding='utf-8')).items():
+            # Kaynakta en genis olani tut
+            if k not in MAN or v.get('srcpx', 0) > MAN[k].get('srcpx', 0):
+                MAN[k] = v
 
-def find(src, hq):
-    """Gorselin diskteki yeri. hq ise once baski seti aranir."""
-    base = os.path.basename(src)
+CUT = os.path.join(HERE, '.cut')
+if not os.path.isdir(CUT): os.makedirs(CUT)
+
+STAT = {'recut': 0, 'reused': 0, 'capped': [], 'missing': set(), 'gained': []}
+
+
+def source_of(rec):
+    """Kunyedeki kaynagi diskte bul: once depo, sonra site."""
+    f = rec.get('from') or ''
+    for base in (REPO, HERE, SITE):
+        p = os.path.join(base, f)
+        if os.path.isfile(p): return p
+    s = (rec.get('src') or '').lstrip('/')
+    p = os.path.join(SITE, s)
+    return p if os.path.isfile(p) else None
+
+
+def precut(base, hq):
+    """Onceden kesilmis dosya, varsa."""
     folders = (['img-print', 'img'] if hq else ['img'])
     for d in ROOTS:
         for f in folders:
             p = os.path.join(d, f, base)
             if os.path.isfile(p): return p
+    for d in (SETS if hq else SETS[::-1]):
+        p = os.path.join(d, base)
+        if os.path.isfile(p): return p
     return None
 
 
-MISSING, FELLBACK = set(), set()
+def resolve(src, mm, hq):
+    """Bu yerlestirme icin kullanilacak dosyanin yolu.
+
+    Sayfada mm genisliginde basilacaksa hedef cozunurluk kadar piksel
+    istenir. Onceden kesilmis dosya yetiyorsa o kullanilir; yetmiyor ve
+    kaynak daha genisse kaynaktan yeniden kesilir; kaynak da yetmiyorsa
+    elde ne varsa o basilir ve rapora yazilir.
+    """
+    base = os.path.basename(src)
+    if base.endswith('.svg'):
+        p = precut(base, hq)
+        return p or src
+    ppi = TARGET if hq else WEB_PPI
+    need = int(round(mm / 25.4 * ppi))
+    have_p = precut(base, hq)
+    have = 0
+    if have_p:
+        try: have = Image.open(have_p).size[0]
+        except Exception: have = 0
+    rec = MAN.get(base)
+    if not rec:
+        if not have_p: STAT['missing'].add(base)
+        else: STAT['reused'] += 1
+        return have_p or src
+    # Kadrajdan sonra kaynakta gercekten kalan genislik
+    boxw = (rec['box'][2] if rec.get('box') else 1.0)
+    limit = int(rec.get('srcpx', 0) * boxw)
+    if have >= need or limit <= have:
+        STAT['reused'] += 1
+        if have < need:
+            STAT['capped'].append((base, mm, have, need))
+        return have_p or src
+    want = min(need, limit)
+    key = hashlib.md5(('%s|%d|%s' % (base, want, hq)).encode()).hexdigest()[:10]
+    out = os.path.join(CUT, '%s-%d-%s.jpg' % (os.path.splitext(base)[0], want, key))
+    if not os.path.isfile(out):
+        sp = source_of(rec)
+        if not sp:
+            STAT['missing'].add(base); return have_p or src
+        im = Image.open(sp)
+        if im.mode not in ('RGB', 'L'): im = im.convert('RGB')
+        if rec.get('box'):
+            b, (w, h) = rec['box'], im.size
+            im = im.crop((int(b[0] * w), int(b[1] * h),
+                          int((b[0] + b[2]) * w), int((b[1] + b[3]) * h)))
+        if im.size[0] > want:
+            ar = im.size[0] / float(im.size[1])
+            im = im.resize((want, max(1, int(round(want / ar)))), Image.LANCZOS)
+        im.convert('RGB').save(out, 'JPEG', quality=88 if hq else 78,
+                               optimize=True, subsampling=0 if hq else 2)
+    STAT['recut'] += 1
+    STAT['gained'].append((base, have, want))
+    if want < need: STAT['capped'].append((base, mm, want, need))
+    return out
 
 
-def url(src, hq):
-    p = find(src, hq)
-    if not p:
-        MISSING.add(os.path.basename(src)); return src
-    if hq and os.sep + 'img' + os.sep in p and 'img-print' not in p:
-        FELLBACK.add(os.path.basename(src))
-    return 'file://' + p
+def url(p):
+    return ('file://' + p) if os.path.isabs(p) else p
 
 
 def draw(e, hq):
@@ -78,8 +162,8 @@ def draw(e, hq):
         cls = (' class="%s"' % e['cls']) if e.get('cls') else ''
         pos = (';object-position:%s' % e['pos']) if e.get('pos') else ''
         return ('<img%s src="%s" style="left:%.2fmm;top:%.2fmm;width:%.2fmm;'
-                'height:%.2fmm%s">' % (cls, url(e['src'], hq), e['x'], e['y'],
-                                       e['w'], e['h'], pos))
+                'height:%.2fmm%s">' % (cls, url(resolve(e['src'], e['w'], hq)),
+                                       e['x'], e['y'], e['w'], e['h'], pos))
     if t == 'txt':
         extra = (';' + e['style']) if e.get('style') else ''
         return ('<div class="b %s" style="left:%.2fmm;top:%.2fmm;width:%.2fmm%s">'
@@ -152,11 +236,10 @@ const [,,file,out,wmm,hmm]=process.argv;
   const b=await chromium.launch(process.env.PLAYWRIGHT_CHROMIUM
     ?{executablePath:process.env.PLAYWRIGHT_CHROMIUM,args:['--no-sandbox']}:{});
   const p=await b.newPage();
-  await p.goto('file://'+path.resolve(file),{waitUntil:'load',timeout:600000});
+  await p.goto('file://'+path.resolve(file),{waitUntil:'load',timeout:900000});
   await p.waitForFunction(()=>Array.from(document.images)
-    .every(i=>i.complete&&i.naturalWidth>0),{timeout:600000});
+    .every(i=>i.complete&&i.naturalWidth>0),{timeout:900000});
   await p.evaluate(()=>document.fonts&&document.fonts.ready);
-  // Kagida dusen gercek cozunurluk, yerlestirildigi olcuye gore.
   const ppi=await p.evaluate(()=>{const MM=96/25.4;
     return [...document.images].filter(i=>!i.src.endsWith('.svg'))
       .map(i=>i.naturalWidth/((i.getBoundingClientRect().width/MM)/25.4))
@@ -171,23 +254,26 @@ const [,,file,out,wmm,hmm]=process.argv;
 
 m = json.load(open(SRC, encoding='utf-8'))
 pages = m['pages'] if isinstance(m, dict) and 'pages' in m else m
-print('duzen: %s  —  %d sayfa' % (os.path.basename(SRC), len(pages)))
+print('duzen: %s  —  %d sayfa  ·  kunye %d kesit'
+      % (os.path.basename(SRC), len(pages), len(MAN)))
 
 pr = os.path.join(HERE, '_printer.js')
 open(pr, 'w', encoding='utf-8').write(PRINTER)
 
 JOBS = [
     ('print', 'Yigit-Ozen-Paintings-Print-Master.pdf', True, 3.0, False,
-     'baski ustasi · 300 ppi set · 3 mm tasma'),
+     'baski ustasi · %d ppi hedef · 3 mm tasma' % TARGET),
     ('web', 'Yigit-Ozen-Paintings-Web.pdf', False, 0.0, DOUBLE,
-     'web · ekran seti · kesim olcusu'),
+     'web · %d ppi hedef · kesim olcusu' % WEB_PPI),
 ]
 env = dict(os.environ)
 env.setdefault('NODE_PATH', os.path.join(HERE, 'node_modules'))
 
 for name, fn, hq, bleed, dbl, label in JOBS:
     if ONLY and ONLY != name: continue
-    MISSING.clear(); FELLBACK.clear()
+    for k in ('recut', 'reused'): STAT[k] = 0
+    STAT['capped'], STAT['gained'] = [], []
+    STAT['missing'] = set()
     tmp = os.path.join(HERE, '_layout-%s.html' % name)
     out = os.path.join(REPO, fn)
     n, w, h = build(pages, hq, bleed, dbl, tmp)
@@ -201,12 +287,21 @@ for name, fn, hq, bleed, dbl, label in JOBS:
     print('  %d levha · %.0f x %.0f mm · %.1f MB' % (n, w, h, mb))
     print('  gorsel %d · ortanca %d ppi · en dusuk %d · 240 alti %d · 150 alti %d'
           % (s['n'], s['med'], s['min'], s['under240'], s['under150']))
-    if FELLBACK:
-        print('  ! baski seti yok, ekran dosyasi kullanildi: %d (%s)'
-              % (len(FELLBACK), ', '.join(sorted(FELLBACK)[:3])))
-    if MISSING:
-        print('  ! bulunamayan gorsel: %d (%s)'
-              % (len(MISSING), ', '.join(sorted(MISSING)[:3])))
+    print('  kaynaktan yeniden kesilen %d · hazir dosyadan %d'
+          % (STAT['recut'], STAT['reused']))
+    big = sorted(STAT['gained'], key=lambda g: g[1] and -(g[2] / g[1]) or 0)[:3]
+    for b0, was, now in big:
+        if was and now > was * 1.05:
+            print('     %-26s %d -> %d px' % (b0[:26], was, now))
+    if STAT['capped']:
+        worst = sorted(STAT['capped'], key=lambda c: c[2] / float(c[3]))[:3]
+        print('  kaynak sinirli %d kesit, en kotu:' % len(STAT['capped']))
+        for b0, mmw, hv, nd in worst:
+            print('     %-26s %.0fmm icin %d px var, %d gerekli (%d ppi)'
+                  % (b0[:26], mmw, hv, nd, round(hv / (mmw / 25.4))))
+    if STAT['missing']:
+        print('  ! bulunamayan: %d (%s)'
+              % (len(STAT['missing']), ', '.join(sorted(STAT['missing'])[:3])))
     os.remove(tmp)
 
 os.remove(pr)
