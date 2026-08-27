@@ -135,7 +135,8 @@ body.props #lib,body.props #stage,body.iprops #lib,body.iprops #stage{top:84px}
   <button id="del">Sil</button>
   <span style="width:10px"></span>
   <button id="undo">Geri</button><button id="redo">İleri</button>
-  <button id="save">Kaydet</button><button id="load">Yükle</button>
+  <button id="save" title="Düzenini .json olarak indirir — PDF değil">Düzeni indir</button>
+  <button id="load" title="İndirdiğin .json düzeni geri yükler">Düzen yükle</button>
   <button id="reset">Sıfırla</button>
   <button id="exp" class="on">Export</button>
 </div>
@@ -186,9 +187,12 @@ body.props #lib,body.props #stage,body.iprops #lib,body.iprops #stage{top:84px}
 
 <div id="dlg"><div class="box">
   <h3>Export</h3>
-  <p>Tarayıcının yazdırma penceresi açılır. <b>Hedef: PDF olarak kaydet</b>,
-     kenar boşlukları <b>Yok</b>, <b>Arka plan grafikleri</b> açık olmalı.
-     Yazılar yazı olarak, görseller tam çözünürlükte gider.</p>
+  <p>Baskı, editörden ayrı temiz bir pencerede açılır — önizleme orada
+     kilitlenmez. Açılan pencerede <b>Hedef: PDF olarak kaydet</b>,
+     <b>Kenar boşlukları: Yok</b>, <b>Arka plan grafikleri: açık</b>.
+     Yazılar yazı olarak, görseller tam çözünürlükte gider.<br>
+     <b>129 sayfanın hepsi ağırdır.</b> Chrome takılırsa aralık vererek
+     parça parça al: 1-30, 31-60, 61-90, 91-129.</p>
   <div class="row">
     <button class="opt" data-mode="single"><b>Tek sayfa</b>
       <small>129 sayfa · 240 × 320 mm</small></button>
@@ -224,6 +228,9 @@ let undoStack = [];
 const $ = s => document.querySelector(s);
 const el = (t, c) => { const e = document.createElement(t); if (c) e.className = c; return e; };
 const KEY = 'yo-booklet-editor-v1';
+// Baski penceresi ayni stili kullanir; adresi buradan alir.
+const CSSHREF = (document.querySelector('link[rel=stylesheet]') || {}).getAttribute
+  ? document.querySelector('link[rel=stylesheet]').getAttribute('href') : 'book.css';
 
 /* ── yukleme ───────────────────────────────────────────────────────── */
 async function boot() {
@@ -705,9 +712,11 @@ $('#delPg').onclick = () => {
   sel = null; curPage = Math.max(0, at - 1); store(); render();
 };
 $('#save').onclick = () => {
+  // Bu bir PDF degil: sayfalarin duzeni. Geri yuklenince kaldigin yerden.
   const b = new Blob([JSON.stringify(model)], { type: 'application/json' });
   const a = el('a'); a.href = URL.createObjectURL(b);
   a.download = 'booklet-layout.json'; a.click();
+  note('Düzenin booklet-layout.json olarak indi. PDF için Export kullan.');
 };
 $('#load').onclick = () => {
   const inp = el('input'); inp.type = 'file'; inp.accept = '.json';
@@ -951,9 +960,37 @@ async function doExport(mode) {
       .then(() => { done++; busy('Görseller hazırlanıyor… ' + done + ' / ' + imgs.length); });
   }));
   busy('Yazdırma penceresi açılıyor…');
-  await new Promise(r => setTimeout(r, 400));
-  busy(null);
-  window.print();
+  // Chrome'un onizlemesi, editorun butun DOM'u sayfadayken 129 levhayi
+  // cizmeye calisinca kilitleniyor. Baskiyi bos bir pencereye tasiyoruz:
+  // orada yalnizca kagit var.
+  const base = location.href.replace(/[^/]*$/, '');
+  const doc2 = '<!doctype html><html lang="en"><head><meta charset="utf-8">' +
+    '<base href="' + base + '">' +
+    '<title>Paintings since 2019 — export</title>' +
+    '<link rel="stylesheet" href="' + CSSHREF + '">' +
+    '<style>html,body{margin:0;padding:0;background:#fff}' +
+    '@page{size:' + sw + 'mm ' + PH + 'mm;margin:0}' +
+    '.sheet{width:' + sw + 'mm;height:' + PH + 'mm;display:flex;position:relative;' +
+    'page-break-after:always;break-after:page;background:#fff;overflow:hidden}' +
+    '.sheet:last-child{page-break-after:auto;break-after:auto}' +
+    '.pg{color:#111}.pg.dark{color:#fff}' +
+    '.hnd,.guide,.margins,.lbl,.snapline{display:none!important}</style></head><body>' +
+    host.innerHTML + '</body></html>';
+  const w2 = window.open('', '_blank');
+  if (!w2) {
+    busy(null);
+    note('Tarayıcı yeni pencereyi engelledi — açılır pencerelere izin ver.');
+    return;
+  }
+  w2.document.open(); w2.document.write(doc2); w2.document.close();
+  const go = () => {
+    const ii = [...w2.document.images];
+    Promise.all(ii.map(im => (im.complete && im.naturalWidth) ? Promise.resolve()
+        : new Promise(r => { im.onload = im.onerror = r; })))
+      .then(() => { busy(null); host.innerHTML = ''; setTimeout(() => w2.print(), 300); });
+  };
+  if (w2.document.readyState === 'complete') go();
+  else w2.addEventListener('load', go);
 }
 function busy(t) {
   let b = document.getElementById('busy');
