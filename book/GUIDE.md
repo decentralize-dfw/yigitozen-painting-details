@@ -26,18 +26,43 @@ Bleed 5 mm.
   opens against the dominant. Nothing floats in leftover space; small
   images are docked to the block they belong to.
 
-## 3. Three image classes
+## 3. Three image classes, by area
+
+Scale is decided as a share of the page (240 × 320 mm = 76 800 mm²), not
+by column count, because area is what the eye reads.
 
 - **MON** — the dominant: a full-page bleed, a full-height column, a
-  spine-crossing band, or a plate at 187–260 mm.
-- **SUP** — 65–153 mm wide (S 65, M 100, L 153), always in a stated
-  relation to the dominant, captioned.
-- **INDEX** — 48 mm and below, only where the function is indexical:
-  contents, the index, docked studies and versions, sequence strips,
-  butted mass cells.
+  spine-crossing band, or a plate at 187–260 mm. Above 30 %.
+- **SUP** — a secondary in stated relation to the dominant: 20–35 % of the
+  page, captioned, aligned to an edge, axis or baseline.
+- **PUNCTUM** — a clue: about 2.8 % of the page (≈ 57 mm at landscape
+  proportions), placed exactly, never decorative.
+- **INDEX** — small images whose function is indexical: contents, the
+  index, docked studies, sequence frames, butted mass cells.
 
-Widths between 49 and 64 mm are the timid middle and are forbidden;
-`audit.js` measures every drawn image against this.
+**The forbidden middle.** A compact image (drawn proportion between 1:2
+and 2:1) that covers 4–19 % of the page and stands **alone** on that page
+is the indecisive scale the second edition exists to remove. `audit.js`
+flags it. Plates, index images, deliberate bleeds, butted masses and the
+comparative chapter are outside the rule; two or more related fragments on
+one page are a composition and are judged by eye, not by the rule.
+
+## 3a. One gesture, three times
+
+No distinctive layout may appear more than three times in the book. The
+gesture "a small clue facing a full-bleed image" is kept for works 01, 03
+and 27 and counted by `audit.js`; everywhere else a full-bleed dominant
+takes a different partner:
+
+| | relationship |
+|---|---|
+| `f_clue` | one or two puncta on a single axis |
+| `f_wide` | a secondary large enough to answer back |
+| `f_narrow` | a narrow vertical column on the outer edge |
+| `f_baseline` | two fragments on one strict baseline |
+| `f_dossier` | two readings at one width — evidence facing immersion |
+| `f_weld` | two halves butted at the spine, read as one picture |
+| `f_across` | a horizontal sentence spanning the spread |
 
 ## 4. Plates
 
@@ -114,19 +139,48 @@ and each spread names the works it draws on.
 
 ## 9. Typography
 
-Two families, four levels: Inter for navigation, metadata, captions and
-display (titles roman bold, year numerals 108 pt); Newsreader for the
-notes, essays and the pause sentences (italic). Micro captions sit within
-4 mm of their image. Artwork-led pages carry no header rules and no
+Two families, four levels, chosen for paper rather than for the screen:
+
+| | | |
+|---|---|---|
+| caption | Inter | 7.6 pt, uppercase, 1.46 |
+| body | Newsreader | 10.8 pt, 1.40 |
+| display | Inter bold | 15–108 pt |
+| pause | Newsreader italic | 20 / 27 / 44 pt |
+
+Grey text is #6e6e6e — dark enough to survive offset. Rules are 0.35 pt
+and no finer. Italic marks one voice only: the artist's own sentences.
+Micro captions sit within 4 mm of their image. Artwork-led pages carry no header rules and no
 running labels — only a small folio at the outer foot, with year and place
 on the verso. Titles keep the artist's spelling, punctuation and
 capitalisation exactly.
 
-## 10. Audit
+## 10. Two files
+
+- **Screen edition** — `Yigit-Ozen-Paintings-since-2019.pdf`, trim size,
+  RGB, about 137 ppi, bookmarked.
+- **Print master** — `Yigit-Ozen-Paintings-Print-Master.pdf`, 246 × 326 mm:
+  the 240 × 320 trim with a real 3 mm bleed on every edge, images cut at
+  300 ppi where the source allows and never upscaled.
+
+Colour is left as the photography was taken: no global grade, no CMYK
+conversion, because no printer profile has been supplied. Conversion and
+soft-proofing belong to the printer's profile, not to this repository.
+
+## 11. Audit
 
 `node audit.js` reports on the rendered file: distorted images, non-bleed
-overflow, overlaps (butted masses exempt), text outside the margins, blank
-pages, timid middle widths, weak dominants in B/C spreads, and the bleed
-count per 32 pages. All must return zero findings. `book.py` additionally
-enforces: spread parity, the crop register, plate contexts, family runs,
-and a page count of 126–146.
+overflow, image overlaps (butted masses exempt), text over images, text
+over text, text outside the margins, blank pages, the forbidden middle,
+weak dominants, the count of the clue gesture, and bleeding pages per 32.
+`node audit.js --print` adds effective resolution on the bleed master.
+All must return zero findings. `book.py` additionally enforces spread
+parity, the crop register, plate contexts, family runs and a page count of
+126–146.
+
+Fifty-eight images in the print master fall under 240 ppi. Every one is a
+cut taken from a plate photograph, and the photograph is the limit: the
+files are 2 000–2 500 px and a cut of a fifth of the width carries only
+what it carries. They are not upscaled and not sharpened. Re-shooting the
+plates at higher resolution is the only real fix; where a master exists —
+work 02 — it is used.

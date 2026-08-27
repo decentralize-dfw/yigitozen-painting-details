@@ -4,7 +4,11 @@ The art book, second edition. Thirty-five paintings, built spread by
 spread from the site's `works.json` and the photographs in this
 repository.
 
-`Yigit-Ozen-Paintings-since-2019.pdf` — 129 pages, 240 × 320 mm.
+`Yigit-Ozen-Paintings-since-2019.pdf` — 129 pages, 240 × 320 mm, the
+screen edition.
+`Yigit-Ozen-Paintings-Print-Master.pdf` — the same 129 pages at
+246 × 326 mm: trim plus a real 3 mm bleed, images at 300 ppi where the
+source allows. Not committed; run the build to make it.
 `Yigit-Ozen-Paintings-Short.pdf` — 24 pages, eight works and one recurring
 figure, for sending cold.
 
@@ -60,9 +64,17 @@ python3 book.py ../../yigit/works.json      # book.html + images/
 node audit.js                               # the specification, measured
 node print.js && python3 post.py            # the PDF, its metadata and bookmarks
 
+python3 book.py ../../yigit/works.json --print   # 300 ppi + real bleed
+node print.js --print                            # the print master
+
 python3 book.py ../../yigit/works.json --short
 node print.js --short && python3 post.py --short
 ```
+
+`booklet-editor.html` opens the same 129 pages as a spread-by-spread
+editor in the browser: drag pictures in from the archive, move and resize
+them, edit the type in place, pull guides, then print back to PDF with the
+text still text.
 
 `print.js` and `audit.js` take `playwright` or `playwright-core`,
 whichever is installed, and honour `PLAYWRIGHT_CHROMIUM` when the browser
