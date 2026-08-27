@@ -1049,25 +1049,21 @@ def f_pause(w, text, attrib, img=None, img_box=None, img_cap='', kind='reach'):
     return pl, pr
 
 # ── metinler ─────────────────────────────────────────────────────────
-P1 = ('The figures in these paintings are assembled rather than drawn whole. A body '
-      'accumulates out of clusters of rounded cells and bubbles that lean against one '
-      'another, and it may close or stay open: which way it goes belongs to where that '
-      'figure stands in the scene and to what it is thinking there. Bodies and faces are '
-      'the medium the work is made in, and the question they carry is an existential one. '
-      'What lies behind them is not a backdrop but a place, and those places work as '
-      'dimensions.')
-P2 = ('The decisions are taken in wet paint, on the spot. Layer goes over layer like a '
-      'palimpsest, and they are not layers of light and shadow: they are colour clusters '
-      'of movement, energy, aura and feeling. Large areas of ground are left bare, and '
-      'they carry as much weight as the painted part.')
-P3 = ('Familiar compositional formats are kept while the agreement that made them legible '
-      'is withdrawn: an object is held out, a sign is displayed, and what either stands '
-      'for is never supplied. Titles act as a second body in the scene, bending the image '
-      'instead of describing it. Power appears as a distribution of weight, one figure '
-      'left underneath the stack. At the edges a small onlooker sits with an X drawn over each eye, and '
-      'in one painting its mouth is stitched shut as well, so the witness is cancelled '
-      'before anything can be reported. Scale works as a verdict, one face given as a person and the rest reduced '
-      'to signs, sometimes a face replaced by a number.')
+P1 = ('In Özen\'s paintings a body appears as rounded units settle on top of one '
+      'another. The contour arrives late and often does not arrive. Scale gives '
+      'the verdict. A shape held large enough becomes somebody, and the same '
+      'shape beside it becomes a row. Most of the ground stays unpainted, and '
+      'that emptiness decides how far the figure gets to build.')
+P2 = ('The same parts have been turning up since the beginning. A figure present '
+      'in the scene and not looking. A chair nobody sits in. A frame drawn over '
+      'the scene and left open. A bird that arrives under its own power, carrying '
+      'something never unwrapped. These are working parts. Nothing in them waits '
+      'to be solved. The one helping and the one crushing are made of the same '
+      'heap.')
+P3 = ('Titles do not name the picture. A greeting, a game, a file name, a line '
+      'taken from elsewhere. They set a second language beside the image and tilt '
+      'it. Decisions are taken in wet paint, colour is held as a distribution. '
+      'Over the years the parts stay where they are and the temperature changes.')
 BLURB = ('Thirty-five works made since 2019 across Istanbul, Milan and Luxembourg: '
          'acrylic on canvas, on carton and on paper, and one drawing in charcoal on the '
          'reverse of a canvas. They are given here newest first, and a small figure with '
