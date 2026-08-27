@@ -1,0 +1,41 @@
+YIĞIT ÖZEN — PAINTINGS SINCE 2019
+InDesign paketi
+
+  Yigit-Ozen-Paintings.idml     InDesign bunu acar
+  Links/                        175 gorsel, baski cozunurlugunde
+  Document fonts/               Inter ve Newsreader
+
+NASIL ACILIR
+
+  Klasoru oldugu gibi indir, sonra .idml dosyasina cift tikla. Uc klasor
+  yan yana durdugu surece InDesign gorselleri ve yazi tiplerini kendisi
+  bulur; hicbir seyi sisteme kurmak gerekmez.
+
+  .indd ISTIYORSAN: InDesign'da acildiktan sonra Dosya > Farkli Kaydet,
+  bicim InDesign Belgesi (.indd). .indd Adobe'nin kapali bicimidir ve
+  yalnizca InDesign'in kendisi yazabilir; IDML tam olarak bunun icin var.
+
+ICINDE NE VAR
+
+  129 sayfa, 65 yaprak. Kapak tek, gerisi karsilikli.
+  734 yazi cercevesi, hepsi gercek yazi ve bir paragraf stiline bagli.
+  24 paragraf stili — kitabin yazi kademelerinin karsiligi. Butun
+  altyazilarin puntosunu degistirmek tek islem.
+  5 karakter stili. Bunlardan biri kitaba ozel: bir kunye icindeki egik
+  isaret egiklik degil gri renk demektir, o ayrim korunmustur.
+  177 bagli gorsel, her biri kendi olcek ve kaydirmasiyla; tasan kadraj
+  odak noktasini korur.
+  119 cizgi nesne olarak. Renkler, kenar bosluklari, 12 kolon, dort
+  register ve 3 mm tasma payi belgede tanimli.
+
+  58 yerlestirme 240 ppi altinda kalir. Sebebi tasarim degil kaynak:
+  tablo fotograflari 1761 x 2000 piksel, yani web turevi. Orijinaller
+  depoya girerse book/layout-export.py ve to-indesign.py ayni duzenden
+  daha yuksek cozunurluklu bir dosya uretir; sayfada hicbir seyin
+  degismesi gerekmez.
+
+NASIL URETILDI
+
+  python3 book/to-indesign.py            paketi yazar
+  python3 book/idml-audit.py             paketin tutarliligini olcer
+  python3 book/idml-preview.py 21        yapragi geri okuyup cizer
