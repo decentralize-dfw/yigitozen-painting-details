@@ -1,15 +1,19 @@
 # -*- coding: utf-8 -*-
 """
 YIĞIT ÖZEN — PAINTINGS SINCE 2019
-Kitabi sifirdan kuran motor.
+Ikinci basim. Kitabi serim serim kuran motor.
 
-Kitabin tek bir fikri var: her tablo bir acilimdir. Sol sayfa yazidir ve
-neredeyse bostur; sag sayfa tablonun kendisidir ve sayfayi doldurur. Otuz
-bes acilim boyunca butun tablolar ayni bant icinde, ayni yukseklikte durur,
-boylece okur onlari birbiriyle durustce karsilastirir.
+Kitabin fikri denetimli kirilmadir: her sayfanin altinda ayni modernist
+izgara durur — on iki kolon, 5 mm taban, dort register — ve bu izgara
+bilerek, seyrek ve buyuk jestlerle kirilir. Birim sayfa degil serimdir:
+her serimde bir egemen oge, sol ile sag arasinda bir iliski, karsisindaki
+kutleye cevap veren bir bosluk vardir.
 
-Kirpma yoktur. Bir gorsel sayfa kenarina dayanabilir; kenardan tasip
-icerigini kaybedemez. Tek istisna kapaktir.
+Her is bir acilim serimiyle girer: solda numara, baslik, kunye ve not,
+sagda tablonun kirpilmamis kendisi, ustu hep ilk registerde, boyu tuvalin
+gercek boyuna gore. Detaylar envanter degil tartisma olarak basilir; her
+kesit kitapta bir kez gorunur. Surec bir zaman dizisidir, esit kareler
+degil. Tekrar edenler bolumu alti ayri davranistir, tek sablon degil.
 
     python3 book.py ../../yigit/works.json
     node print.js && python3 post.py
@@ -26,53 +30,40 @@ OUT = os.path.join(HERE, 'images')
 if not os.path.isdir(OUT): os.makedirs(OUT)
 
 # ── izgara ───────────────────────────────────────────────────────────
-# Kesim 240 x 320. Kenar boslugu ic ve dista farklidir, yani sol ve sag
-# sayfanin olcusu ayni degildir; olcu genisligi ikisinde de 204 mm.
+# Kesim 240 x 320. Olcu genisligi iki sayfada da 204 mm; ic ve dis kenar
+# farkli, yani sol ve sag sayfa ayni sayfa degildir.
 PW, PH = 240.0, 320.0
-MT, MB = 18.0, 22.0            # ust, alt
-MOUT, MIN_ = 16.0, 20.0        # dis, ic (sirt)
-MEASURE = PW - MOUT - MIN_     # 204
+MT, MB = 18.0, 22.0
+MOUT, MIN_ = 16.0, 20.0
+MEASURE = PW - MOUT - MIN_          # 204
 COLS, GUT = 12, 4.0
-COLW = (MEASURE - (COLS - 1) * GUT) / COLS      # 13.333
+COLW = (MEASURE - (COLS - 1) * GUT) / COLS
 BLEED = 5.0
 
-# Dort yatay register. Her gorselin ust kenari bunlardan birine oturur.
-LINE = 5.0                     # taban cizgisi
-REG = [MT, MT + 13 * LINE, MT + 26 * LINE, MT + 39 * LINE]   # 18, 83, 148, 213
-REG_END = MT + 52 * LINE       # 278
-
-HEAD   = 11.6
-HRULE  = 16.4
-FRULE  = 284.0
-FMICRO = 287.4
-FOLIO  = 299.0
-
-BAND_T, BAND_H = MT, REG_END - MT          # levha bandi: 18..278
-BAND_B = BAND_T + BAND_H
-DTOP, DBOT = REG[0], REG_END               # detay sayfasinin calisma alani
+LINE = 5.0
+REG = [MT, MT + 13 * LINE, MT + 26 * LINE, MT + 39 * LINE]   # 18 83 148 213
+REG_END = MT + 52 * LINE                                     # 278
+BAND_T, BAND_H = MT, REG_END - MT
+DBOT = REG_END
+HEAD, HRULE = 11.6, 16.4
+FRULE, FMICRO = 284.0, 287.4
+FOLIO_Y = 302.6
 
 def W(n):  return n * COLW + (n - 1) * GUT
 
-# Olcek yasasi: alti kademe, arasi yok.
-STEPS = ['XS', 'S', 'M', 'L', 'XL', 'XXL']
-STEP_COL = {'XS': 3, 'S': 4, 'M': 6, 'L': 9, 'XL': 12, 'XXL': None}
-STEP_MM = dict((k, (PW + 2 * BLEED) if v is None else W(v))
-               for k, v in STEP_COL.items())
-
-def step_area(step, ar):
-    """Kademenin sayfada kapladigi alan, mm kare."""
-    if step == 'XXL': return (PW + 2 * BLEED) * (PH + 2 * BLEED)
-    w = STEP_MM[step]
-    return w * (w / ar)
+# Uc gorsel sinifi: MON tam sayfaya yakin ya da tasar; SUP 65-153 mm;
+# INDEX 48 mm ve yalniz dizin isi gorur. 49-64 mm arasi urkek ara boydur
+# ve yasaktir; denetim bunu olcer.
+XS, S, M, L, XL = W(3), W(4), W(6), W(9), W(12)   # 48 65 100 153 204
 
 # ── gorsel hazirligi ─────────────────────────────────────────────────
-# Basilacak genisligi bilerek kesilir: milimetre basina 5.4 piksel, yani
-# 137 dpi. Kagitta bunun altina inmek gorunur, ustune cikmak dosyayi
-# buyutur ve sayfada bir karsiligi olmaz.
+# Basilacak genislige gore kesilir: milimetreye 5.4 piksel. Serit gibi
+# cok genis basilan parcalar icin tavan yukselir; kaynakta olmayan piksel
+# uydurulmaz, buyutme yoktur.
 CACHE, MADE = {}, set()
 
-def prep(src, mm, tag, box=None):
-    px = int(max(360, min(1360, round(mm * 5.4))))
+def prep(src, mm, tag, box=None, hi=1360):
+    px = int(max(360, min(hi, round(mm * 5.4))))
     key = (src, px, tuple(box) if box else None)
     if key in CACHE: return CACHE[key]
     path = os.path.join(ROOT, src.lstrip('/'))
@@ -92,50 +83,49 @@ def prep(src, mm, tag, box=None):
     CACHE[key] = ('images/' + name, ar)
     return CACHE[key]
 
+RATIO_CACHE = {}
+
 def ratio(src, box=None):
-    im = Image.open(os.path.join(ROOT, src.lstrip('/')))
-    w, h = im.size
-    return (box[2] * w) / (box[3] * h) if box else w / float(h)
-
-def phash(src, box=None):
-    im = Image.open(os.path.join(ROOT, src.lstrip('/'))).convert('L')
-    if box:
+    key = (src, tuple(box) if box else None)
+    if key not in RATIO_CACHE:
+        im = Image.open(os.path.join(ROOT, src.lstrip('/')))
         w, h = im.size
-        im = im.crop((int(box[0] * w), int(box[1] * h),
-                      int((box[0] + box[2]) * w), int((box[1] + box[3]) * h)))
-    im = im.resize((8, 8), Image.LANCZOS)
-    px = list(im.getdata()); avg = sum(px) / 64.0
-    return sum(1 << i for i, v in enumerate(px) if v > avg)
+        RATIO_CACHE[key] = (box[2] * w) / (box[3] * h) if box else w / float(h)
+    return RATIO_CACHE[key]
 
-def far(a, b):
-    return bin(a ^ b).count('1')
-
-def spread_out(items, thr=9):
-    """Birbirine cok benzeyen iki kesit yan yana gelmesin."""
-    if len(items) < 3: return items
-    hs = [phash(d['src'], d.get('box')) for d in items]
-    out, left = [items[0]], list(range(1, len(items)))
-    used = [0]
-    while left:
-        last = hs[used[-1]]
-        best = max(left, key=lambda i: far(hs[i], last))
-        if far(hs[best], last) < thr:
-            best = left[0]
-        out.append(items[best]); used.append(best); left.remove(best)
-    return out
-
-# Buyuk harfe cevrilen her yerde ad elle yazilir: CSS'in uppercase'i
-# Turkce i'yi noktasiz I yapar ve ad yanlis cikar.
-NM = 'Y\u0130\u011e\u0130T \u00d6ZEN'
-
+NM = 'YİĞİT ÖZEN'
 
 def e(s):
     return (str(s).replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
             .replace('&amp;middot;', '&middot;').replace('&amp;ndash;', '&ndash;')
             .replace('&amp;nbsp;', '&nbsp;').replace('&amp;amp;', '&amp;')
-            .replace('&amp;copy;', '&copy;').replace('&amp;lt;em&amp;gt;', '<em>')
-            .replace('&lt;em&gt;', '<em>').replace('&lt;/em&gt;', '</em>')
-            .replace('&lt;br&gt;', '<br>'))
+            .replace('&amp;copy;', '&copy;').replace('&lt;em&gt;', '<em>')
+            .replace('&lt;/em&gt;', '</em>').replace('&lt;br&gt;', '<br>')
+            .replace('&lt;i&gt;', '<i>').replace('&lt;/i&gt;', '</i>'))
+
+# ── kesit sicili ─────────────────────────────────────────────────────
+# Her kesit kitapta bir kez basilir. Levhanin butunu yalniz uc baglamda
+# gorunebilir: acilim, dizin, kapanis. Sicil bunu derleme aninda tutar;
+# ihlal sayfa degil hata uretir.
+USED = {}
+PLATE_CTX = ('open', 'index', 'close')
+
+def register(src, box, role, hint=''):
+    key = (src.split('/')[-1], tuple(round(v, 3) for v in box) if box else None)
+    if role == 'plate':
+        got = USED.setdefault(key, set())
+        if not isinstance(got, set):
+            raise SystemExit('levha ile kesit karisti: %s' % (key,))
+        if hint not in PLATE_CTX:
+            raise SystemExit('levhanin butunu burada basilmaz: %s %s' % (key, hint))
+        if hint in got:
+            raise SystemExit('levha ayni baglamda iki kez: %s %s' % (key, hint))
+        got.add(hint)
+    else:
+        if key in USED:
+            raise SystemExit('kesit iki kez basiliyor: %s (%s / %s)'
+                             % (key, USED[key], hint))
+        USED[key] = hint or role
 
 # ── sayfa ────────────────────────────────────────────────────────────
 PAGES = []
@@ -145,8 +135,9 @@ class Page(object):
     def __init__(self, run='', klass=''):
         self.run, self.klass, self.bits = run, klass, []
         self.folio = True
+        self.fam = 'E'
         self.no = len(PAGES) + 1
-        self.verso = (self.no % 2 == 0)          # cift sayfa: sol
+        self.verso = (self.no % 2 == 0)
         self.ml = MOUT if self.verso else MIN_
         self.mr = MIN_ if self.verso else MOUT
     def X(self, i): return self.ml + i * (COLW + GUT)
@@ -161,45 +152,53 @@ class Page(object):
         return self.box(x, y, w, s, ('m ' + cls).strip(), ex)
     def t(self, x, y, w, s, cls='', ex=''):
         return self.box(x, y, w, s, ('t ' + cls).strip(), ex)
+    def sans(self, x, y, w, s, cls='', ex=''):
+        return self.box(x, y, w, s, ('sans ' + cls).strip(), ex)
     def d(self, x, y, w, s, cls='', ex=''):
         return self.box(x, y, w, s, ('d ' + cls).strip(), ex)
     def rule(self, x, y, w, thick=False):
         self.bits.append('<div class="r%s" style="left:%.2fmm;top:%.2fmm;width:%.2fmm"></div>'
                          % (' t' if thick else '', x, y, w))
         return self
-    def img(self, src, x, y, w, h=None, box=None, tag=None):
+    def vrule(self, x, y, h):
+        self.bits.append('<div class="r v" style="left:%.2fmm;top:%.2fmm;height:%.2fmm;width:.35pt"></div>'
+                         % (x, y, h))
+        return self
+    def frame(self, x, y, w, h):
+        self.bits.append('<div class="fr" style="left:%.2fmm;top:%.2fmm;width:%.2fmm;height:%.2fmm"></div>'
+                         % (x, y, w, h))
+        return self
+    def img(self, src, x, y, w, h=None, box=None, tag=None, cls='', hi=1360):
         t = tag or hashlib.md5((src + str(box)).encode()).hexdigest()[:8]
-        path, ar = prep(src, w, t, box)
+        path, ar = prep(src, w, t, box, hi)
         if h is None: h = w / ar
-        self.raw('<img src="%s" style="left:%.2fmm;top:%.2fmm;width:%.2fmm;height:%.2fmm">'
-                 % (path, x, y, w, h))
+        self.raw('<img %ssrc="%s" style="left:%.2fmm;top:%.2fmm;width:%.2fmm;height:%.2fmm">'
+                 % (('class="%s" ' % cls) if cls else '', path, x, y, w, h))
         return y + h
-    def pic(self, src, x, y, w, box=None, tag=None, cap=None, capw=None):
-        y2 = self.img(src, x, y, w, None, box, tag)
-        if cap:
-            self.m(max(x, self.ml), y2 + 2.4, capw or max(w, W(4)), e(cap), 'g')
-        return y2
-    def pich(self, src, x, y, h, box=None, tag=None, cap=None):
-        ar = ratio(src, box)
-        w = h * ar
-        if x is None: x = (PW - w) / 2
-        self.img(src, x, y, w, h, box, tag)
-        if cap: self.m(max(x, self.ml), y + h + 2.4, W(6), e(cap), 'g')
-        return x, w
+    def cover_img(self, src, x, y, w, h, box=None, tag=None, pos='50% 45%', hi=1600):
+        t = tag or hashlib.md5((src + str(box) + 'c').encode()).hexdigest()[:8]
+        path, _ = prep(src, w, t, box, hi)
+        self.raw('<img class="cut" src="%s" style="left:%.2fmm;top:%.2fmm;'
+                 'width:%.2fmm;height:%.2fmm;object-position:%s">'
+                 % (path, x, y, w, h, pos))
+        return y + h
 
 def page(run='', klass=''):
     p = Page(run, klass); PAGES.append(p); CUR[0] = p; return p
+
+def spread(run=''):
+    """Bir serim: sol (cift) ve sag (tek) sayfa birlikte acilir. Bir is
+       her zaman cift sayfada basladigi icin bu denklik yapisaldir."""
+    if len(PAGES) % 2 != 1:
+        raise SystemExit('serim tek sayfada acilamaz: sayfa %d' % (len(PAGES) + 1))
+    pl = page(run); pr = page(run)
+    return pl, pr
 
 def use(p):
     CUR[0] = p; return p
 
 def X(i):  return CUR[0].X(i)
 def R(n):  return CUR[0].R(n)
-
-def head(p, left, right=None, thick=True):
-    p.rule(X(0), HRULE, MEASURE, thick)
-    p.m(X(0), HEAD, W(8), left)
-    if right: p.m(R(4), HEAD, W(4), right, 'rt g')
 
 # ── veri ─────────────────────────────────────────────────────────────
 WORKS = json.load(open(SRC, encoding='utf-8'))
@@ -213,7 +212,6 @@ NOT_DETAIL = {
     'ciaocapo_detail_8.jpg': 'The pair, before the colour',
     'cellularspleens_detail_4.jpg': 'The whole, in another version',
 }
-NOT_DETAIL_KIND = dict.fromkeys(NOT_DETAIL, 'Version')
 
 for w in WORKS:
     ims = w['images']
@@ -230,20 +228,517 @@ for w in WORKS:
 BY_N = {w['n']: w for w in WORKS}
 FIRST = {}
 
+def det(w, i):
+    suf = '_detail_%d.jpg' % i
+    for d in w['details'] + w['aside']:
+        if d['src'].endswith(suf): return d
+    raise SystemExit('detay yok: %02d %s' % (w['n'], suf))
+
+def proc(w, i):
+    return w['process'][i - 1]
+
+def aside(w, name):
+    for a in w['aside']:
+        if name in a['src']: return a
+    raise SystemExit('etud yok: %02d %s' % (w['n'], name))
+
 def where(d):
+    if isinstance(d, dict) and d.get('line'): return d['line']
     b = d['src'].split('/')[-1]
     return NOT_DETAIL.get(b) or WHERE.get(b, d.get('label', 'Detail'))
 
-def kind(d):
-    b = d['src'].split('/')[-1]
-    return NOT_DETAIL_KIND.get(b) or d.get('label', 'Study')
+def crop_of(wk, b):
+    """Motif ya da okuma kutusu kirpilmis tuvalin icinde verilir;
+       fotograf icindeki yerine cevirir."""
+    pb = wk['plate'].get('box') or [0, 0, 1, 1]
+    return [pb[0] + b[0] * pb[2], pb[1] + b[1] * pb[3], b[2] * pb[2], b[3] * pb[3]]
 
-def sentence(w, i=0):
-    parts = [x.strip() for x in w['note'].replace('; ', '. ').split('. ') if x.strip()]
-    s = parts[min(i, len(parts) - 1)]
-    return s if s.endswith('.') else s + '.'
+def clause(w, k):
+    f = w['facets'][k % 3]
+    for sep in (', the ', '; ', ', and ', ', with '):
+        f = f.split(sep)[0]
+    if len(f) > 46: f = f[:44].rsplit(' ', 1)[0]
+    return f[0].upper() + f[1:]
 
-# ── metin ────────────────────────────────────────────────────────────
+def cap_line(w, d, k=0, prefix=''):
+    loc = where(d)
+    t = loc[0].upper() + loc[1:] + ' — ' + clause(w, k)
+    if len(t) > 96: t = t[:94].rsplit(' ', 1)[0] + '…'
+    return (prefix + ' <i>&middot;</i> ' if prefix else '') + e(t)
+
+def loc_line(d):
+    """Karsi-gorselin kunyesi yalniz konumdur: el notu egemene aittir."""
+    loc = where(d)
+    return e(loc[0].upper() + loc[1:])
+
+# ── olcek: tuvalin gercek boyu sayfadaki boyunu belirler ─────────────
+# 100 x 160 cm bant boyu basilir, 29.7 x 42 cm kucuk kalir. Dogruluk
+# hiyerarsinin kendisidir; hicbir levha bandin ortasinda yuzmez, ustu
+# hep ilk registerdedir.
+def plate_size(w, k=1.0):
+    m = re.findall(r'([\d.]+)', w['dim'])
+    wcm, hcm = float(m[0]), float(m[1])
+    ar = w['ar']
+    if ar <= 1.05:
+        h = min(BAND_H, 111.0 + 0.93 * hcm)
+        if w['n'] == 20: h = BAND_H          # anitsal: kitabin en buyuk tuvali
+        wd = h * ar
+        if wd > MEASURE: wd = MEASURE; h = wd / ar
+    else:
+        wd = min(MEASURE, 111.0 + 0.93 * wcm)
+        h = wd / ar
+    return wd * k, h * k
+
+def put_plate(p, w, k=1.0, ctx='open', outer=True):
+    register(w['plate']['src'], None, 'plate', ctx)
+    wd, h = plate_size(w, k)
+    if w['ar'] > 1.05:
+        x = p.X(0)
+    else:
+        x = (PW - p.mr - wd) if (outer and not p.verso) else p.X(0)
+    p.img(w['plate']['src'], x, REG[0], wd, None, w['plate'].get('box'),
+          'p%02d' % w['n'] if k == 1.0 else 'p%02dk' % w['n'])
+    return x, wd, h
+
+# ── yazi bloklari ────────────────────────────────────────────────────
+def title_size(t):
+    n = len(t)
+    return 42 if n <= 14 else 32 if n <= 26 else 25 if n <= 40 else 19 if n <= 62 else 15
+
+def title_lines(t, fs, wmm):
+    cpl = wmm / (0.176 * fs)
+    words, lines, cur = t.split(' '), 1, 0
+    for wd in words:
+        add = len(wd) + (1 if cur else 0)
+        if cur + add > cpl and cur:
+            lines += 1; cur = len(wd)
+        else:
+            cur += add
+    return lines
+
+def serif_h(chars, wmm, pt=9.6):
+    cpl = wmm / (0.170 * pt)
+    return math.ceil(chars / cpl) * (0.552 * pt)
+
+def micro_h(chars, wmm):
+    cpl = wmm / 1.34
+    return math.ceil(chars / cpl) * 3.66
+
+QUOTE_SRC = {3: 'Tony Soprano, <i>The Sopranos</i>, HBO, season one, 1999'}
+
+def work_block(p, w, y, x0=None, meas=None, tfs=None):
+    """Isin kunye blogu: numara, baslik, olculer, not, uc not. Tek dikey
+       kutle; artan bosluk sayfanin dibine toplanir, ortasina degil."""
+    x0 = p.X(0) if x0 is None else x0
+    meas = W(7) if meas is None else meas
+    p.m(x0, y, meas, '%02d' % w['n'], 'wn')
+    y += 7.0
+    fs = tfs or title_size(w['title'])
+    tl = title_lines(w['title'], fs, meas)
+    p.box(x0, y, meas, e(w['title']), 'd', 'font-size:%dpt' % fs)
+    y += tl * 0.367 * fs + 5.5
+    p.rule(x0, y, min(meas, W(7)))
+    y += 3.2
+    meta = '%s <i>&middot;</i> %s <i>&middot;</i> %s <i>&middot;</i> %s' % (
+        e(w['medium']), e(w['dim']), e(w.get('dim_in', '')), e(w['run']))
+    p.m(x0, y, meas, meta, 'g')
+    y += micro_h(len(re.sub(r'<[^>]*>', '', meta)), meas) + 5.0
+    note = w['note']
+    if note.lstrip().startswith('“') and w['n'] in QUOTE_SRC:
+        cut = note.find('”') + 1
+        q, rest = note[:cut], note[cut:].strip(' .')
+        p.box(x0, y, meas, e(q), 'q')
+        y += serif_h(len(q), meas, 12.5) * 1.12 + 4.0
+        p.m(x0, y, meas, QUOTE_SRC[w['n']], 'g')
+        y += 8.0
+        if rest:
+            p.t(x0, y, meas, e(rest) + '.')
+            y += serif_h(len(rest), meas) + 4.0
+    else:
+        p.t(x0, y, meas, e(note))
+        y += serif_h(len(note), meas) + 4.0
+    y += 2.0
+    p.rule(x0, y, meas)
+    y += 3.2
+    fac = '<br>'.join('<b>%s</b> — %s' % (h, e(f))
+                      for h, f in zip(('Colour', 'Composition', 'Hand'), w['facets']))
+    p.m(x0, y, meas, fac, 'g')
+    y += sum(micro_h(len(f) + 10, meas) for f in w['facets']) + 4.0
+    return y
+
+# ══ A · ACILIM ═══════════════════════════════════════════════════════
+# Solda yazi, sagda tablonun kendisi. Yil esikleri ayri sayfa degildir:
+# yilin ilk isinde iri bir rakam olarak baslik blogunun ustune girer.
+def f_open(w, thresh=None, thresh_line='', gap_note='', integrate=None,
+           int_cap=''):
+    pl, pr = spread(w['run'])
+    pl.fam = pr.fam = 'A'
+    FIRST.setdefault(w['n'], pl.no)
+    use(pl)
+    y = 29.0
+    if thresh:
+        pl.d(X(0), 20.0, W(10), thresh, 'yr')
+        pl.m(X(0), 62.0, W(8), thresh_line, 'g')
+        y = REG[1]
+    y = work_block(pl, w, y)
+    if gap_note:
+        y += 4.0
+        pl.t(X(0), y, W(7), '<em>%s</em>' % e(gap_note))
+        y += serif_h(len(gap_note), W(7)) + 4.0
+    if integrate:
+        y += 5.0
+        src, box, tag = integrate
+        register(src, box, 'crop', 'open %02d' % w['n'])
+        ar = ratio(src, box)
+        ih = min(S / ar, 84.0)
+        iw = ih * ar
+        pl.img(src, X(0), y, iw, None, box, tag, cls='ix')
+        pl.m(X(0) + iw + 4.0, y + 0.4, max(W(3), W(7) - iw - 4.0), e(int_cap), 'g')
+    use(pr)
+    put_plate(pr, w)
+    return pl, pr
+
+def f_pair(wa, wb, ka=0.71, int_a=None, int_a_cap=''):
+    """Iki kucuk is tek serimde: sagda buyuk olan, solda kucugu. Ikisi de
+       butun, ikisi de kendi kunyesiyle; olcek farki iliskinin kendisi.
+       Dik levhada kunye yandaki kolona, yatikta levhanin altina girer."""
+    pl, pr = spread(wa['run'])
+    pl.fam = pr.fam = 'A'
+    FIRST.setdefault(wa['n'], pl.no)
+    FIRST.setdefault(wb['n'], pl.no + 1)
+
+    def one(p, wk, k, sub):
+        use(p)
+        register(wk['plate']['src'], None, 'plate', 'open')
+        wd, h = plate_size(wk, k)
+        if wk['ar'] <= 1.05:
+            x = p.X(0) if sub else (p.ml + MEASURE - wd)
+            p.img(wk['plate']['src'], x, REG[0], wd, None, wk['plate'].get('box'),
+                  'p%02d' % wk['n'] if k == 1.0 else 'p%02dk' % wk['n'])
+            bx = (x + wd + 8.0) if sub else p.X(0)
+            bw = p.ml + MEASURE - bx if sub else (x - 8.0 - p.X(0))
+            y2 = work_block(p, wk, REG[0], x0=bx, meas=max(bw, W(3)), tfs=15)
+        else:
+            x = p.X(0)
+            p.img(wk['plate']['src'], x, REG[0], wd, None, wk['plate'].get('box'),
+                  'p%02d' % wk['n'] if k == 1.0 else 'p%02dk' % wk['n'])
+            y2 = work_block(p, wk, REG[0] + h + 10.0, meas=W(7),
+                            tfs=min(19, title_size(wk['title'])))
+        return y2
+
+    ya = one(pl, wa, ka, sub=True)
+    if int_a:
+        src, box, tag = int_a
+        register(src, box, 'crop', 'open %02d' % wa['n'])
+        ar = ratio(src, box)
+        iw = min(XS, 64.0 * ar)
+        use(pl)
+        pl.img(src, X(0), REG[3], iw, None, box, tag, cls='ix')
+        pl.m(X(0) + iw + 4.0, REG[3] + 0.4, W(7) - iw, e(int_a_cap), 'g')
+    one(pr, wb, 1.0, sub=False)
+    return pl, pr
+
+# ══ B · TARTISMA ═════════════════════════════════════════════════════
+# Bir egemen kesit, karsisinda bir ila uc karsi-gorsel. Egemen tam sayfa
+# tasar, tam boy kolon olur ya da sirt guvenliyse serime yayilan bant.
+def f_argument(w, dom, secs=(), side='R', pos='50% 40%', mode='page',
+               frag=None, band_h=108.0, focal=0.5, tagk='a'):
+    pl, pr = spread(w['run'])
+    pl.fam = pr.fam = 'B'
+    dp = pr if side == 'R' else pl
+    tp = pl if side == 'R' else pr
+
+    if mode == 'page':
+        register(dom['src'], dom.get('box'), 'crop', 'w%02d dom' % w['n'])
+        use(dp)
+        dp.cover_img(dom['src'], -BLEED, -BLEED, PW + 2 * BLEED, PH + 2 * BLEED,
+                     dom.get('box'), 'w%02d%sD' % (w['n'], tagk), pos)
+        dp.folio = False
+        use(tp)
+        # Karsi-gorseller sirta yaslanir: egemene dogru egilirler.
+        toward = tp.verso                     # solda: sag kenara hizala
+        y, k = REG[0], 0
+        for sc in secs:
+            register(sc['src'], sc.get('box'), 'crop', 'w%02d sec' % w['n'])
+            ar = ratio(sc['src'], sc.get('box'))
+            wd = M if k == 0 else S
+            if y + wd / ar > DBOT:
+                wd = S if k == 0 else XS
+            if y + wd / ar > DBOT:
+                wd = (DBOT - y) * ar
+            h = wd / ar
+            x = (tp.ml + MEASURE - wd) if toward else tp.X(0)
+            tp.img(sc['src'], x, y, wd, None, sc.get('box'),
+                   'w%02d%s%d' % (w['n'], tagk, k),
+                   cls='ix' if wd < S else '')
+            cw = max(wd, W(4))
+            cx = (tp.ml + MEASURE - cw) if toward else x
+            tp.m(cx, y + h + 2.6, cw, loc_line(sc), 'g',
+                 'text-align:right' if toward else '')
+            nxt = next((r for r in REG if r > y + h + 16.0), None)
+            y = nxt if nxt is not None else y + h + 18.0
+            k += 1
+        if frag:
+            tp.t(X(0), 238.0, W(5.5), '<em>%s</em>' % e(frag))
+        tp.rule(X(0), 262.0, W(6))
+        tp.m(X(0), 265.4, W(10), '%02d <i>&middot;</i> %s <i>&middot;</i> %s'
+             % (w['n'], e(w['title']), cap_line(w, dom, 0, prefix='Opposite')), 'g')
+
+    elif mode == 'band':
+        # Serit kaynagin butun genisligini alir, yalniz boyu kesilir;
+        # sirt ortasina yuz dusmeyen kesitler icindir.
+        b = dom.get('box') or [0.0, 0.0, 1.0, 1.0]
+        SPAN = PW * 2 + 2 * BLEED
+        full_ar = ratio(dom['src'], b)
+        want = SPAN / band_h
+        if full_ar < want:
+            keep = (full_ar / want) * b[3]
+            top = min(max(b[1], b[1] + (b[3] - keep) * focal), b[1] + b[3] - keep)
+            b = [b[0], top, b[2], keep]
+        register(dom['src'], b, 'crop', 'w%02d band' % w['n'])
+        top = REG[1]
+        path, _ = prep(dom['src'], SPAN, 'w%02d%sB' % (w['n'], tagk), b, hi=1800)
+        pl.raw('<img src="%s" style="left:%.2fmm;top:%.2fmm;width:%.2fmm;height:%.2fmm">'
+               % (path, -BLEED, top, SPAN, band_h))
+        pr.raw('<img src="%s" style="left:%.2fmm;top:%.2fmm;width:%.2fmm;height:%.2fmm">'
+               % (path, -BLEED - PW, top, SPAN, band_h))
+        use(pl)
+        pl.m(pl.X(0), top + band_h + 3.0, W(9), cap_line(w, dom, 0), 'g')
+        if frag:
+            pl.t(pl.X(0), REG[0] + 8.0, W(6), '<em>%s</em>' % e(frag))
+        use(pr)
+        pr.m(pr.X(0), top + band_h + 3.0, W(6),
+             '%02d <i>&middot;</i> %s' % (w['n'], e(w['title'])), 'g')
+        y, k = REG[3], 1
+        for sc in secs:
+            register(sc['src'], sc.get('box'), 'crop', 'w%02d sec' % w['n'])
+            ar = ratio(sc['src'], sc.get('box'))
+            wd = M
+            if y + wd / ar > 280.0:
+                wd = (280.0 - y) * ar
+            h = wd / ar
+            pr.img(sc['src'], pr.X(0), y, wd, None, sc.get('box'),
+                   'w%02d%s%d' % (w['n'], tagk, k))
+            pr.m(pr.X(0) + wd + 4.0, y + 0.4, W(4), loc_line(sc), 'g')
+            k += 1
+
+    elif mode == 'column':
+        # Tam boy dusey kesit; karsi sayfada nottan bir cumle ve bosluk.
+        register(dom['src'], dom.get('box'), 'crop', 'w%02d dom' % w['n'])
+        ar = ratio(dom['src'], dom.get('box'))
+        h = BAND_H
+        wd = h * ar
+        if wd > MEASURE: wd = MEASURE; h = wd / ar
+        use(dp)
+        x = dp.X(0) if side == 'R' else (dp.ml + MEASURE - wd)
+        dp.img(dom['src'], x, REG[0], wd, h, dom.get('box'),
+               'w%02d%sC' % (w['n'], tagk), hi=1600)
+        use(tp)
+        if frag:
+            tp.t(X(0), REG[1], W(5), '<em>%s</em>' % e(frag))
+        tp.rule(X(0), 262.0, W(6))
+        tp.m(X(0), 265.4, W(10), '%02d <i>&middot;</i> %s <i>&middot;</i> %s'
+             % (w['n'], e(w['title']), cap_line(w, dom, 0, prefix='Opposite')), 'g')
+    return pl, pr
+
+# ══ C · DIZI ═════════════════════════════════════════════════════════
+# Surec zaman olarak basilir: karar ani buyuk, kalan asamalar sirali ve
+# numarali. Kac asamadan kacinin gosterildigi her seferinde soylenir.
+def stage_no(w, d):
+    return w['process'].index(d) + 1
+
+def put_frame(p, w, d, x, y, wd, tagx, cap=None):
+    register(d['src'], d.get('box'), 'frame', 'w%02d seq' % w['n'])
+    bot = p.img(d['src'], x, y, wd, None, d.get('box'),
+                'w%02ds%s' % (w['n'], tagx), cls='ix' if wd < S else '')
+    if cap:
+        p.m(x, bot + 2.2, max(wd, W(5)), e(cap), 'g')
+    note = CREDITS.get(d['src'].split('/')[-1])
+    if note:
+        p.m(x, bot + (7.6 if cap else 2.2), max(wd, W(5)), e(note), 'g')
+    return bot
+
+def shown_line(w, n):
+    return 'Of %d stages, %d <i>&middot;</i> in order' % (len(w['process']), n)
+
+def f_sequence(w, spec):
+    pl, pr = spread(w['run'])
+    pl.fam = pr.fam = 'C'
+    lay = spec['layout']
+
+    if lay == 'rows':
+        # Solda karar ani tam olcude; sagda iki sira secilmis asama.
+        use(pl)
+        bot = put_frame(pl, w, spec['dom'], X(0), REG[0], XL, 'd', spec['domcap'])
+        pl.t(X(0), bot + 14.0, W(7), '<em>%s</em>' % e(spec['line']))
+        use(pr)
+        y, row = REG[0], []
+        strip = spec['strip']
+        for i, d in enumerate(strip):
+            row.append(d)
+            if len(row) == 3 or i == len(strip) - 1:
+                x, hh = X(0), y
+                for dd in row:
+                    b2 = put_frame(pr, w, dd, x, y, S, '%d' % stage_no(w, dd))
+                    pr.m(x, b2 + 2.2, S, '%d' % stage_no(w, dd), 'g')
+                    x += S + 4.0
+                    hh = max(hh, b2)
+                y, row = hh + 13.0, []
+        pr.m(X(0), y + 3.0, W(9), shown_line(w, len(strip) + 1), 'g')
+
+    elif lay == 'source':
+        # Kaynak ciftin solunda buyuk cizim; sagda kaynak, kirmizi ve dizi.
+        use(pl)
+        bot = put_frame(pl, w, spec['dom'], X(0), REG[0], XL, 'd', spec['domcap'])
+        use(pr)
+        b1 = put_frame(pr, w, spec['src_frame'], X(0), REG[0], S, 'src',
+                       spec.get('srccap'))
+        x = X(4)
+        for dd in spec['strip']:
+            b2 = put_frame(pr, w, dd, x, REG[0], XS, '%d' % stage_no(w, dd))
+            pr.m(x, b2 + 2.2, XS, '%d' % stage_no(w, dd), 'g')
+            x += XS + 4.0
+        pr.t(X(0), 118.0, W(6), '<em>%s</em>' % e(spec['line']))
+        b3 = put_frame(pr, w, spec['mid'], X(0), REG[2], M, 'm')
+        pr.m(X(0) + M + 4.0, REG[2] + 0.4, W(5), e(spec.get('midcap', '')), 'g')
+        pr.m(X(0) + M + 4.0, b3 - 3.2, W(5), shown_line(w, len(spec['strip']) + 3), 'g')
+
+    elif lay == 'still':
+        # Kaynak tek basina solda, bosluk icinde; sagda cizim buyuk ve dizi.
+        use(pl)
+        sf = spec['src_frame']
+        register(sf['src'], None, 'frame', 'w%02d seq' % w['n'])
+        x = pl.ml + MEASURE - M
+        bot = pl.img(sf['src'], x, REG[1], M, None, None, 'w%02dsstill' % w['n'])
+        pl.m(x, bot + 2.6, M, e(spec.get('srccap', '')), 'g')
+        note = CREDITS.get(sf['src'].split('/')[-1])
+        if note: pl.m(x, bot + 8.0, M, e(note), 'g')
+        pl.t(X(0), 236.0, W(6), '<em>%s</em>' % e(spec['line']))
+        use(pr)
+        ar_d = ratio(spec['dom']['src'], spec['dom'].get('box'))
+        wd_d = L if L / ar_d <= 190.0 else 190.0 * ar_d
+        bot = put_frame(pr, w, spec['dom'], X(0), REG[0], wd_d, 'd', spec['domcap'])
+        x = X(0)
+        for dd in spec['strip']:
+            b2 = put_frame(pr, w, dd, x, 216.0, XS, '%d' % stage_no(w, dd))
+            pr.m(x, b2 + 2.2, XS, '%d' % stage_no(w, dd), 'g')
+            x += XS + 4.0
+        pr.m(X(0), 282.0, W(9), shown_line(w, len(spec['strip']) + 2), 'g')
+
+    elif lay == 'faces':
+        # Egemen bir detay tam sayfa; karsisinda ayni yerin uc asamasi.
+        register(spec['dom']['src'], spec['dom'].get('box'), 'crop',
+                 'w%02d dom' % w['n'])
+        use(pl)
+        pl.cover_img(spec['dom']['src'], -BLEED, -BLEED, PW + 2 * BLEED,
+                     PH + 2 * BLEED, spec['dom'].get('box'),
+                     'w%02dsD' % w['n'], spec.get('pos', '50% 40%'))
+        pl.folio = False
+        use(pr)
+        y = REG[0]
+        for dd in spec['strip']:
+            b2 = put_frame(pr, w, dd, X(0), y, S, '%d' % stage_no(w, dd))
+            pr.m(X(0) + S + 4.0, y + 0.4, W(2), '%d' % stage_no(w, dd), 'g')
+            y = b2 + 8.0
+        pr.t(X(6), REG[1], W(5), '<em>%s</em>' % e(spec['line']))
+        pr.rule(X(6), 262.0, W(6))
+        pr.m(X(6), 265.4, W(6), '%02d <i>&middot;</i> %s <i>&middot;</i> %s'
+             % (w['n'], e(w['title']), e(spec['domcap'])), 'g')
+
+    elif lay == 'stagger':
+        # Egemen tam olcude solda; asamalar sagda basamak basamak iner.
+        use(pl)
+        bot = put_frame(pl, w, spec['dom'], X(0), REG[0], XL, 'd', spec['domcap'])
+        pl.t(X(0), bot + 14.0, W(6), '<em>%s</em>' % e(spec['line']))
+        use(pr)
+        n = len(spec['strip'])
+        for i, dd in enumerate(spec['strip']):
+            x = X(i * 3)
+            y = REG[0] + i * ((DBOT - 46.0 - REG[0]) / max(1, n - 1))
+            b2 = put_frame(pr, w, dd, x, y, XS, '%d' % stage_no(w, dd))
+            pr.m(x, b2 + 2.2, XS, '%d' % stage_no(w, dd), 'g')
+        pr.m(X(0), DBOT + 2.0, W(9), shown_line(w, n + 1), 'g')
+
+    elif lay == 'versions':
+        # Ayni sahnenin baska halleri: kronoloji iddiasiz, yan yana.
+        use(pl)
+        a = spec['dom']
+        register(a['src'], a.get('box'), 'crop', 'w%02d ver' % w['n'])
+        bot = pl.img(a['src'], X(0), REG[0], L, None, a.get('box'), 'w%02dv0' % w['n'])
+        pl.m(X(0), bot + 2.6, L, e(where(a)), 'g')
+        pl.t(X(0), min(bot + 14.0, 250.0), W(7), '<em>%s</em>' % e(spec['line']))
+        use(pr)
+        y = REG[0]
+        for i, (vv, wd) in enumerate(zip(spec['strip'], (M, S, S))):
+            register(vv['src'], vv.get('box'), 'crop', 'w%02d ver' % w['n'])
+            bot = pr.img(vv['src'], X(0), y, wd, None, vv.get('box'),
+                         'w%02dv%d' % (w['n'], i + 1))
+            pr.m(X(0) + wd + 4.0, y + 0.4, W(4), e(where(vv)), 'g')
+            nxt = next((r for r in REG if r > bot + 14.0), None)
+            y = nxt if nxt is not None else bot + 16.0
+
+    elif lay == 'study':
+        # Etud solda buyuk; sagda etudun tabloda vardigi yer.
+        use(pl)
+        a = spec['dom']
+        register(a['src'], a.get('box'), 'crop', 'w%02d study' % w['n'])
+        wd = spec.get('domw', L)
+        bot = pl.img(a['src'], X(0), REG[0], wd, None, a.get('box'),
+                     'w%02dst' % w['n'])
+        pl.m(X(0), bot + 2.6, W(9), e(where(a)), 'g')
+        pl.t(X(0), min(bot + 14.0, 250.0), W(7), '<em>%s</em>' % e(spec['line']))
+        use(pr)
+        y = REG[0]
+        for i, (vv, wd2, cp) in enumerate(spec['after']):
+            register(vv['src'], vv.get('box'), 'crop', 'w%02d after' % w['n'])
+            bot = pr.img(vv['src'], X(0), y, wd2, None, vv.get('box'),
+                         'w%02dsa%d' % (w['n'], i), hi=1600)
+            pr.m(X(0), bot + 2.6, W(8), e(cp), 'g')
+            y = bot + 18.0
+        pr.rule(X(0), 262.0, W(6))
+        pr.m(X(0), 265.4, W(9), '%02d <i>&middot;</i> %s' % (w['n'], e(w['title'])), 'g')
+    return pl, pr
+
+# ══ D · DURAK ════════════════════════════════════════════════════════
+# Sanatcinin bir cumlesi resim boyunda; geri kalani kararli bosluk.
+# Kitapta iki kez, ikisinde de baska kurulur.
+def f_pause(w, text, attrib, img=None, img_box=None, img_cap='', kind='reach'):
+    pl, pr = spread(w['run'])
+    pl.fam = pr.fam = 'D'
+    use(pl)
+    if kind == 'reach':
+        # Soz sol ustte biter; kol sag alt koseden girer, soze uzanir.
+        pl.box(X(0), REG[0] + 16.0, W(9), e(text), 'pq')
+        pl.m(X(0), REG[0] + 16.0 + math.ceil(len(text) / 33.0) * 12.6 + 8.0,
+             W(8), attrib, 'g')
+        use(pr)
+        if img:
+            register(img, img_box, 'crop', 'pause %02d' % w['n'])
+            ar = ratio(img, img_box)
+            wd = W(8)
+            h = wd / ar
+            x = PW + BLEED - wd
+            y = PH + BLEED - h
+            pr.img(img, x, y, wd, h, img_box, 'w%02dpz' % w['n'], hi=1600)
+            pr.m(x - W(4) - 6.0, 262.0, W(4), e(img_cap), 'g rt')
+            pr.folio = False
+    elif kind == 'inscribe':
+        # Yazit solda tek basina; etud sagda, kagit beyazi sayfa beyazina.
+        pl.box(X(0), REG[1], W(9), e(text), 'pq big')
+        pl.m(X(0), REG[1] + 24.0, W(8), attrib, 'g')
+        use(pr)
+        if img:
+            register(img, img_box, 'crop', 'pause %02d' % w['n'])
+            ar = ratio(img, img_box)
+            wd = L
+            h = wd / ar
+            if h > 236.0: h = 236.0; wd = h * ar
+            x = pr.ml + MEASURE - wd
+            pr.img(img, x, REG[0], wd, h, img_box, 'w%02dpz' % w['n'], hi=1600)
+            pr.m(x, REG[0] + h + 2.6, wd, e(img_cap), 'g')
+    return pl, pr
+
+# ── metinler ─────────────────────────────────────────────────────────
 P1 = ('The figures in these paintings are assembled rather than drawn whole. A body '
       'accumulates out of clusters of rounded cells and bubbles that lean against one '
       'another, and it may close or stay open: which way it goes belongs to where that '
@@ -292,1018 +787,798 @@ CV = [('Painting, selected exhibitions', [
         ('VCA Mentorship, 6th Cohort, Architecture in the Metaverse', '2023'),
         ('Opening Keynote, Digital Fashion Summit, Creative Denmark', '2024')])]
 
-FACETS = ('Colour', 'Composition', 'Hand')
-
-# ══ eserin acilimi ═══════════════════════════════════════════════════
-# Sol sayfa yazidir: ustte kunye satiri, ortada baslik, altta paragraf ve
-# uc not. Sag sayfa tablodur ve bandi doldurur. Otuz bes acilim bunun
-# disina cikmaz; degisen tek sey tablonun kendisidir.
-
-def title_size(t):
-    n = len(t)
-    return 32 if n <= 26 else 26 if n <= 40 else 20 if n <= 62 else 15
-
-
-# Notu bir alintiyla baslayan isler icin kaynak. Kaynak alintinin altinda
-# durur; yuz sayfa sonraki kunyede degil.
-QUOTE_SRC = {3: 'Tony Soprano, <i>The Sopranos</i>, HBO, season one, 1999'}
-
-
-def type_page(w):
-    """Isin yazi sayfasi. Ustte kunye, baslik, olculer ve paragraf tek bir
-       blok halinde; ortada beyaz; altta uc not ve iri folyo. Otuz bes
-       yazi sayfasi bu ritmi tutar."""
-    p = page(w['run'])
-    head(p, '%02d <i>&middot;</i> %s' % (w['n'], e(w['medium'])), e(w['run']))
-
-    fs = title_size(w['title'])
-    p.box(X(0), 29.0, W(9), '<em>%s</em>' % e(w['title']), 'd',
-          'font-size:%dpt' % fs)
-    cpl = W(9) / (0.176 * fs)          # 1 mm'ye dusen harf: yaklasik
-    lines = max(1, int(math.ceil(len(w['title']) / cpl)))
-    ty = max(29.0 + lines * 0.367 * fs + 7.0, 50.0)
-    p.rule(X(0), ty, W(9))
-    p.m(X(0), ty + 3.4, W(7),
-        e(w['dim']) + ' <i>&middot;</i> ' + e(w.get('dim_in', '')))
-
-    y = ty + 17.0
-    if w['note'].lstrip().startswith('\u201c'):
-        # Alinti kitaptaki tek italik govdedir; yorum duz kalir.
-        p.box(X(0), y, W(6), e(w['note']), 'q')
-        qh = 5.2 * math.ceil(len(w['note']) / 45.0) + 2.0
-        src = QUOTE_SRC.get(w['n'])
-        if src:
-            p.box(X(0), y + qh + 2.6, W(6), src, 'src')
-            qh += 12.0
-        if w.get('read'):
-            p.t(X(0), y + qh + 5.0, W(6), e(w['read']))
-            qh += 5.0 + 4.5 * math.ceil(len(w['read']) / 52.0)
-    else:
-        body = '<p>%s</p>' % e(w['note'])
-        if w.get('read'):
-            body += '<p>%s</p>' % e(w['read'])
-        p.t(X(0), y, W(6), body)
-        nch = len(w['note']) + (len(w.get('read') or '') + 26 if w.get('read') else 0)
-        qh = math.ceil(nch / 52.0) * 4.5
-
-    # 6.4 — metin bloğu dikeyde tek parcadir: baslik, olcu, not ve uc not
-    # arasinda 12 mm'den fazla bosluk kalmaz. Artan bosluk sayfanin
-    # altina toplanir, ortasina degil.
-    fy = min(y + qh + 12.0, 236.0)
-    p.rule(X(0), fy, MEASURE)
-    for i, f in enumerate(FACETS):
-        p.m(X(i * 4), fy + 3.6, W(4) - 3,
-            '<b>%s</b><br><i>%s</i>' % (f, e(w['facets'][i])))
-    return p
-
-
-def plate_page(w):
-    """Tablonun kendisi. Butun tablolar ayni bandin icinde durur; dik
-       olanlar bandin yuksekligini alir, yatik olanlar sayfanin
-       genisligini. Hicbiri kirpilmaz."""
-    p = page(w['run'], 'plate')
-    h = BAND_H
-    wd = h * w['ar']
-    if wd > PW:
-        wd = PW; h = wd / w['ar']
-    x = (PW - wd) / 2
-    y = BAND_T + (BAND_H - h) / 2
-    path, _ = prep(w['plate']['src'], wd, 'p%02d' % w['n'], w['plate'].get('box'))
-    p.raw('<img src="%s" style="left:%.2fmm;top:%.2fmm;width:%.2fmm;height:%.2fmm">'
-          % (path, x, y, wd, h))
-    return p
-
-# ══ detay sayfalari ══════════════════════════════════════════════════
-# Alti arketip vardir, yedincisi yoktur. Her gorsel alti kademeden birine
-# atanir; ara boy yoktur. Her gorselin ust kenari bir register cizgisine
-# oturur, alt kenar serbesttir. Bosluk tek parcadir ve en az iki sayfa
-# kenarina dayanir; kosegen yerlesim yasaktir.
-
-def crop_of(wk, b):
-    """Motif kutusu kirpilmis tablonun icinde verilmistir; saklanan
-       fotografin icindeki yerine cevirir."""
-    pb = wk['plate'].get('box') or [0, 0, 1, 1]
-    return [pb[0] + b[0] * pb[2], pb[1] + b[1] * pb[3], b[2] * pb[2], b[3] * pb[3]]
-
-
-def in_motifs(w):
-    return [(sec, c) for sec in MOTIFS['sections']
-            for c in sec['crops'] if c['n'] == w['n']]
-
-
-def px_of(src, box=None):
-    im = Image.open(os.path.join(ROOT, src.lstrip('/')))
-    return im.size[0] * (box[2] if box else 1.0)
-
-
-def cap_step(c):
-    """Kesit kagitta 3.8 piksel/mm'nin altina dusmez; tam sayfa levha
-       icin 5.2, yani 250 mm'de 1300 piksel."""
-    px = px_of(c['src'], c.get('box'))
-    out = 'XS'
-    for st in STEPS:
-        need = 5.2 if st == 'XXL' else 3.8
-        if STEP_MM[st] * need <= px: out = st
-    return out
-
-
-def widen(c, need_px):
-    """Bir kesiti buyuk basmak icin kutusunu genisletir: buyutmek yerine
-       daha genis bir alan alinir. Genisleme tablonun kendi sinirinda
-       durur, yoksa fotografin icindeki duvar da kadraja girer."""
-    b = c.get('box')
-    if not b: return c
-    lim = c.get('limit') or [0.0, 0.0, 1.0, 1.0]
-    full = px_of(c['src'], lim)
-    if px_of(c['src'], b) >= need_px or full < need_px: return c
-    k = min(lim[2] / b[2], need_px / px_of(c['src'], b))
-    nw = min(lim[2], b[2] * k); nh = min(lim[3], b[3] * k)
-    nx = min(max(lim[0], b[0] - (nw - b[2]) / 2), lim[0] + lim[2] - nw)
-    ny = min(max(lim[1], b[1] - (nh - b[3]) / 2), lim[1] + lim[3] - nh)
-    d = dict(c); d['box'] = [nx, ny, nw, nh]
-    d['tag'] = c['tag'] + 'w'
-    d['cap'] = cap_step(d)
-    return d
-
-
-def clause(w, k):
-    """Kunyenin ikinci yarisi: o kadrajda elin ne yaptigi. Isin kendi uc
-       notundan alinir, sirayla, boylece ayni is icinde tekrarlanmaz."""
-    f = w['facets'][k % 3]
-    for sep in (', the ', '; ', ', and ', ', with '):
-        f = f.split(sep)[0]
-    if len(f) > 46: f = f[:44].rsplit(' ', 1)[0]
-    return f[0].upper() + f[1:]
-
-
-def caption(w, c, step):
-    loc = c['loc']
-    loc = loc[0].upper() + loc[1:]
-    if c.get('again'):
-        return e(loc) + ' &mdash; ' + c['again']
-    if STEPS.index(step) < 2:                 # XS ve S: yalniz konum
-        return e(loc) + (' &deg;' if c.get('echo') else '')
-    t = loc + ' \u2014 ' + clause(w, c['k'])
-    if len(t) > 90: t = t[:88].rsplit(' ', 1)[0] + '\u2026'
-    return e(t) + (' &deg;' if c.get('echo') else '')
-
-
-def material(w):
-    """Bir isin detay malzemesi: cekilmis detaylar, sonra o tablonun
-       tekrar eden figurleri. Ikincisi Recurring bolumunde de basilir, ve
-       kunyesinde bir derece isareti tasir."""
-    out = []
-    for d in spread_out(w['details']) if len(w['details']) > 2 else w['details']:
-        out.append({'src': d['src'], 'box': d.get('box'), 'loc': where(d),
-                    'echo': None})
-    for sec, c in in_motifs(w):
-        out.append({'src': w['plate']['src'], 'box': crop_of(w, c['box']),
-                    'loc': c['line'], 'echo': sec['key'],
-                    'limit': w['plate'].get('box') or [0, 0, 1, 1]})
-    for k, c in enumerate(out):
-        c['k'] = k
-        c['cap'] = cap_step(c)
-        c['tag'] = 'w%02dc%d' % (w['n'], k)
-    return out
-
-
-def at_most(c, step):
-    """Cozunurluk elverdigi en buyuk kademe."""
-    i = min(STEPS.index(step), STEPS.index(c['cap']))
-    return STEPS[max(i, 0)]
-
-
-def place(p, c, step, x, y, w=None, h=None):
-    """Bir kesiti verilen kademede yerlestirir. XXL sayfayi tasar ve
-       kenarindan kesilir; oteki kademelerde kirpma yoktur."""
-    if step == 'XXL':
-        path, _ = prep(c['src'], 250, c['tag'] + 'X', c.get('box'))
-        p.raw('<img class="cut" src="%s" style="left:%.2fmm;top:%.2fmm;'
-              'width:%.2fmm;height:%.2fmm">' % (path, x, y, w, h))
-        return y + h
-    wd = STEP_MM[step]
-    return p.img(c['src'], x, y, wd, None, c.get('box'), c['tag'] + step)
-
-
-# ── A · THE PLATE ───────────────────────────────────────────────────
-def a_plate(p, w, cs, tag):
-    c = widen(cs[0], 250 * 5.2)
-    IH = 288.0 + BLEED
-    place(p, c, 'XXL', -BLEED, -BLEED, PW + 2 * BLEED, IH)
-    p.m(p.X(0), 291.0, W(8), '%02d <i>&middot;</i> %s' % (w['n'], e(w['title'])))
-    p.m(p.R(2), 291.0, W(2), 'Detail', 'rt g')
-    p.m(p.X(0), 296.6, W(10), caption(w, c, 'XXL'), 'g')
-    return ['XXL']
-
-
-# ── B · THE JUMP ────────────────────────────────────────────────────
-def b_jump(p, w, cs, tag, corner=False):
-    """Ustte buyuk, altta XS, ayni sol kenara hizali; aralarinda en az
-       26 mm. Bosluk saga dogru acilir. Nakarat kipinde buyuk asagi,
-       kucuk sag ust kosedeki sabit yerine gecer: sol-ust'ten sag-alt'a
-       kosegen kurulmaz."""
-    big, small = cs[0], cs[1]
-    ar = ratio(big['src'], big.get('box'))
-    bs = 'M'
-    for st in ('XL', 'L', 'M', 'S'):
-        if STEPS.index(st) > STEPS.index(at_most(big, 'XL')): continue
-        if STEP_MM[st] / ar <= 196.0: bs = st; break
-    bw = STEP_MM[bs]; bh = bw / ar
-    sw = STEP_MM['XS']
-    sh = sw / ratio(small['src'], small.get('box'))
-
-    if corner:
-        by = DBOT - bh - 8.0
-        p.img(big['src'], p.X(0), by, bw, None, big.get('box'), big['tag'] + bs)
-        p.m(p.X(0), by + bh + 2.6, W(9), caption(w, big, bs), 'g')
-        sy = REG[0]
-        room = by - sy - 26.0
-    else:
-        p.img(big['src'], p.X(0), REG[0], bw, None, big.get('box'), big['tag'] + bs)
-        p.m(p.X(0), REG[0] + bh + 2.6, W(9), caption(w, big, bs), 'g')
-        sy = next((r for r in REG if r >= REG[0] + bh + 26.0), None)
-        if sy is None: sy = min(REG[0] + bh + 30.0, DBOT - 60.0)
-        room = DBOT - sy - 8.0
-
-    sx = p.R(3) if corner else p.X(0)
-    if sh > room:
-        sh = max(24.0, min(room, sw * 1.4))
-        path, _ = prep(small['src'], sw, small['tag'] + 'XSb', small.get('box'))
-        p.raw('<img class="cut" src="%s" style="left:%.2fmm;top:%.2fmm;'
-              'width:%.2fmm;height:%.2fmm">' % (path, sx, sy, sw, sh))
-    else:
-        p.img(small['src'], sx, sy, sw, None, small.get('box'), small['tag'] + 'XSb')
-    p.m(p.R(4) if corner else sx, sy + sh + 2.6, W(4),
-        caption(w, small, 'XS'), 'g rt' if corner else 'g')
-    return [bs, 'XS']
-
-
-# ── C · THE STACK ───────────────────────────────────────────────────
-def c_stack(p, w, cs, tag):
-    n = len(cs)
-    for st in ('M', 'S', 'XS'):
-        wd = STEP_MM[st]
-        hs = [wd / ratio(c['src'], c.get('box')) for c in cs]
-        if sum(hs) + (n - 1) * 4.0 + n * 5.0 <= DBOT - REG[0]: break
-    y = REG[0]
-    for c in cs:
-        h = wd / ratio(c['src'], c.get('box'))
-        p.img(c['src'], p.X(0), y, wd, None, c.get('box'), c['tag'] + st)
-        p.m(p.X(0) + wd + 4.0, y, W(5), caption(w, c, st), 'g')
-        y += h + 4.0 + 5.0
-    return [st] * n
-
-
-# ── D · THE STRIP ───────────────────────────────────────────────────
-def d_strip(pl, pr, w, c, tag, again=None):
-    """Serimi bastan basa gecen yatay bant. Kesitten bir serit alinir;
-       serit, kesitin kendisi gibi, isin bir parcasidir."""
-    H = 108.0
-    SPAN = PW * 2 + 2 * BLEED
-    # Serit kaynagin butun genisligini alir; yalnizca yukseklikten kirpilir.
-    # Boylece 490 mm'ye yayilan bant en cok piksele sahip olur.
-    b = c.get('box') or [0, 0, 1, 1]
-    lim = c.get('limit') or ([0.0, 0.0, 1.0, 1.0] if c.get('box') is None
-                             else [0.0, 0.0, 1.0, 1.0])
-    b = [lim[0], b[1], lim[2], b[3]]
-    full_ar = ratio(c['src'], b)
-    want = SPAN / H
-    if full_ar >= want:
-        nb = list(b)
-    else:
-        keep_h = (full_ar / want) * b[3]
-        nb = [lim[0], min(max(lim[1], b[1] + (b[3] - keep_h) / 2.0),
-                          lim[1] + lim[3] - keep_h), lim[2], keep_h]
-    top = REG[1]
-    path, _ = prep(c['src'], SPAN, c['tag'] + 'D', nb)
-    pl.raw('<img src="%s" style="left:%.2fmm;top:%.2fmm;width:%.2fmm;height:%.2fmm">'
-           % (path, -BLEED, top, SPAN, H))
-    pr.raw('<img src="%s" style="left:%.2fmm;top:%.2fmm;width:%.2fmm;height:%.2fmm">'
-           % (path, -BLEED - PW, top, SPAN, H))
-    if c.get('echo'): ECHO_STEP.setdefault((w['n'], c['echo']), 'XXL')
-    cc = dict(c); cc['again'] = again
-    use(pl)
-    pl.m(pl.X(0), top + H + 3.0, W(9), caption(w, cc, 'XXL'), 'g')
-    use(pr)
-    pr.m(pr.X(0), top + H + 3.0, W(6),
-         '%02d <i>&middot;</i> %s' % (w['n'], e(w['title'])))
-    pr.m(pr.R(3), top + H + 3.0, W(3), 'A band across the spread', 'rt g')
-    return ['XXL']
-
-
-# ── E · THE FIELD ───────────────────────────────────────────────────
-def e_field(p, w, cs, tag):
-    n = len(cs)
-    cols = 4
-    cell = (MEASURE - (cols - 1) * 4.0) / cols          # 48
-    rows = int(math.ceil(n / float(cols)))
-    y = DBOT - 24.0 - rows * (cell + 4.0) + 4.0
-    for i, c in enumerate(cs):
-        x = p.X(0) + (i % cols) * (cell + 4.0)
-        yy = y + (i // cols) * (cell + 4.0)
-        path, _ = prep(c['src'], cell, c['tag'] + 'F', c.get('box'))
-        p.raw('<img class="cut" src="%s" style="left:%.2fmm;top:%.2fmm;'
-              'width:%.2fmm;height:%.2fmm">' % (path, x, yy, cell, cell))
-    ybot = y + rows * (cell + 4.0) - 4.0
-    p.rule(p.X(0), ybot + 4.0, MEASURE)
-    per = int(math.ceil(n / 3.0))
-    for col in range(3):
-        part = cs[col * per:(col + 1) * per]
-        if not part: continue
-        p.m(p.X(col * 4), ybot + 7.0, W(4) - 3,
-            '<br>'.join('%d <i>&middot;</i> %s%s'
-                        % (col * per + j + 1, e(c['loc']),
-                           ' &deg;' if c.get('echo') else '')
-                        for j, c in enumerate(part)), 'g')
-    return ['XS'] * n
-
-
-# ── F · THE WELD ────────────────────────────────────────────────────
-def f_weld(p, w, cs, tag):
-    """Iki gorsel birebir ayni boyda, sifir oluk, birbirine yapisik ve
-       iki yandan tasar: tek gorsel gibi okunur."""
-    a, b = cs[0], cs[1]
-    span = PW + 2 * BLEED
-    wd = span / 2.0
-    h = min(wd / ratio(a['src'], a.get('box')), wd / ratio(b['src'], b.get('box')))
-    h = min(h, 210.0)
-    top = REG[0]
-    for i, c in enumerate((a, b)):
-        path, _ = prep(c['src'], wd, c['tag'] + 'W', c.get('box'))
-        p.raw('<img class="cut" src="%s" style="left:%.2fmm;top:%.2fmm;'
-              'width:%.2fmm;height:%.2fmm">' % (path, -BLEED + i * wd, top, wd, h))
-    p.m(p.X(0), top + h + 3.0, W(5), caption(w, a, 'M'), 'g')
-    p.m(p.R(5), top + h + 3.0, W(5), caption(w, b, 'M'), 'g rt')
-    return ['M', 'M']
-
-
-ARCH = {'A': a_plate, 'B': b_jump, 'C': c_stack, 'E': e_field, 'F': f_weld}
-
-
-def chunks(n):
-    """Etudler sayfalara boyle dagilir: uceri ve ikiseri."""
-    if n <= 3: return [n] if n else []
-    out = []
-    while n > 4:
-        out.append(3); n -= 3
-    if n == 4: out += [2, 2]
-    elif n: out.append(n)
-    return out
-
-
-def sheet_head(p, w, label='Detail'):
-    head(p, '%02d <i>&middot;</i> %s' % (w['n'], e(w['title'])), label, False)
-
-
-ECHO_STEP = {}             # (is, motif) -> eserler bolumunde basildigi kademe
-
-REFRAIN = (3, 15, 27)      # ucunde ayni kademe ayni kosede: hizli
-                           # cevirmede nabiz
-
-
-def detail_page(w, kind, cs, i, last=False):
-    p = page(w['run'])
-    if kind != 'A':
-        sheet_head(p, w, 'Detail' if len(cs) == 1 else 'Details')
-    if kind == 'B':
-        steps = b_jump(p, w, cs, 'w%02dd%d' % (w['n'], i),
-                       corner=(w['n'] in REFRAIN and last))
-    else:
-        steps = ARCH[kind](p, w, cs, 'w%02dd%d' % (w['n'], i))
-    for c, st in zip(cs, steps + [steps[-1]] * 4):
-        if c.get('echo'):
-            ECHO_STEP.setdefault((w['n'], c['echo']), st)
-    p.arch, p.steps = kind, steps
-    return p
-
-
-def allot(w, crops):
-    """Detay sayfasi sayisi: yuzey, tekrar eden figur ve surec dizisi.
-       Cekilmis detayi olan is en az bir sayfa alir; 2026 isleri, malzeme
-       yetiyorsa, tekrar mekanigi icin dort alir."""
-    m = re.findall(r'([\d.]+)', w['dim'])
-    area = (float(m[0]) * float(m[1])) / 10000.0 if len(m) >= 2 else 0.0
-    sc = (1 if area > 0.7 else 0) + len(in_motifs(w)) + (1 if w['process'] else 0)
-    n = 0 if sc == 0 else 1 if sc <= 2 else 2 if sc <= 4 else 3
-    if crops: n = max(n, 1)
-    if w['year'] == '2026' and len(crops) >= 5: n = max(n, 4)
-    return min(n, len(crops) + 1)
-
-
-def detail_run(w, crops):
-    """Bir isin detay dizisi. Her serimde tam sayfa bir levha ya da bir
-       serit bulunur, yani her serimin bir oznesi vardir. Ayni arketip ne
-       ayni serimde iki kez ne de art arda iki serimde gelir; dizi en
-       kucuk gorselle biter; acilis kesiti bir kez daha, kucuk ve butun."""
-    n = allot(w, crops)
-    if not n or not crops: return []
-    rest = list(crops)
-    lead = max(rest, key=lambda c: (STEPS.index(c['cap']), -c['k']))
-    rest.remove(lead)
-    wide = (w['ar'] >= 1.3
-            and px_of(lead['src'], lead.get('limit')) >= 1900)
-
-    if n <= 1:
-        return [('A', [lead])]
-
-    out = [('A', [lead])]
-    # ilk serimin sag sayfasi: eldeki malzemeye gore
-    if len(rest) >= 6:
-        out.append(('E', rest[:8])); rest = rest[8:]
-    elif len(rest) >= 3:
-        out.append(('C', rest[:4])); rest = rest[4:]
-    elif len(rest) >= 2:
-        out.append(('F', rest[:2])); rest = rest[2:]
-    elif len(rest) == 1:
-        out.append(('B', [rest[0], lead])); rest = []
-    else:
-        out.append(('B', [lead, lead]))
-
-    while len(out) < n:
-        if rest:
-            second = rest.pop(0)
-            out.append(('D', [second]) if wide else ('A', [second]))
-            if len(out) < n:
-                if len(rest) >= 2:
-                    out.append(('B', rest[:2])); rest = rest[2:]
-                elif rest:
-                    out.append(('B', [rest.pop(0), lead]))
-                else:
-                    out.append(('B', [lead, lead]))
-        else:
-            break
-
-    # 5.1 tekrar: acilis kesiti, son sayfada, kucuk ve butun halinde
-    if len(out) >= 3:
-        again = dict(lead)
-        again['again'] = 'The same place, whole'
-        again['tag'] = lead['tag'] + 'r'
-        k, cs = out[-1]
-        cs = list(cs)
-        if k == 'B':
-            out[-1] = (k, [cs[0], again])
-        elif k in ('C', 'E') and len(cs) < (8 if k == 'E' else 5):
-            out[-1] = (k, cs + [again])
-    return out
-
-
-# ══ surec, etud, ara sayfa ═══════════════════════════════════════════
-
-def process_sheet(w, part, i, total, base=0):
-    """Bir tablonun asamalari. Kitapta izgaranin yeri yalniz burasi:
-       bunlar levha degil bir siradir, ve bir kontak baski gibi sayfayi
-       bastan asagi doldurur."""
-    p = page(w['run']); p.arch = 'P'
-    sheet_head(p, w, 'Process')
-    avail = (FRULE - 10.0) - DTOP
-    ars = [ratio(d['src'], d.get('box')) for d in part]
-    best = None
-    for c in (2, 3, 4, 5):
-        if c > len(part): break
-        gap = 6.0
-        cw = (MEASURE - (c - 1) * gap) / c
-        rows = int(math.ceil(len(part) / float(c)))
-        bs = [part[r * c:(r + 1) * c] for r in range(rows)]
-        hs = [max(cw / ratio(d['src'], d.get('box')) for d in band) for band in bs]
-        tot = sum(hs) + gap * (rows - 1)
-        if tot > avail: continue
-        if best is None or tot > best[0]: best = (tot, c, cw, gap, rows, hs, bs)
-    if best is None:
-        c, gap = 5, 6.0
-        cw = (MEASURE - 4 * gap) / 5
-        rows = int(math.ceil(len(part) / 5.0))
-        bs = [part[r * 5:(r + 1) * 5] for r in range(rows)]
-        hs = [cw / min(ars) for _ in range(rows)]
-        best = (sum(hs) + gap * (rows - 1), c, cw, gap, rows, hs, bs)
-    tot, c, cw, gap, rows, hs, bands = best
-    y = DTOP + max(0.0, (avail - tot) / 2.0)
-    note, k = None, 0
-    for r, band in enumerate(bands):
-        x = X(0)
-        for d in band:
-            p.pic(d['src'], x, y, cw, d.get('box'), 'w%02dp%02d' % (w['n'], base + k))
-            note = CREDITS.get(d['src'].split('/')[-1]) or note
-            x += cw + gap; k += 1
-        y += hs[r] + gap
-    p.rule(X(0), FRULE, MEASURE)
-    p.m(X(0), FMICRO, W(5), '%d stages <i>&middot;</i> %d&ndash;%d'
-        % (total, base + 1, base + len(part)))
-    if note: p.m(X(6), FMICRO, W(6), e(note), 'g')
-    return p
-
-
-def study_sheet(w, part, i):
-    """Kokte duran calismalar. Bunlar detay degil, ayri resimlerdir;
-       hicbiri kirpilmaz, ve ayni olcek yasasina uyarlar."""
-    p = page(w['run']); p.arch = 'S'
-    sheet_head(p, w, 'Studies and versions')
-    cs = [{'src': a0['src'], 'box': a0.get('box'), 'loc': where(a0),
-           'echo': None, 'k': j, 'cap': 'XXL',
-           'tag': 'w%02ds%d%d' % (w['n'], i, j)} for j, a0 in enumerate(part)]
-    n = len(cs)
-    if n == 1:
-        c = cs[0]
-        ar = ratio(c['src'], c.get('box'))
-        wd = STEP_MM['XL']
-        if wd / ar > DBOT - REG[0] - 10.0:
-            wd = (DBOT - REG[0] - 10.0) * ar
-        p.img(c['src'], p.X(0), REG[0], wd, None, c.get('box'), c['tag'])
-        p.m(p.X(0), REG[0] + wd / ar + 3.0, W(9), e(c['loc']), 'g')
-        p.m(p.R(2), REG[0] + wd / ar + 3.0, W(2), kind(part[0]), 'rt g')
-    elif n == 2:
-        b_jump(p, w, cs, 'st')
-    else:
-        c_stack(p, w, cs, 'st')
-    return p
-
-
-INTERLEAVES = []          # sonradan doldurulur: motif sayfalari daha kurulmadi
-MOTIF_AT = {}             # motif anahtari -> sayfa numarasi
-
-
-def interleaf(w):
-    """Sayfa sayisi denk gelmediginde acilan sayfa bos ya da tekrar olmaz.
-       Isin icinde kitabin tekrar eden figurlerinden biri geciyorsa, o
-       figur burada kendi kesitiyle ve bolumunun sayfasiyla verilir."""
-    p = page(w['run']); p.arch = 'R'
-    INTERLEAVES.append((p, w))
-    return p
-
-
-def fill_interleaf(p, w):
-    hits = in_motifs(w)
-    if not hits:
-        head(p, '%02d <i>&middot;</i> %s' % (w['n'], e(w['title'])), 'From the note', False)
-        p.d(X(0), 132.0, W(9), e(sentence(w, 1)), 'l')
-        return
-    head(p, '%02d <i>&middot;</i> %s' % (w['n'], e(w['title'])),
-         'Recurring here', False)
-    n = len(hits)
-    Y0, TOP = 38.0, FRULE - 16.0
-    IW = W(8) if n == 1 else W(6)
-    maxh = ((TOP - Y0) - (n - 1) * 16.0) / n
-    rows = []
-    for sec, c in hits:
-        bx = crop_of(w, c['box'])
-        ar = ratio(w['plate']['src'], bx)
-        iw = min(IW, maxh * ar)
-        rows.append((sec, c, bx, iw, iw / ar))
-    slack = (TOP - Y0) - sum(r[4] for r in rows)
-    gap = max(16.0, slack / (n + 1)) if n > 1 else 0.0
-    y = Y0 + (slack * .28 if n == 1 else gap * .5)
-    for sec, c, bx, iw, hh in rows:
-        path, _ = prep(w['plate']['src'], iw, 'il%02d%s' % (w['n'], sec['key']), bx)
-        p.raw('<img src="%s" style="left:%.2fmm;top:%.2fmm;width:%.2fmm;height:%.2fmm">'
-              % (path, X(0), y, iw, hh))
-        tx = X(9) if n == 1 else X(7)
-        tw = W(3) if n == 1 else W(5)
-        p.d(tx, y - 1.4, tw, e(sec['name']), 's')
-        p.t(tx, y + 11.0, tw, e(c['line'][0].upper() + c['line'][1:]) + '.')
-        pg = MOTIF_AT.get(sec['key'])
-        if pg:
-            p.m(tx, y + hh - 4.0, tw, 'Page %d' % pg, 'g')
-        y += hh + gap
-    p.rule(X(0), FRULE, MEASURE)
-    p.m(X(0), FMICRO, W(9),
-        'The figure is followed through all its appearances in the chapter '
-        'on what comes back', 'g')
-
+TOC = None
+SECTIONS = []
 
 # ══ on sayfalar ══════════════════════════════════════════════════════
 COVER_SRC = '/img/full/detail/7famboardgame_detail_3.jpg'
+COVER_ON_PLATE = [0.125, 0.375, 0.550, 0.458]   # kapagin 01 uzerindeki yeri
 
-p = page('', 'dark')
-p.folio = False
-cpath, car = prep(COVER_SRC, 240, 'cover')
-ch = 240.0 / car
-p.raw('<img src="%s" style="left:0;top:0;width:240mm;height:%.2fmm">' % (cpath, ch))
-p.m(X(0), ch + 8.0, W(6), NM)
-p.m(R(4), ch + 8.0, W(4), 'Thirty-five works', 'rt')
-p.rule(X(0), ch + 16.0, MEASURE, True)
-p.d(X(0), 208.0, W(10), 'Paintings<br>since 2019', 'l')
-p.rule(X(0), 292.0, MEASURE)
-p.m(X(0), 295.4, W(6), 'Istanbul <i>&middot;</i> Milan <i>&middot;</i> Luxembourg')
-p.m(R(3), 295.4, W(3), 'yigitozen.xyz', 'rt')
+def front_matter():
+    # Kapak: kesit ustte, koyu zeminde baslik. Kesitin tablodaki yeri
+    # kitabin son sayfasinda isaretlenir.
+    p = page('', 'dark')
+    p.folio = False
+    p.fam = 'F'
+    register(COVER_SRC, None, 'crop', 'cover')
+    cpath, car = prep(COVER_SRC, 240, 'cover')
+    ch = 240.0 / car
+    p.raw('<img src="%s" style="left:0;top:0;width:240mm;height:%.2fmm">' % (cpath, ch))
+    p.m(X(0), ch + 8.0, W(6), NM)
+    p.m(R(4), ch + 8.0, W(4), 'Thirty-five works', 'rt g')
+    p.rule(X(0), ch + 16.0, MEASURE, True)
+    p.d(X(0), 206.0, W(10), 'Paintings<br>since 2019', 'l')
+    p.rule(X(0), 292.0, MEASURE)
+    p.m(X(0), 295.4, W(6), 'Istanbul <i>&middot;</i> Milan <i>&middot;</i> Luxembourg')
+    p.m(R(3), 295.4, W(3), 'yigitozen.xyz', 'rt')
 
-p = page('Imprint')
-head(p, 'Imprint', NM)
-p.d(X(0), 29.0, W(9), 'Thirty-five<br>paintings', 's')
-p.rule(X(0), 68.0, W(9))
-p.m(X(0), 71.4, W(7), '2019&ndash;2026 <i>&middot;</i> Istanbul, Milan and Luxembourg')
-p.t(X(0), 190.0, W(6), e(SHORT_BLURB if SHORT else BLURB))
-p.rule(X(0), 258.0, MEASURE)
-p.m(X(0), 261.6, W(4), '<b>Medium</b><br><i>Acrylic on canvas, on carton and on paper, '
-    'and one drawing in charcoal</i>')
-p.m(X(4), 261.6, W(4), '<b>Order</b><br><i>Newest first, so the seven years are read '
-    'backwards</i>')
-p.m(X(8), 261.6, W(4), '<b>Rights</b><br><i>All works &copy; Yiğit Özen. '
-    'All rights reserved</i>')
+    p = page('Imprint')
+    p.fam = 'F'
+    p.m(X(0), HEAD, W(6), 'Imprint')
+    p.m(R(4), HEAD, W(4), NM, 'rt g')
+    p.rule(X(0), HRULE, MEASURE, True)
+    p.d(X(0), 29.0, W(9), 'Thirty-five<br>paintings', 's')
+    p.rule(X(0), 66.0, W(9))
+    p.m(X(0), 69.4, W(7), '2019&ndash;2026 <i>&middot;</i> Istanbul, Milan and Luxembourg')
+    p.t(X(0), 196.0, W(6), e(SHORT_BLURB if SHORT else BLURB))
+    p.rule(X(0), 258.0, MEASURE)
+    p.m(X(0), 261.6, W(4), '<b>Medium</b><br>Acrylic on canvas, on carton and on '
+        'paper, and one drawing in charcoal', 'g')
+    p.m(X(4), 261.6, W(4), '<b>Order</b><br>Newest first, so the seven years are '
+        'read backwards', 'g')
+    p.m(X(8), 261.6, W(4), '<b>Rights</b><br>All works &copy; Yiğit Özen. '
+        'All rights reserved', 'g')
 
-if not SHORT:
     p = page('Paintings since 2019')
+    p.fam = 'F'
     p.m(X(0), HEAD, W(6), NM)
     p.m(R(4), HEAD, W(4), 'Istanbul <i>&middot;</i> Milan <i>&middot;</i> Luxembourg', 'rt g')
     p.rule(X(0), HRULE, MEASURE, True)
     p.d(X(0), 118.0, W(11), 'Paintings<br>since<br>2019', 'xl')
     p.rule(X(0), 262.0, MEASURE)
-    p.m(X(0), 265.4, W(5), 'Thirty-five works')
+    p.m(X(0), 265.4, W(5), 'Thirty-five works' if not SHORT else 'Eight works')
     p.m(R(4), 265.4, W(4), 'Newest first', 'rt g')
 
-    MEAS6 = W(6)
-    X6 = (PW - MEAS6) / 2
-    p = page('On the work')
-    p.m(X6, HEAD, MEAS6, 'On the work', 'ct')
-    p.t(X6, 30.0, MEAS6, '<p>%s</p><p>%s</p><p>%s</p>' % (e(P1), e(P2), e(P3)), 'j')
-    p.m(X6, 246.0, MEAS6, 'On the work', 'ct')
-    p.rule(X6 + MEAS6 / 2 - 12, 254.0, 24.0)
-    p.m(X6, 288.0, MEAS6, 'Text by the artist', 'ct g')
+    if SHORT: return
 
-    p = page('On the work', 'plate')
+    # Deneme serimi: solda sanatcinin metni iki kolonda, sagda tam tasan
+    # bir kesit. Metin ile resim ayni serimde karsi karsiya.
+    pl, pr = spread('On the work')
+    pl.fam = pr.fam = 'F'
+    use(pl)
+    pl.m(X(0), HEAD, W(6), 'On the work')
+    pl.m(R(4), HEAD, W(4), 'Text by the artist', 'rt g')
+    pl.rule(X(0), HRULE, MEASURE, True)
+    cw = W(5.8)
+    pl.t(X(0), 34.0, cw, '<p>%s</p><p>%s</p>' % (e(P1), e(P2)))
+    pl.t(X(6.2), 34.0, cw, '<p>%s</p>' % e(P3))
+    pl.rule(X(0), 262.0, MEASURE)
+    pl.m(X(0), 265.4, W(8), 'Thirty-five works, 2019&ndash;2026, read newest first')
+    pl.m(R(3), 265.4, W(3), '15 <i>&middot;</i> viperella', 'rt g')
+    use(pr)
     _esrc = '/img/full/detail/viperella_detail_1.jpg'
-    _ear = ratio(_esrc)
-    _eh = min(272.0, PW / _ear)
-    p.pich(_esrc, None, 24.0 + (272.0 - _eh) / 2, _eh, None, 'essay')
-    p.m(X(0), 306.0, W(9), '15 <i>&middot;</i> Viperella, the head and the raised hand', 'g')
+    register(_esrc, None, 'crop', 'essay')
+    pr.cover_img(_esrc, -BLEED, -BLEED, PW + 2 * BLEED, PH + 2 * BLEED, None,
+                 'essay', '30% 30%')
+    pr.folio = False
 
-    por = '/img/portrait.jpg'
-    p = page('Biography')
-    head(p, 'Biography', NM)
-    p.pic(por, R(6), 29.0, W(6), None, 'portrait')
-    p.d(X(0), 29.0, W(5), 'Yiğit<br>Özen', 's')
-    p.rule(X(0), 68.0, W(5))
-    p.m(X(0), 71.4, W(5), 'Born 1994, Istanbul')
-    p.t(X(0), 190.0, W(6), ''.join('<p>%s</p>' % e(x) for x in BIO))
-    p.rule(X(0), FRULE, MEASURE)
-    p.m(X(0), FMICRO, W(5), 'Painter and spatial designer')
-    p.m(R(4), FMICRO, W(4), 'Studio, Luxembourg', 'rt g')
-
-    p = page('Biography')
-    head(p, 'Exhibitions and talks', 'Selected')
+    pl, pr = spread('Biography')
+    pl.fam = pr.fam = 'F'
+    use(pl)
+    pl.m(X(0), HEAD, W(6), 'Biography')
+    pl.m(R(4), HEAD, W(4), NM, 'rt g')
+    pl.rule(X(0), HRULE, MEASURE, True)
+    pl.img('/img/portrait.jpg', pl.ml + MEASURE - M, 29.0, M, None, None, 'portrait')
+    pl.d(X(0), 29.0, W(5), 'Yiğit<br>Özen', 's')
+    pl.rule(X(0), 66.0, W(5))
+    pl.m(X(0), 69.4, W(5), 'Born 1994, Istanbul')
+    pl.t(X(0), 190.0, W(6), ''.join('<p>%s</p>' % e(x) for x in BIO))
+    pl.rule(X(0), FRULE, MEASURE)
+    pl.m(X(0), FMICRO, W(5), 'Painter and spatial designer')
+    pl.m(R(4), FMICRO, W(4), 'Studio, Luxembourg', 'rt g')
+    use(pr)
+    pr.m(X(0), HEAD, W(8), 'Exhibitions and talks')
+    pr.m(R(2), HEAD, W(2), 'Selected', 'rt g')
+    pr.rule(X(0), HRULE, MEASURE, True)
     y = 34.0
     for gi, (h4, rows) in enumerate(CV):
-        p.rule(X(0), y - 4.0, MEASURE, gi == 0)
-        p.m(X(0), y, W(4), h4)
+        pr.m(X(0), y, W(4), h4)
         yy = y
         for a2, b2 in rows:
-            p.m(X(4), yy, W(7), e(a2), 'g')
-            p.m(R(1), yy, W(1), b2, 'rt g')
+            pr.m(X(4), yy, W(7), e(a2), 'g')
+            pr.m(R(1), yy, W(1), b2, 'rt g')
             yy += 6.6
-        y = yy + 16.0
-    p.rule(X(0), FRULE, MEASURE)
-    p.m(X(0), FMICRO, W(8),
-        'The painting and the design practice are kept apart, and the rules between '
-        'them say where one ends')
+        y = yy + 12.0
+        if gi < len(CV) - 1:
+            pr.rule(X(0), y - 6.0, MEASURE)
+    pr.rule(X(0), FRULE, MEASURE)
+    pr.m(X(0), FMICRO, W(8),
+         'The painting and the design practice are kept apart, and the rules '
+         'between them say where one ends')
 
-p = page('How to read this')
-MEAS7 = W(7)
-X7 = (PW - MEAS7) / 2
-p.m(X7, HEAD, MEAS7, 'How this book is arranged', 'ct')
-p.t(X7, 34.0, MEAS7,
-    '<p>The thirty-five paintings are given newest first, so the seven years '
-    'are read backwards. A paragraph that says a thing happens for the first '
-    'time means the first time reading backwards through the book.</p>'
-    '<p>Every work has a spread of its own. The left page carries the number, '
-    'the medium, the title, the dimensions and a paragraph, and at its foot '
-    'three notes on colour, composition and hand. The right page carries the '
-    'painting, and every painting in the book is reproduced inside one band, '
-    'so their sizes on the page can be compared.</p>'
-    '<p>Where a work was photographed in detail, its details follow on their '
-    'own sheets, each with one line saying where in the painting it is. Where '
-    'the stages of the work were photographed, they follow as a contact sheet. '
-    'Sheets of paper and earlier paintings of the same scene are given as '
-    'studies and versions.</p>'
-    '<p>Dimensions are width by height, in centimetres, then in inches.</p>', 'j')
-p.m(X7, 246.0, MEAS7, 'Newest first', 'ct')
-p.rule(X7 + MEAS7 / 2 - 12, 254.0, 24.0)
-p.m(X7, 288.0, MEAS7, '2026 to 2019', 'ct g')
+    # Duzen sayfasi + icindekiler: bir serim, iki is goren sayfa.
+    pl, pr = spread('How to read this')
+    pl.fam = pr.fam = 'F'
+    use(pl)
+    pl.m(X(0), HEAD, W(8), 'How this book is arranged')
+    pl.rule(X(0), HRULE, MEASURE, True)
+    pl.t(X(0), 34.0, W(6),
+         '<p>The thirty-five paintings are given newest first, so the seven '
+         'years are read backwards. A paragraph that says a thing happens for '
+         'the first time means the first time reading backwards through the '
+         'book.</p>'
+         '<p>Every work opens on a spread: the number, the title, the '
+         'dimensions and the note on the left, the painting whole on the '
+         'right. The top of every painting sits on the same line throughout '
+         'the book, and its size on the page follows the size of the canvas, '
+         'so the largest canvas prints largest. The first work of each year '
+         'carries the year as a numeral; nothing else marks the thresholds.</p>'
+         '<p>Where a work was photographed in detail or in progress, one or '
+         'two spreads follow. Details are chosen, not collected: one cut is '
+         'set large against one or two others, each printed once in the whole '
+         'book, each captioned with where it is and what the hand did there. '
+         'The stages of a painting are given in order with the decisive stage '
+         'large, and the caption says how many stages there were.</p>'
+         '<p>Six recurring figures are followed in a chapter at the end, in '
+         'cuts that appear nowhere else. Dimensions are width by height, in '
+         'centimetres, then in inches.</p>')
+    pl.rule(X(0), 262.0, MEASURE)
+    pl.m(X(0), 265.4, W(6), 'Newest first')
+    pl.m(R(4), 265.4, W(4), '2026 to 2019', 'rt g')
+    global TOC
+    use(pr)
+    TOC = pr
 
-TOC = page('Contents') if not SHORT else None
-
-# ══ eserler ══════════════════════════════════════════════════════════
-# Yil ayraci yok: yil zaten her sayfanin dibinde yazar. Isler kesintisiz,
-# yeniden eskiye. Her is bir acilimla baslar ve acilim hep ayni yerdedir,
-# yani her isin yazi sayfasi cift, tablosu tek sayfa numarasina duser.
-
-def proc_chunks(n):
-    if n <= 12: return [n] if n else []
-    k = int(math.ceil(n / 12.0))
-    base, rem = divmod(n, k)
-    return [base + 1] * rem + [base] * (k - rem)
-
-def split_one(cs):
-    """Sayfa sayisini bir artirmak icin en buyuk yigini ikiye ayirir."""
-    if not cs: return None
-    i = max(range(len(cs)), key=lambda j: cs[j])
-    if cs[i] < 2: return None
-    out = list(cs)
-    out[i] = cs[i] - 1
-    out.insert(i + 1, 1)
-    return out
-
-SELECT = [1, 2, 5, 8, 15, 22, 34, 35]
-SEQ = WORKS if not SHORT else [w for w in WORKS if w['n'] in SELECT]
-
-ARCH_LOG = []          # denetim icin: hangi sayfada hangi arketip
-
-for w in SEQ:
-    FIRST[w['n']] = len(PAGES) + 1
-    type_page(w)
-    plate_page(w)
-    if SHORT:
-        continue
-
-    crops = material(w)
-    run = detail_run(w, crops)
-    pc = proc_chunks(len(w['process']))
-    ac = chunks(len(w['aside']))
-
-    # Sayfa sayisi cift olmali: is hep cift sayfada acilir. Denk gelmezse
-    # once dizi bir sayfa uzar, olmuyorsa tekrar eden figur sayfasi gelir.
-    def total(): return sum(2 if k == 'D' else 1 for k, _ in run) + len(pc) + len(ac)
-    # Yatay bir isin tek detay sayfasi, serit olarak iki sayfaya yayilir:
-    # hem sayfa sayisi denklesir hem tasma kotasi dolar.
-    # Yatay bir isin tek detay sayfasi serit olarak iki sayfaya yayilir:
-    # hem serime bir ozne kazandirir hem tasma kotasini doldurur.
-    if (total() % 2 and len(run) == 1 and run[0][0] == 'A'
-            and w['ar'] >= 1.3
-            and px_of(run[0][1][0]['src'],
-                      run[0][1][0].get('limit')) >= 1900):
-        run = [('D', run[0][1])]
-    # Sayfa sayisi denk gelmezse fazladan bir detay sayfasi uydurulmaz:
-    # denklestirmeyi, kendi icerigi olan "burada tekrar eden" sayfasi yapar.
-
-    order = list(run)
-    procs = []
-    if len(order) >= 4 and pc and len(pc) % 2:
-        n0 = len(w['process'])
-        half = n0 // 2
-        pc = [n0 - half, half] if half else pc
-    if len(order) >= 4 and pc and len(pc) % 2 == 0:
-        procs = [('#P', None)]
-        order = order[:2] + procs + order[2:]
-    for i, (akind, acs) in enumerate(order):
-        if akind == '#P':
-            at0 = 0
-            for j, k in enumerate(pc):
-                process_sheet(w, w['process'][at0:at0 + k], j, len(w['process']), at0)
-                at0 += k
-            continue
-        if akind == 'D':
-            pl = page(w['run']); pr = page(w['run'])
-            use(pl); sheet_head(pl, w, 'Detail')
-            st = d_strip(pl, pr, w, acs[0], 'w%02dd%d' % (w['n'], i))
-            pl.arch, pl.steps = 'D', st
-            pr.arch, pr.steps = 'D', []
-            ARCH_LOG.append((len(PAGES) - 1, w['n'], 'D', st))
-        else:
-            p = detail_page(w, akind, acs, i, last=(i == len(run) - 1))
-            ARCH_LOG.append((len(PAGES), w['n'], akind, p.steps))
-    if not procs:
-        at = 0
-        for i, k in enumerate(pc):
-            process_sheet(w, w['process'][at:at + k], i, len(w['process']), at); at += k
-    at = 0
-    for i, k in enumerate(ac):
-        study_sheet(w, w['aside'][at:at + k], i); at += k
-    if len(PAGES) % 2 == 0:
-        interleaf(w)
-
-# ══ dizin ════════════════════════════════════════════════════════════
-def index_grid(run):
-    p = page(run); p.arch = 'R'
-    head(p, 'The thirty-five', 'Index', False)
-    NC, Y0, CAP, RG, FT = 7, 34.0, 6.0, 10.0, 22.0
-    rows = [WORKS[i:i + NC] for i in range(0, len(WORKS), NC)]
-    nr = len(rows)
-    step = MEASURE / NC
-    cw = step - GUT
-    bh = ((FRULE - FT - Y0) - nr * CAP - (nr - 1) * RG) / nr
-    y = Y0
-    for row in rows:
-        for j, wk in enumerate(row):
-            iw = min(cw, bh * wk['ar']); ih = iw / wk['ar']
-            x = X(0) + j * step
-            path, _ = prep(wk['plate']['src'], iw, 'ix%02d' % wk['n'],
-                           wk['plate'].get('box'))
-            p.raw('<img src="%s" style="left:%.2fmm;top:%.2fmm;width:%.2fmm;height:%.2fmm">'
-                  % (path, x, y + bh - ih, iw, ih))
-            p.m(x, y + bh + 1.6, cw, '%02d' % wk['n'], 'g')
-        p.rule(X(0), y + bh + CAP + RG / 2 - 1.0, MEASURE)
-        y += bh + CAP + RG
-    p.rule(X(0), FRULE, MEASURE)
-    p.m(X(0), FMICRO, W(8), 'Every plate at one width, in the order of the book')
-    p.m(R(2), FMICRO, W(2), '35 works', 'rt g')
-    return p
-
-if not SHORT:
-    p = page('Index')
-    p.m(X(0), HEAD, W(6), 'Index')
-    p.m(R(4), HEAD, W(4), '2019&ndash;2026', 'rt g')
+def toc_fill(p):
+    use(p)
+    p.m(X(0), HEAD, W(6), 'Contents')
+    p.m(R(4), HEAD, W(4), 'Thirty-five works', 'rt g')
     p.rule(X(0), HRULE, MEASURE, True)
-    p.d(X(0), 128.0, W(10), 'The<br>thirty-five', 'l')
-    p.rule(X(0), 262.0, MEASURE)
-    p.m(X(0), 265.4, W(9), 'Made across Istanbul, Milan and Luxembourg')
-    index_grid('Index')
-
-# ══ tekrar edenler ═══════════════════════════════════════════════════
-def motif_text(sec):
-    p = page(sec['name']); p.arch = 'R'
-    MOTIF_AT[sec['key']] = len(PAGES)
-    p.m(X(0), HEAD, W(6), 'A recurring figure')
-    p.m(R(4), HEAD, W(4), e(sec['range']), 'rt g')
-    p.rule(X(0), HRULE, MEASURE, True)
-    p.d(X(0), 118.0, W(8), e(sec['name']), 'l')
-    p.t(X(0), 186.0, W(7), '<p>%s</p><p>%s</p><p>%s</p>'
-        % (e(sec['lead']), e(sec['a']), e(sec['b'])))
-    p.rule(X(0), FRULE, MEASURE)
-    p.m(X(0), FMICRO, W(4), '%d works' % len(sec['crops']))
-    p.m(X(4), FMICRO, W(8),
-        ' <i>&middot;</i> '.join('%02d' % c['n'] for c in sec['crops']), 'g')
-    return p
-
-def motif_pics(sec):
-    """Figurun gectigi butun tablolardan kesitler. Sayfa, ilk kesitin
-       kenardan kenara giden bir bandiyla acilir."""
-    p = page(sec['name']); p.arch = 'R'
-    c0 = sec['crops'][0]; w0 = BY_N[c0['n']]
-    bx0 = crop_of(w0, c0['box'])
-    lim0 = w0['plate'].get('box') or [0, 0, 1, 1]
-    band = [lim0[0], bx0[1], lim0[2], bx0[3]]
-    bar = ratio(w0['plate']['src'], band)
-    BH = 84.0
-    want = (PW + 2 * BLEED) / BH
-    if bar < want:
-        kh = (bar / want) * band[3]
-        band = [band[0], min(max(lim0[1], band[1] + (band[3] - kh) / 2.0),
-                             lim0[1] + lim0[3] - kh), band[2], kh]
-    bp0, _ = prep(w0['plate']['src'], PW + 2 * BLEED, 'mb-' + sec['key'], band)
-    p.raw('<img class="cut" src="%s" style="left:-5mm;top:-5mm;'
-          'width:250mm;height:%.2fmm">' % (bp0, BH + BLEED))
-    p.m(X(0), BH + 4.0, W(8),
-        e(sec['name']) + ', in every painting it appears')
-    p.m(R(2), BH + 4.0, W(2), 'Details', 'rt g')
-    p.rule(X(0), BH + 12.0, MEASURE)
-    items = [(BY_N[c['n']], c) for c in sec['crops']]
-    Y0, CAPH, RG, FT = BH + 18.0, 9.6, 12.0, 20.0
-    cols = 2
-    rows = int(math.ceil(len(items) / float(cols)))
-    cellw = (MEASURE - GUT * 2) / cols
-    step = cellw + GUT * 2
-    bh = ((FRULE - FT - Y0) - rows * CAPH - (rows - 1) * RG) / rows
-    y = Y0
-    for r in range(rows):
-        band = items[r * cols:(r + 1) * cols]
-        for j, (wk, c) in enumerate(band):
-            bx = crop_of(wk, c['box'])
-            ar = ratio(wk['plate']['src'], bx)
-            st = ECHO_STEP.get((wk['n'], sec['key']))
-            want = STEP_MM.get(st, cellw) if st and st != 'XXL' else cellw
-            iw = min(cellw, want, bh * ar); ih = iw / ar
-            x = X(0) + j * step
-            path, _ = prep(wk['plate']['src'], iw,
-                           'm-%s%02d' % (sec['key'], r * cols + j), bx)
-            p.raw('<img src="%s" style="left:%.2fmm;top:%.2fmm;width:%.2fmm;height:%.2fmm">'
-                  % (path, x, y + bh - ih, iw, ih))
-            p.m(x, y + bh + 1.8, cellw,
-                '%02d <i>&middot;</i> %s <i>&middot;</i> %s'
-                % (c['n'], wk['year'], e(c['line'])), 'g')
-        if r < rows - 1:
-            p.rule(X(0), y + bh + CAPH + RG / 2 - 1.0, MEASURE)
-        y += bh + CAPH + RG
-    return p
-
-RECUR_TOC = None
-
-
-def fill_recur_toc(q):
-    head(q, 'What comes back', 'Contents', False)
-    RY0, RG2 = 36.0, 13.0
-    ns = len(MOTIFS['sections'])
-    ih = ((FRULE - 10.0 - RY0) - (ns - 1) * RG2) / ns
-    yy = RY0
-    for sec in MOTIFS['sections']:
-        c = sec['crops'][0]; wk = BY_N[c['n']]
-        bx = crop_of(wk, c['box'])
-        ar = ratio(wk['plate']['src'], bx)
-        iw = min(W(5), ih * ar); hh = iw / ar
-        path, _ = prep(wk['plate']['src'], iw, 'rc-' + sec['key'], bx)
-        q.raw('<img src="%s" style="left:%.2fmm;top:%.2fmm;width:%.2fmm;height:%.2fmm">'
-              % (path, X(0), yy + (ih - hh) / 2, iw, hh))
-        q.d(X(6), yy - 1.4, W(4), e(sec['name']), 's')
-        q.m(X(6), yy + 9.0, W(5),
-            e(sec['lead']) + ' <i>&middot;</i> in %d paintings' % len(sec['crops']), 'g')
-        q.m(R(1), yy - 1.0, W(1), str(MOTIF_AT.get(sec['key'], 0)), 'rt')
-        if sec is not MOTIFS['sections'][-1]:
-            q.rule(X(0), yy + ih + RG2 / 2 - 1.0, MEASURE)
-        yy += ih + RG2
-    q.rule(X(0), FRULE, MEASURE)
-    q.m(X(0), FMICRO, W(8),
-        'Ordered by how many paintings the figure appears in, most first')
-    q.m(R(2), FMICRO, W(2), 'Page', 'rt g')
-
-
-if not SHORT:
-    # Bolumun acilis sayfasi tam tasmali bir kesit; yazi onun uzerinde.
-    p = page('The recurring', 'dark'); p.arch = 'A'
-    _rc = MOTIFS['sections'][0]['crops'][0]
-    _rw = BY_N[_rc['n']]
-    _rp, _x = prep(_rw['plate']['src'], 250, 'recur-open', crop_of(_rw, _rc['box']))
-    p.raw('<img class="cut" src="%s" style="left:-5mm;top:-5mm;'
-          'width:250mm;height:330mm">' % _rp)
-    p.m(X(0), HEAD, W(6), 'Six things that come back')
-    p.m(R(4), HEAD, W(4), '2019&ndash;2026', 'rt')
-    p.rule(X(0), HRULE, MEASURE, True)
-    p.d(X(0), 196.0, W(10), 'The<br>recurring', 'l')
-    p.rule(X(0), 262.0, MEASURE)
-    p.m(X(0), 265.4, W(10),
-        ' <i>&middot;</i> '.join(x['name'] for x in MOTIFS['sections']))
-
-    RECUR_TOC = page('The recurring')
-
-for sec in (MOTIFS['sections'][:1] if SHORT else MOTIFS['sections']):
-    motif_text(sec)
-    motif_pics(sec)
-
-# ══ kunye ════════════════════════════════════════════════════════════
-p = page('Colophon')
-head(p, 'Colophon', NM)
-p.t(X(0), 40.0, W(5),
-    '<p>All works by Yiğit Özen, born 1994 in Istanbul and trained as an architect. '
-    'They are given newest first, so a paragraph that says a thing happens for the '
-    'first time means the first time reading backwards through the book.</p>'
-    '<p>Dimensions are width by height, in centimetres and then in inches.</p>'
-    '<p>Photography by the artist. Plates and details reproduce documentation of the '
-    'paintings; colour and surface differ from the works themselves. The files are '
-    'set at about 137 pixels to the inch of printed width, which is made for reading '
-    'and for screens rather than for offset printing.</p>'
-    '<p>Detail photography exists for fourteen of the thirty-five. Where it does not, '
-    'the work is given its spread and nothing more; no detail has been cropped out of '
-    'a plate to fill a page.</p>')
-p.t(X(6), 40.0, W(6),
-    '<p>Where a paragraph gives a proportion or a percentage, it was measured on the '
-    'documentation file rather than on the painting, and it describes that file. No '
-    'colour target was used in the photography, so the figures are a reading of the '
-    'photograph and not a colorimetric claim about the paint.</p>'
-    '<p>Titles are set as the artist writes them, in his spelling and his punctuation. '
-    '<em>il sbagliato di rompipalle</em>, <em>sono squalo</em> and <em>caprocorn</em> '
-    'are his, not slips of the setting.</p>'
-    '<p>Sources for the two borrowed reference images and for the epigraph on 03 are '
-    'given on the pages they appear on.</p>'
-    '<p>A caption gives where in the painting the crop is, and then what the hand did '
-    'there, taken from that work&rsquo;s own note on colour, composition or hand. A '
-    'degree sign after a caption means the same crop is printed again in the chapter '
-    'on what comes back, so the argument there can be checked against the painting '
-    'it came from.</p>'
-    '<p>Full-page plates are enlarged to the sheet and cut by its edges. Every one of '
-    'them is also printed small and whole elsewhere in the same work, so nothing is '
-    'shown only in part.</p>'
-    '<p>Set in Inter, under the SIL Open Font License. A short selection of the same '
-    'works is published separately for sending; the thirty-five are also at '
-    'yigitozen.xyz, where every photograph can be seen at full size.</p>'
-    '<p>All works &copy; Yiğit Özen. All rights reserved.</p>')
-p.rule(X(0), FRULE, MEASURE)
-p.m(X(0), FMICRO, W(4), 'x@yigitozen.xyz')
-p.m(X(4), FMICRO, W(4), 'Instagram @yjgjf')
-p.m(R(4), FMICRO, W(4), 'yigitozen.xyz <i>&middot;</i> de-centralize.com', 'rt g')
-
-if SHORT:
-    index_grid('Index')
-
-if True:
-    last = page('', 'plate')
-    last.folio = False
-    last.raw('<img class="mark" src="images/logo.svg">')
-
-# ══ icindekiler ══════════════════════════════════════════════════════
-def toc(p, items, head_t):
-    """Otuz bes satir tek sayfada. Basliklar sanatcinin kendi yazimiyla,
-       kucuk harfle; buyuk harfe cevrilirse s(t)lop, 7 fam ve otekiler
-       kendi bicimlerini kaybeder."""
-    head(p, head_t, 'Thirty-five works')
-    y = 30.0
-    for wk in items:
-        two = len(wk['title']) > 76
-        p.m(X(0), y + 0.6, W(1), '%02d' % wk['n'])
-        p.t(X(1), y, W(7), '<em>%s</em>' % e(wk['title']),
-            '', 'font-size:8.2pt;line-height:1.34')
-        p.m(X(8), y + 0.6, W(2), e(wk['year']), 'g')
-        p.m(R(1), y + 0.6, W(1), str(FIRST.get(wk['n'], 0)), 'rt')
-        h = 6.0 + (4.0 if two else 0.0)
-        p.rule(X(0), y + h - 1.6, MEASURE)
-        y += h
+    y = 26.0
+    for wk in WORKS:
+        p.m(X(0), y + 0.4, W(1), '%02d' % wk['n'], 'g')
+        p.sans(X(1), y, W(8), e(wk['title']), '', 'font-size:8.0pt;line-height:1.3')
+        p.m(X(9), y + 0.4, W(1), e(wk['year']), 'g')
+        p.m(R(1), y + 0.4, W(1), str(FIRST.get(wk['n'], 0)), 'rt')
+        y += 6.1
+    y += 2.4
+    p.rule(X(0), y, MEASURE)
+    y += 3.2
+    for name, pg in SECTIONS:
+        p.sans(X(1), y, W(7), name, '', 'font-size:8.0pt;line-height:1.3')
+        p.m(R(1), y + 0.4, W(1), str(pg), 'rt')
+        y += 6.1
     p.rule(X(0), FRULE, MEASURE)
     p.m(X(0), FMICRO, W(8),
         'Each work opens on a spread: the note on the left, the painting on the right')
     p.m(R(2), FMICRO, W(2), 'Page', 'rt g')
 
-if TOC is not None:
-    toc(TOC, WORKS, 'Contents')
+# ══ kitabin kurgusu ══════════════════════════════════════════════════
+# Yeniden eskiye: 2026 surecle yogun, 2023 tek is ve gorunur bir sessizlik,
+# 2020 sikisir, 2019 arsive acilir. Ayni aile ust uste en cok iki serim.
+def build_works():
+    N = BY_N
 
-# Motif bolumlerinin sayfalari artik belli; ara sayfalar simdi dolar.
-for _p, _w in INTERLEAVES:
-    fill_interleaf(_p, _w)
-if RECUR_TOC is not None:
-    fill_recur_toc(RECUR_TOC)
+    # 2026 — alti is
+    w = N[1]
+    f_open(w, thresh='2026', thresh_line='Six works <i>&middot;</i> Luxembourg')
+    f_argument(w, det(w, 2), [det(w, 5), det(w, 4)], side='R', pos='50% 32%')
+    f_sequence(w, {'layout': 'rows', 'dom': proc(w, 1),
+                   'domcap': 'Stage 1 — the board and both players, drawn before any colour',
+                   'strip': [proc(w, i) for i in (3, 6, 9, 12, 14)],
+                   'line': 'Fourteen stages. The board is drawn first and the far '
+                           'player worked in black and white; the colour comes '
+                           'over it, and the blue family arrives last, after both '
+                           'heads are already fixed.'})
+
+    w = N[2]
+    f_open(w)
+    f_argument(w, det(w, 3), [det(w, 2)], side='L', pos='50% 32%')
+    f_argument(w, det(w, 7), [det(w, 5)], mode='band', focal=0.1,
+               frag='A cage drawn from above, its walls never arriving; a chair '
+                    'outlined where no one will sit.')
+    f_sequence(w, {'layout': 'source', 'dom': proc(w, 2),
+                   'domcap': 'Stage 2 — the Leonardo taken through in pencil',
+                   'src_frame': proc(w, 1), 'srccap': 'Stage 1 — the source',
+                   'mid': proc(w, 4),
+                   'midcap': 'Stage 4 — the ground drowned in red',
+                   'strip': [proc(w, i) for i in (9, 13)],
+                   'line': 'Thirteen stages. A Leonardo is taken, traced in '
+                           'pencil, buried under a field of red, and Virgil is '
+                           'assembled on top of the grave.'})
+
+    w = N[3]
+    f_open(w)
+    f_argument(w, det(w, 2), [det(w, 9), det(w, 6)], side='R', pos='50% 30%')
+    f_sequence(w, {'layout': 'still', 'src_frame': proc(w, 1),
+                   'srccap': 'Stage 1 — the source',
+                   'dom': proc(w, 2),
+                   'domcap': 'Stage 2 — the still, redrawn in blue line',
+                   'strip': [proc(w, i) for i in (3, 6, 8, 12)],
+                   'line': 'Twelve stages. A television still is redrawn in '
+                           'blue, the ground goes orange, and the body is '
+                           'rebuilt from lobes until the face arrives, last.'})
+
+    w = N[4]
+    f_open(w, integrate=(proc(w, 1)['src'], None, 'w04sk'),
+           int_cap='The first stage, in pencil')
+    f_sequence(w, {'layout': 'faces', 'dom': det(w, 1), 'pos': '50% 42%',
+                   'strip': [proc(w, i) for i in (3, 4, 5)],
+                   'domcap': 'Under the brim of the hat',
+                   'line': 'The face is made three times: left blank in the '
+                           'blocking, given a moustache, then ringed in red. '
+                           'The teeth under the brim arrive last of all.'})
+
+    w = N[5]
+    f_open(w)
+    f_argument(w, det(w, 1), [det(w, 5)], mode='band', focal=0.35,
+               frag='The attack comes down the diagonal; the rowers hold their line.')
+    f_sequence(w, {'layout': 'stagger', 'dom': proc(w, 1),
+                   'domcap': 'Stage 1 — begun as an ink page in a notebook',
+                   'strip': [proc(w, i) for i in (2, 3, 4, 5)],
+                   'line': 'Five stages. The dark ground first, then the '
+                           'mountains, then the boat; the crew and the flock '
+                           'are drawn in white at the end.'})
+
+    w = N[6]
+    f_open(w)
+    f_argument(w, det(w, 1), [det(w, 7)], side='R', pos='45% 45%')
+
+    # 2023 — bosluk: tek is, tek serim. Sol sayfanin ucte ikisi bos ve
+    # bunu kastediyor.
+    w = N[7]
+    f_open(w, thresh='2023', thresh_line='One commission <i>&middot;</i> Istanbul',
+           gap_note='From 2020 the studio work went largely to XR and spatial '
+                    'design, and the canvases thin out to this one commission '
+                    'before the painting resumes in 2026.')
+
+    # 2020 — on is
+    w = N[8]
+    f_open(w, thresh='2020', thresh_line='Ten works <i>&middot;</i> Milan')
+    f_argument(w, det(w, 1), [det(w, 2)], side='L', pos='50% 28%')
+    f_sequence(w, {'layout': 'versions', 'dom': det(w, 8),
+                   'strip': [det(w, 6), det(w, 7)],
+                   'line': 'The pair, three times: in ink before the colour, on '
+                           'green and blue, and in blue and grey. Which came '
+                           'first the studio does not say.'})
+
+    w = N[9]
+    f_open(w)
+    f_argument(w, det(w, 1), [det(w, 3), det(w, 4)], side='R', pos='50% 40%')
+
+    f_pair(N[10], N[11])
+
+    w = N[12]
+    f_open(w)
+    f_argument(w, det(w, 1), [det(w, 2)], side='L', pos='42% 30%')
+
+    f_open(N[13])
+
+    w = N[14]
+    f_open(w)
+    f_pause(w, 'it could be about to strike, it could be reached out to hold '
+               'something.',
+            'From the note on 14 <i>&middot;</i> When the Darkness surrounds, '
+            'be among those who burn the Great Fire',
+            img=det(w, 2)['src'], img_cap='The shoulder, and the reaching arm',
+            kind='reach')
+
+    w = N[15]
+    f_open(w, integrate=(det(w, 8)['src'], None, 'w15sig'),
+           int_cap='The red mark in the top right corner')
+    f_argument(w, det(w, 3), [det(w, 2), det(w, 6)], side='R', pos='50% 40%')
+
+    f_pair(N[17], N[16], ka=0.78)
+
+    # 2019 — on sekiz is
+    w = N[18]
+    f_open(w, thresh='2019',
+           thresh_line='Eighteen works <i>&middot;</i> Milan and Istanbul',
+           integrate=(aside(w, 'sinoverblacmatter')['src'], None, 'w18v'),
+           int_cap='An earlier painting of the same scene, the room still red '
+                   'and the seat still blue')
+
+    w = N[19]
+    f_open(w)
+    f_argument(w, {'src': w['plate']['src'],
+                   'box': crop_of(w, [0.04, 0.14, 0.44, 0.83]),
+                   'line': 'The body on the divan, from the feet'},
+               side='R', mode='column',
+               frag='We look at the body on the blue divan from the feet; the '
+                    'knees push forward and swell into two large lumps, the '
+                    'head a dark patch so far off it nearly vanishes. The crow '
+                    'itself is kept for the chapter on what comes back.')
+
+    f_open(N[20])
+    f_open(N[21])
+    f_pair(N[22], N[23])
+
+    w = N[24]
+    f_open(w)
+    f_sequence(w, {'layout': 'study', 'dom': aside(w, 'goodppl'),
+                   'after': [({'src': w['plate']['src'],
+                               'box': crop_of(w, [0.02, 0.0, 0.55, 0.45]),
+                               'line': 'The same arm and heap, in paint'},
+                              M, 'The same arm and heap, in paint on black paper')],
+                   'line': 'The winged figure and the row of small onlookers '
+                           'are set in charcoal before any paint; the heap '
+                           'keeps the pose and the black takes the rest.'})
+
+    f_pair(N[25], N[26])
+
+    w = N[27]
+    f_open(w)
+    f_argument(w, det(w, 1),
+               [{'src': w['plate']['src'],
+                 'box': crop_of(w, [0.0, 0.06, 0.36, 0.4]),
+                 'line': 'The left head, near a skull'}],
+               side='R', pos='55% 35%')
+
+    f_open(N[28])
+
+    w = N[29]
+    f_open(w)
+    f_pause(w, 'Deeply ordered chaos.',
+            'Inscribed at the top of the pencil study for 29 <i>&middot;</i> '
+            'wings of abyss',
+            img=aside(w, 'wingsofabbyss')['src'],
+            img_cap='Pencil study, inscribed at the top', kind='inscribe')
+
+    f_pair(N[31], N[30], ka=0.71,
+           int_a=(aside(N[31], 'societyscrewingbalance')['src'], None, 'w31st'),
+           int_a_cap='Pencil study; the hanging head, the seated group and '
+                     'the grid behind them')
+
+    f_pair(N[32], N[33])
+
+    w = N[34]
+    f_open(w)
+    f_sequence(w, {'layout': 'study', 'dom': aside(w, 'luciddrowning-v1'),
+                   'domw': XL,
+                   'after': [(aside(w, 'lucid-drowning-v2'), M,
+                              'An earlier painted version, taken through in '
+                              'pink, green and blue')],
+                   'line': 'Annotated in pencil with the colours to be used — '
+                           'pink, green, grey — then taken through in paint '
+                           'twice; in the final canvas the border between body '
+                           'and water is given up.'})
+
+    f_open(N[35])
+
+# ══ dizin ════════════════════════════════════════════════════════════
+def index_spread():
+    pl, pr = spread('Index')
+    pl.fam = pr.fam = 'E'
+    SECTIONS.append(('Index — the thirty-five at one width', pl.no))
+    halves = (WORKS[:18], WORKS[18:])
+    for p, items, lead in ((pl, halves[0], True), (pr, halves[1], False)):
+        use(p)
+        if lead:
+            p.m(X(0), HEAD, W(8), 'The thirty-five, at one width')
+        else:
+            p.m(R(4), HEAD, W(4), 'Index <i>&middot;</i> 2019&ndash;2026', 'rt g')
+        p.rule(X(0), HRULE, MEASURE, True)
+        NC = 5
+        rows = [items[i:i + NC] for i in range(0, len(items), NC)]
+        stepx = MEASURE / NC
+        cw = stepx - GUT
+        Y0, CAP = 30.0, 7.0
+        bh = ((FRULE - Y0) - len(rows) * (CAP + 6.0)) / len(rows)
+        y = Y0
+        for row in rows:
+            for j, wk in enumerate(row):
+                register(wk['plate']['src'], None, 'plate', 'index')
+                ar = wk['ar']
+                iw = min(cw, bh * ar); ih = iw / ar
+                x = X(0) + j * stepx
+                p.img(wk['plate']['src'], x, y + bh - ih, iw, ih,
+                      wk['plate'].get('box'), 'ix%02d' % wk['n'], cls='ix')
+                p.m(x, y + bh + 1.6, cw, '%02d <i>&middot;</i> %d'
+                    % (wk['n'], FIRST.get(wk['n'], 0)), 'g')
+            y += bh + CAP + 6.0
+        p.rule(X(0), FRULE, MEASURE)
+        if lead:
+            p.m(X(0), FMICRO, W(8), 'Every plate at one width, in the order of the book')
+        else:
+            p.m(R(4), FMICRO, W(4), 'Work <i>&middot;</i> page', 'rt g')
+
+# ══ tekrar edenler ═══════════════════════════════════════════════════
+# Alti figur, alti ayri davranis. Buradaki kesitler kitabin baska hicbir
+# yerinde gorunmez; bir yer geri geldiginde baska ya da daha genis bir
+# kadrajla gelir.
+MOTIF_AT = {}
+RECUR_TOC = None
+
+def msec(key):
+    return next(s for s in MOTIFS['sections'] if s['key'] == key)
+
+def mcrop(sec, n):
+    c = next(c for c in sec['crops'] if c['n'] == n)
+    wk = BY_N[n]
+    return wk, crop_of(wk, c['box']), c['line']
+
+def mcap(n, line):
+    wk = BY_N[n]
+    t = line[0].upper() + line[1:]
+    return '%02d <i>&middot;</i> %s — %s' % (n, wk['year'], e(t))
+
+def put_crop(p, sec, n, x, y, wd, tagx, widen_k=1.0, bottom=None, cap=True,
+             capw=None, hi=1360):
+    wk, bx, line = mcrop(sec, n)
+    if widen_k != 1.0:
+        cx, cy = bx[0] + bx[2] / 2, bx[1] + bx[3] / 2
+        lim = wk['plate'].get('box') or [0, 0, 1, 1]
+        nw, nh = min(lim[2], bx[2] * widen_k), min(lim[3], bx[3] * widen_k)
+        bx = [min(max(lim[0], cx - nw / 2), lim[0] + lim[2] - nw),
+              min(max(lim[1], cy - nh / 2), lim[1] + lim[3] - nh), nw, nh]
+    register(wk['plate']['src'], bx, 'crop', 'motif %s %d' % (sec['key'], n))
+    ar = ratio(wk['plate']['src'], bx)
+    h = wd / ar
+    if bottom is not None:
+        y = bottom - h
+    p.img(wk['plate']['src'], x, y, wd, h, bx,
+          'm%s%02d%s' % (sec['key'][:2], n, tagx),
+          cls='ix' if wd < S else '', hi=hi)
+    if cap == 'short':
+        # Dip siradaki tanik yalniz numarasini tasir; satiri anahtardadir.
+        p.m(x, y + h + 2.0, wd, '%02d <i>&middot;</i> %s' % (n, BY_N[n]['year']), 'g')
+    elif cap:
+        p.m(x, y + h + 2.0, capw or max(wd, W(3.6)), mcap(n, line), 'g')
+    return y, h
+
+def motif_head(p, sec, y=18.0, tw=4.6):
+    p.d(X(0), y, W(8), e(sec['name']), 's')
+    p.m(X(0), y + 11.0, W(6), e(sec['lead']), 'g')
+    p.t(X(0), y + 19.0, W(tw), '<p>%s</p><p>%s</p>' % (e(sec['a']), e(sec['b'])))
+
+def recur_section():
+    # Bolum acilisi: tam tasan kesit, ustunde bolumun adi; sagda alti
+    # figurun tipografik icindekileri.
+    pl, pr = spread('What comes back')
+    pl.fam = pr.fam = 'R'
+    SECTIONS.append(('What comes back — six recurring figures', pl.no))
+    use(pl)
+    sec0 = MOTIFS['sections'][0]
+    wk0, bx0, _ = mcrop(sec0, 1)
+    register(wk0['plate']['src'], bx0, 'crop', 'recur open')
+    pl.cover_img(wk0['plate']['src'], -BLEED, -BLEED, PW + 2 * BLEED,
+                 PH + 2 * BLEED, bx0, 'recur-open', '50% 60%')
+    pl.raw('<div class="shade"></div>')
+    pl.m(X(0), HEAD, W(6), 'Six things that come back', 'wh')
+    pl.m(R(4), HEAD, W(4), '2019&ndash;2026', 'rt wh')
+    pl.d(X(0), 224.0, W(10), 'What<br>comes back', 'l wh')
+    pl.folio = False
+    use(pr)
+    pr.m(X(0), HEAD, W(6), 'What comes back')
+    pr.m(R(4), HEAD, W(4), 'Contents', 'rt g')
+    pr.rule(X(0), HRULE, MEASURE, True)
+    global RECUR_TOC
+    RECUR_TOC = pr
+
+    m_onlooker(); m_chair(); m_crow(); m_cage(); m_body(); m_face()
+
+def recur_toc_fill(p):
+    use(p)
+    y = 38.0
+    for sec in MOTIFS['sections']:
+        p.d(X(0), y, W(6), e(sec['name']), 's')
+        p.m(X(0), y + 11.0, W(8),
+            e(sec['lead']) + ' <i>&middot;</i> in %d paintings <i>&middot;</i> %s'
+            % (len(sec['crops']),
+               ' '.join('%02d' % c['n'] for c in sec['crops'])), 'g')
+        p.m(R(1), y + 0.6, W(1), str(MOTIF_AT.get(sec['key'], 0)), 'rt')
+        y += 37.4
+        if sec is not MOTIFS['sections'][-1]:
+            p.rule(X(0), y - 10.0, MEASURE)
+    p.rule(X(0), FRULE, MEASURE)
+    p.m(X(0), FMICRO, W(8),
+        'Every cut in this chapter appears nowhere else in the book')
+    p.m(R(2), FMICRO, W(2), 'Page', 'rt g')
+
+def m_onlooker():
+    # Dagilmis tanik: yedi kesit serimin dibinde ayni zeminde durur, biri
+    # yukari alinmistir; egemen kesit ucunun dibinde durdugu yigindir.
+    sec = msec('onlooker')
+    pl, pr = spread(sec['name'])
+    pl.fam = pr.fam = 'R'
+    MOTIF_AT[sec['key']] = pl.no
+    use(pl)
+    motif_head(pl, sec)
+    put_crop(pl, sec, 31, X(6), 0, S, 'r', bottom=REG[1] + 46.0)
+    put_crop(pl, sec, 20, X(0), 0, S, 'g', bottom=DBOT, cap='short')
+    put_crop(pl, sec, 22, X(5), 0, XS, 'g', bottom=DBOT, cap='short')
+    put_crop(pl, sec, 23, X(8), 0, S, 'g', bottom=DBOT, cap='short')
+    # Sirada duranlarin satirlari: metnin altinda bir anahtar
+    key = [(20, mcrop(sec, 20)[2]), (22, mcrop(sec, 22)[2]),
+           (23, mcrop(sec, 23)[2]), (5, mcrop(sec, 5)[2]),
+           (29, mcrop(sec, 29)[2]), (1, mcrop(sec, 1)[2])]
+    pl.m(X(0), 126.0, W(4.6),
+         '<br>'.join(mcap(n, l) for n, l in key), 'g')
+    use(pr)
+    pr.m(X(6), 18.0, W(6),
+         'The witness, in every painting it stands in: ranged across a board, '
+         'along a boat, at the foot of the heap. Along the foot of the '
+         'spread: 20, 22 and 23; 05, 29 and 01.', 'g')
+    put_crop(pr, sec, 24, X(0), REG[1], L, 'd')
+    put_crop(pr, sec, 5, X(0), 0, S, 'g', bottom=DBOT, cap='short')
+    put_crop(pr, sec, 29, X(5), 0, XS, 'g', bottom=DBOT, cap='short')
+    put_crop(pr, sec, 1, X(9), 0, XS, 'g', bottom=DBOT, widen_k=1.5, cap='short')
+
+def m_chair():
+    # Yokluk: dort kesit, dordu de yalniz. Egemen olan bosluktur.
+    sec = msec('chair')
+    pl, pr = spread(sec['name'])
+    pl.fam = pr.fam = 'R'
+    MOTIF_AT[sec['key']] = pl.no
+    use(pl)
+    motif_head(pl, sec)
+    put_crop(pl, sec, 22, X(8), REG[1], XS, 'a')
+    put_crop(pl, sec, 35, X(1), REG[3], S, 'b')
+    use(pr)
+    put_crop(pr, sec, 2, X(2), REG[1], M, 'c')
+    put_crop(pr, sec, 23, X(7), REG[3], S, 'd')
+
+def m_crow():
+    # Yon: kus bedeni solda tam boy; ucus sag sayfada soldan saga,
+    # asagidan yukari, son kesit ust kenardan tasarak cikar.
+    sec = msec('crow')
+    pl, pr = spread(sec['name'])
+    pl.fam = pr.fam = 'R'
+    MOTIF_AT[sec['key']] = pl.no
+    use(pl)
+    wk, bx, line = mcrop(sec, 19)
+    register(wk['plate']['src'], bx, 'crop', 'motif crow 19')
+    ar = ratio(wk['plate']['src'], bx)
+    h = BAND_H; wd = h * ar
+    if wd > W(9): wd = W(9); h = wd / ar
+    pl.img(wk['plate']['src'], X(0), REG[0], wd, h, bx, 'mcr19', hi=1600)
+    pl.m(X(0), REG[0] + h + 2.4, W(9), mcap(19, line), 'g')
+    use(pr)
+    motif_head(pr, sec, y=18.0, tw=4.2)
+    put_crop(pr, sec, 16, X(4), 0, S, 'a', bottom=268.0)
+    put_crop(pr, sec, 5, X(7), 110.0, S, 'b')
+    wk2, bx2, line2 = mcrop(sec, 29)
+    register(wk2['plate']['src'], bx2, 'crop', 'motif crow 29')
+    ar2 = ratio(wk2['plate']['src'], bx2)
+    h2 = S / ar2
+    pr.img(wk2['plate']['src'], pr.X(8), -BLEED, S, h2, bx2, 'mcr29')
+    pr.m(pr.X(8), h2 - BLEED + 2.0, W(4), mcap(29, line2), 'g')
+
+def m_cage():
+    # Cerceve: cizilen kurallar kapanmadan biter; kesitler uzerine oturur.
+    sec = msec('cage')
+    pl, pr = spread(sec['name'])
+    pl.fam = pr.fam = 'R'
+    MOTIF_AT[sec['key']] = pl.no
+    use(pl)
+    motif_head(pl, sec, tw=4.0)
+    wk, bx, line = mcrop(sec, 15)
+    register(wk['plate']['src'], bx, 'crop', 'motif cage 15')
+    ar = ratio(wk['plate']['src'], bx)
+    h = BAND_H; wd = h * ar
+    x15 = pl.ml + MEASURE - wd
+    pl.img(wk['plate']['src'], x15, REG[0], wd, h, bx, 'mcg15', hi=1600)
+    pl.m(X(0), DBOT + 2.0, W(5), mcap(15, line), 'g')
+    use(pr)
+    pr.raw('<div class="r" style="left:%.2fmm;top:78.00mm;width:%.2fmm"></div>'
+           % (-BLEED, pr.X(9) + BLEED))
+    pr.vrule(pr.X(9), 78.0, 158.0)
+    pr.rule(pr.X(3), 258.0, pr.ml + MEASURE - pr.X(3))
+    put_crop(pr, sec, 2, X(1), 42.0, W(8), 'a')
+    put_crop(pr, sec, 35, X(0), 100.0, W(4.6), 'b')
+    put_crop(pr, sec, 20, X(6), 148.0, S, 'c')
+    put_crop(pr, sec, 6, X(7), 224.0, S, 'd')
+
+def m_body():
+    # Birikim: alti kesit sifir olukla tek kutle, serimin dibinde, sirtta
+    # yukselen bir hoyuk gibi; ustler duzensiz, hucre hucre bir siluet.
+    sec = msec('body')
+    pl, pr = spread(sec['name'])
+    pl.fam = pr.fam = 'R'
+    MOTIF_AT[sec['key']] = pl.no
+    use(pl)
+    motif_head(pl, sec)
+    left  = [(3, 85.0), (8, 60.0), (17, 100.0)]
+    right = [(24, 100.0), (9, 75.0), (27, 70.0)]
+    keyed = []
+    x = -BLEED
+    for n, wd in left:
+        wk, bx, line = mcrop(sec, n)
+        register(wk['plate']['src'], bx, 'crop', 'motif body %d' % n)
+        h = wd / ratio(wk['plate']['src'], bx)
+        pl.img(wk['plate']['src'], x, DBOT - h, wd, h, bx, 'mbd%02d' % n, cls='butt')
+        keyed.append((n, line)); x += wd
+    use(pr)
+    x = 0.0
+    for n, wd in right:
+        wk, bx, line = mcrop(sec, n)
+        register(wk['plate']['src'], bx, 'crop', 'motif body %d' % n)
+        h = wd / ratio(wk['plate']['src'], bx)
+        pr.img(wk['plate']['src'], x, DBOT - h, wd, h, bx, 'mbd%02d' % n, cls='butt')
+        keyed.append((n, line)); x += wd
+    pr.m(X(6), 18.0, W(6), '<br>'.join(mcap(n, l) for n, l in keyed), 'g')
+    pr.m(X(6), 18.0 + sum(micro_h(len(l) + 12, W(6)) for _, l in keyed) + 4.0,
+         W(6), 'Left to right along the foot of the spread', 'g')
+
+def m_face():
+    # Yuzlesme: yuzu olmayan bas ile ustune cizile cizile yapilmis yuz
+    # sirtta goz goze; kalan dort yuz iki dogrudan cift olarak altta.
+    sec = msec('face')
+    pl, pr = spread(sec['name'])
+    pl.fam = pr.fam = 'R'
+    MOTIF_AT[sec['key']] = pl.no
+    use(pl)
+    motif_head(pl, sec, tw=4.4)
+    wk, bx, line = mcrop(sec, 18)
+    register(wk['plate']['src'], bx, 'crop', 'motif face 18')
+    ar = ratio(wk['plate']['src'], bx)
+    wd = W(10); h = wd / ar
+    x = pl.ml + MEASURE - wd
+    y = DBOT - h
+    pl.img(wk['plate']['src'], x, y, wd, h, bx, 'mfc18', hi=1600)
+    pl.m(x, y - 6.0, wd, mcap(18, line), 'g')
+    use(pr)
+    wk2, bx2, line2 = mcrop(sec, 32)
+    register(wk2['plate']['src'], bx2, 'crop', 'motif face 32')
+    ar2 = ratio(wk2['plate']['src'], bx2)
+    wd2 = MEASURE; h2 = wd2 / ar2
+    pr.img(wk2['plate']['src'], X(0), REG[0], wd2, h2, bx2, 'mfc32', hi=1600)
+    pr.m(X(0), REG[0] + h2 + 2.4, W(11), mcap(32, line2) +
+         ' <i>&middot;</i> facing it, ' + mcap(18, line), 'g')
+    yb = 224.0
+    hh = 30.0
+    x = X(0)
+    caps = []
+    for a, b in ((1, 12), (21, 27)):
+        x0 = x
+        for n in (a, b):
+            wk3, bx3, line3 = mcrop(sec, n)
+            register(wk3['plate']['src'], bx3, 'crop', 'motif face %d' % n)
+            ar3 = ratio(wk3['plate']['src'], bx3)
+            wd3 = hh * ar3
+            pr.img(wk3['plate']['src'], x, yb, wd3, hh, bx3, 'mfcp%02d' % n,
+                   cls='butt ix')
+            x += wd3
+        caps.append((x0, x - x0, '%02d against %02d' % (a, b)))
+        x += 10.0
+    for x0, wd0, t in caps:
+        pr.m(x0, yb + hh + 2.0, wd0 + 10.0, t, 'g')
+    pr.m(X(0), yb + hh + 8.0, W(11),
+         'The face is where the painting decides whether there is a person '
+         'here, and often declines to decide', 'g')
+
+# ══ kapanis ══════════════════════════════════════════════════════════
+def closing():
+    pl, pr = spread('Colophon')
+    pl.fam = pr.fam = 'E'
+    SECTIONS.append(('Colophon', pl.no))
+    use(pl)
+    pl.m(X(0), HEAD, W(6), 'Colophon')
+    pl.m(R(4), HEAD, W(4), NM, 'rt g')
+    pl.rule(X(0), HRULE, MEASURE, True)
+    pl.sans(X(0), 34.0, W(5),
+        '<p>All works by Yiğit Özen, born 1994 in Istanbul and trained as an '
+        'architect. They are given newest first, so a paragraph that says a '
+        'thing happens for the first time means the first time reading '
+        'backwards through the book.</p>'
+        '<p>Dimensions are width by height, in centimetres and then in inches.</p>'
+        '<p>Photography by the artist. Plates and details reproduce documentation '
+        'of the paintings; colour and surface differ from the works themselves. '
+        'The files are set at about 137 pixels to the inch of printed width, '
+        'made for reading and for screens rather than for offset printing.</p>'
+        '<p>Detail photography exists for fourteen of the thirty-five. Where it '
+        'does not, the work is shown through its plate alone; where a cut is '
+        'taken from a plate — in the chapter on what comes back, and three '
+        'times in the work sections — the caption says where it is.</p>')
+    pl.sans(X(6), 34.0, W(6),
+        '<p>Where a paragraph gives a proportion or a percentage, it was measured '
+        'on the documentation file rather than on the painting, and it describes '
+        'that file. No colour target was used in the photography, so the figures '
+        'are a reading of the photograph and not a colorimetric claim about the '
+        'paint.</p>'
+        '<p>Titles are set as the artist writes them, in his spelling and his '
+        'punctuation. <em>il sbagliato di rompipalle</em>, <em>sono squalo</em> '
+        'and <em>caprocorn</em> are his, not slips of the setting.</p>'
+        '<p>Sources for the two borrowed reference images and for the epigraph '
+        'on 03 are given on the pages they appear on.</p>'
+        '<p>A caption gives where in the painting the cut is, and then what the '
+        'hand did there, taken from that work&rsquo;s own note on colour, '
+        'composition or hand. Every cut is printed once in the book; when a '
+        'place returns in the chapter on what comes back, it returns as a '
+        'different or a wider cut.</p>'
+        '<p>A picture that bleeds is cut by the sheet; every painting treated '
+        'this way is also printed whole in its own opening and in the index.</p>'
+        '<p>Set in Inter and in Newsreader, both under the SIL Open Font '
+        'License; the files are embedded. A short selection of the same works '
+        'is published separately for sending; the thirty-five are also at '
+        'yigitozen.xyz, where every photograph can be seen at full size.</p>'
+        '<p>All works &copy; Yiğit Özen. All rights reserved.</p>')
+    pl.rule(X(0), FRULE, MEASURE)
+    pl.m(X(0), FMICRO, W(4), 'x@yigitozen.xyz')
+    pl.m(X(4), FMICRO, W(4), 'Instagram @yjgjf')
+    pl.m(R(4), FMICRO, W(4), 'yigitozen.xyz <i>&middot;</i> de-centralize.com', 'rt g')
+
+    # Kapanis: kapak kesitinin tablodaki yeri. Kitap nereden acildiysa
+    # orayi gostererek kapanir.
+    use(pr)
+    w1 = BY_N[1]
+    register(w1['plate']['src'], None, 'plate', 'close')
+    wd = W(8)
+    h = wd / w1['ar']
+    x = pr.ml + (MEASURE - wd) / 2.0
+    y = REG[1]
+    pr.img(w1['plate']['src'], x, y, wd, h, w1['plate'].get('box'), 'closep01')
+    pr.frame(x + COVER_ON_PLATE[0] * wd, y + COVER_ON_PLATE[1] * h,
+             COVER_ON_PLATE[2] * wd, COVER_ON_PLATE[3] * h)
+    pr.m(x, y + h + 3.0, wd,
+         'The cover, marked where it was cut from 01 <i>&middot;</i> '
+         '7 fam board game', 'g')
+    pr.raw('<img class="mark" src="images/logo.svg" '
+           'style="left:%.2fmm;top:250mm;width:26mm">' % (PW / 2 - 13))
+
+# ══ kurulum ══════════════════════════════════════════════════════════
+SELECT = [1, 2, 5, 8, 15, 22, 34, 35]
+
+front_matter()
+
+if SHORT:
+    for n in SELECT:
+        f_open(BY_N[n])
+    m_face()
+    p = page('Index')
+    use(p)
+    p.m(X(0), HEAD, W(8), 'The thirty-five, at one width')
+    p.rule(X(0), HRULE, MEASURE, True)
+    NC, Y0, CAP = 7, 30.0, 6.0
+    rows = [WORKS[i:i + NC] for i in range(0, len(WORKS), NC)]
+    stepx = MEASURE / NC
+    cw = stepx - GUT
+    bh = ((FRULE - Y0) - len(rows) * (CAP + 4.0)) / len(rows)
+    y = Y0
+    for row in rows:
+        for j, wk in enumerate(row):
+            ar = wk['ar']
+            iw = min(cw, bh * ar); ih = iw / ar
+            p.img(wk['plate']['src'], X(0) + j * stepx, y + bh - ih, iw, ih,
+                  wk['plate'].get('box'), 'ix%02d' % wk['n'], cls='ix')
+            p.m(X(0) + j * stepx, y + bh + 1.6, cw, '%02d' % wk['n'], 'g')
+        y += bh + CAP + 4.0
+    p.rule(X(0), FRULE, MEASURE)
+    p.m(X(0), FMICRO, W(8), 'Every plate at one width, in the order of the book')
+    p = page('Colophon')
+    p.m(X(0), HEAD, W(6), 'Colophon')
+    p.rule(X(0), HRULE, MEASURE, True)
+    p.sans(X(0), 34.0, W(6), '<p>%s</p><p>All works &copy; Yiğit Özen. All '
+           'rights reserved. Set in Inter and Newsreader, under the SIL Open '
+           'Font License.</p>' % e(SHORT_BLURB))
+    last = page('', 'plate')
+    last.folio = False
+    last.raw('<img class="mark" src="images/logo.svg" '
+             'style="left:%.2fmm;top:139mm;width:42mm">' % (PW / 2 - 21))
+else:
+    SECTIONS.append(('On the work', 4))
+    SECTIONS.append(('Biography and exhibitions', 6))
+    build_works()
+    index_spread()
+    recur_section()
+    closing()
+    SECTIONS.sort(key=lambda s: s[1])
+    toc_fill(TOC)
+    recur_toc_fill(RECUR_TOC)
+
+# ── aile ritmi: ayni aile ust uste en cok iki serim ──────────────────
+if not SHORT:
+    fams = []
+    for i in range(9, len(PAGES) - 1, 2):
+        fams.append((i + 1, PAGES[i].fam))
+    run_f, run_n = None, 0
+    for pno, f in fams:
+        if f == run_f:
+            run_n += 1
+            if f in 'BCD' and run_n > 2:
+                raise SystemExit('aile uc kez ust uste: %s, sayfa %d' % (f, pno))
+        else:
+            run_f, run_n = f, 1
 
 # ══ yaz ══════════════════════════════════════════════════════════════
 out = ['<!doctype html>', '<html lang="en">', '<head>', '<meta charset="utf-8">',
@@ -1314,34 +1589,45 @@ for i, p in enumerate(PAGES, start=1):
     foot = ''
     if p.folio:
         if side == 'L':
-            foot = ('<div class="b f" style="left:%.2fmm;top:%.2fmm;width:%.2fmm">%d</div>'
-                    '<div class="b m g" style="left:%.2fmm;top:%.2fmm;width:%.2fmm">%s</div>'
-                    % (X(0), FOLIO, W(3), i, X(2), FOLIO + 3.4, W(6), p.run or 'Yiğit Özen'))
+            foot = ('<div class="b f" style="left:%.2fmm;top:%.2fmm;width:%.2fmm">'
+                    '%d&ensp;<span>%s</span></div>'
+                    % (p.X(0), FOLIO_Y, W(6), i, p.run or 'Yiğit Özen'))
         else:
             foot = ('<div class="b f rt" style="left:%.2fmm;top:%.2fmm;width:%.2fmm">%d</div>'
-                    '<div class="b m g rt" style="left:%.2fmm;top:%.2fmm;width:%.2fmm">%s</div>'
-                    % (R(3), FOLIO, W(3), i, R(9), FOLIO + 3.4, W(6), p.run or 'Yiğit Özen'))
-    out.append('<section class="pg %s%s" data-arch="%s">%s%s</section>'
-               % (side, (' ' + p.klass if p.klass else ''),
-                  getattr(p, 'arch', p.klass or 'text'), ''.join(p.bits), foot))
+                    % (p.R(2), FOLIO_Y, W(2), i))
+    out.append('<section class="pg %s%s" data-fam="%s">%s%s</section>'
+               % (side, (' ' + p.klass if p.klass else ''), p.fam,
+                  ''.join(p.bits), foot))
     out.append('')
 out += ['</body>', '</html>', '']
 open(os.path.join(HERE, 'book-short.html' if SHORT else 'book.html'),
      'w', encoding='utf-8').write('\n'.join(out))
 
 marks = [('Cover', 1), ('Imprint', 2), ('Paintings since 2019', 3),
-         ('On the work', 4), ('Biography', 6), ('Contents', 8)]
-marks = [(n, i) for n, i in marks if i <= len(PAGES)]
-for wk in SEQ:
-    marks.append(('%02d  %s' % (wk['n'], wk['title']), FIRST[wk['n']]))
+         ('On the work', 4), ('Biography', 6), ('Contents', 9)]
+marks = [(n, i) for n, i in marks if i <= len(PAGES) and not SHORT or n == 'Cover']
+if SHORT:
+    marks = [('Cover', 1), ('Imprint', 2), ('Paintings since 2019', 3)]
+for wk in (WORKS if not SHORT else [BY_N[n] for n in SELECT]):
+    if wk['n'] in FIRST:
+        marks.append(('%02d  %s' % (wk['n'], wk['title']), FIRST[wk['n']]))
 first_run = {}
 for i, p in enumerate(PAGES, start=1):
     if p.run and p.run not in first_run: first_run[p.run] = i
-for name in ['Index', 'The recurring'] + [x['name'] for x in MOTIFS['sections']] + ['Colophon']:
+for name in ['Index', 'What comes back'] + [x['name'] for x in MOTIFS['sections']] + ['Colophon']:
     if name in first_run: marks.append((name, first_run[name]))
 json.dump({'marks': marks, 'pages': len(PAGES), 'short': SHORT},
           open(os.path.join(HERE, 'outline-short.json' if SHORT else 'outline.json'),
                'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+
+# Kullanilmayan gorseller ayiklanir; kisa basim ayni adlari kullanir.
+if not SHORT:
+    for f in os.listdir(OUT):
+        if f.endswith('.jpg') and f not in MADE:
+            os.remove(os.path.join(OUT, f))
+
+if not SHORT and not (126 <= len(PAGES) <= 146):
+    raise SystemExit('sayfa sayisi hedef disi: %d' % len(PAGES))
 
 print('pages: %d' % len(PAGES))
 print('images: %d' % len(MADE))

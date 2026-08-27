@@ -1,79 +1,85 @@
 # Paintings since 2019
 
-The art book. Thirty-five paintings, one spread each, built from the site's
-`works.json` and the photographs in this repository.
+The art book, second edition. Thirty-five paintings, built spread by
+spread from the site's `works.json` and the photographs in this
+repository.
 
-`Yigit-Ozen-Paintings-since-2019.pdf` — 163 pages, 240 × 320 mm.
+`Yigit-Ozen-Paintings-since-2019.pdf` — 129 pages, 240 × 320 mm.
 `Yigit-Ozen-Paintings-Short.pdf` — 24 pages, eight works and one recurring
 figure, for sending cold.
 
-Set in Inter, under the SIL Open Font License; the files are in `fonts/`
-and are embedded in the PDF.
+Set in Inter and Newsreader, both under the SIL Open Font License; the
+files are in `fonts/` and are embedded in the PDF.
 
 ## The one idea
 
-Every work is a spread. The left page is writing and is nearly empty: the
-number and the medium on a rule at the head, the title under it, the
-dimensions, the paragraph, and the three notes on colour, composition and
-hand — all one block, with the leftover white collected at the foot. The
-right page is the painting, filling the sheet.
+Controlled rupture. One modernist grid runs under every page — twelve
+columns, a 5 mm baseline, four registers — and it is broken on purpose, a
+few times per sequence, by scale, by a crop crossing the spine, by a
+sentence set at the size of a painting. The unit is the spread, never the
+page: each carries one dominant element and one deliberate relation
+between left and right, and the white answers whatever it faces.
 
-All thirty-five paintings are reproduced inside one band, 18 mm from the
-head and 260 mm deep. An upright painting takes the band's height, a wide
-one the page's width. That is the whole plate rule, and it means the reader
-compares the paintings rather than the layouts.
-
-The detail pages are not free. Six archetypes, a closed set, and six size
-steps with nothing between them; every spread carries one picture that
-takes more than half of it. `GUIDE.md` is the specification and `audit.js`
-checks it on the rendered file.
+`DIRECTION.md` is the art direction — the statement, the structure, what
+was merged from the 163-page first edition, the five spread families and
+eight built examples. `GUIDE.md` is the binding specification, and
+`audit.js` checks it on the rendered file.
 
 ## What is in it
 
-- **35 spreads**, one to a work, all the same shape.
-- **Detail sheets** allotted by what the work is — surface, recurring
-  figures, whether its making was photographed — not by what happened to be
-  in the camera. Where a work was never photographed in detail, its crops
-  come from its own plate at the places the recurring chapter marks.
-- **49 process stages** across five works, as contact sheets.
-- **10 studies and versions**, each captioned for what it is.
-- **An index** of all thirty-five, every plate at one width on one baseline.
-- **Six recurring figures**, a spread each: text on the left, and on the
-  right a crop from every painting the figure appears in. A crop marked with
-  a degree sign in the works section is printed again there, so the argument
-  can be checked against the painting it came from.
-- Cover, imprint, title, the essay, the biography, the exhibitions, a page
-  on how the book is arranged, the contents on one sheet, the colophon.
-
-Where a work's sheets come out odd, the spare page is not filler: it shows
-which recurring figures are in that painting, with the crop and the page its
-chapter begins. There are no blank pages.
+- **35 openings** — every work enters on a spread: number, title,
+  dimensions, note and facets on the left, the painting whole on the
+  right, top on the first register, its printed size following the
+  physical size of the canvas. Six minor works share three paired
+  spreads, both paintings whole.
+- **Year thresholds as numerals** — 2026, 2023, 2020, 2019 enter as
+  108 pt figures on the first work of the year; the 2023 spread carries
+  the one commission and states the gap in the painting years.
+- **Detail arguments** — one dominant cut against one or two
+  counter-images: face against face, above against below, eye against
+  mouth. Every exact crop is printed once in the whole book; `book.py`
+  refuses a duplicate at build time.
+- **Process as time** — the Leonardo that became *Virgil on Virtual
+  Cage*, the Soprano still that became *gary grills cooper*, the notebook
+  page, the face painted three times; the decisive stage large, the rest
+  a numbered strip that says how many stages there were.
+- **Two pauses** — "it could be about to strike…" facing the reaching
+  arm; "Deeply ordered chaos." facing the pencil study it is inscribed
+  on.
+- **An index** of the thirty-five at one width, with page numbers.
+- **What comes back** — six recurring figures, each spread behaving
+  differently (dispersal, absence, ascent, framing, accumulation,
+  confrontation), in cuts that appear nowhere else in the book.
+- **A closing page** that marks, on the painting itself, exactly where
+  the cover was cut from.
 
 ## Making it
 
 ```
 python3 book.py ../../yigit/works.json      # book.html + images/
-node audit.js                               # the specification, checked
+node audit.js                               # the specification, measured
 node print.js && python3 post.py            # the PDF, its metadata and bookmarks
 
 python3 book.py ../../yigit/works.json --short
 node print.js --short && python3 post.py --short
 ```
 
-`print.js` takes `playwright` or `playwright-core`, whichever is installed,
-and honours `PLAYWRIGHT_CHROMIUM` when the browser lives outside the
-package. `book.css` holds the type sizes and the rules; `book.py` holds
-every position in millimetres.
+`print.js` and `audit.js` take `playwright` or `playwright-core`,
+whichever is installed, and honour `PLAYWRIGHT_CHROMIUM` when the browser
+lives outside the package. `book.css` holds the type; `book.py` holds
+every position in millimetres and every editorial decision in one
+curation script per work.
 
-The pictures are cut to 5.4 pixels per millimetre of printed width, capped
-at 1360 px. That is 137 dpi on the page: below it the paper shows the
-pixels, above it the file grows for nothing.
+The pictures are cut to 5.4 pixels per millimetre of printed width
+(137 dpi on the page), with a higher cap for the spreads-wide bands.
+Unused derivatives are pruned on every full build.
 
 ## The rules it will not break
 
-The full list is in `GUIDE.md`. The short form: no cropping except on the
-full-page plates, which are always also printed small and whole; three type
-sizes and nothing between them; one work to a spread; no blank pages; six
-archetypes and six size steps; one picture over half of every detail spread;
-at least six bleeding pages in every 32; white in one block touching two
-edges; and no picture under three columns.
+The full list is in `GUIDE.md`. The short form: every painting whole,
+uncropped and undistorted in its opening; plate size follows canvas size;
+every exact crop printed once; the whole plate only in opening, index and
+closing; one dominant per spread and at least half the image area in B/C
+spreads; three image classes with the 49–64 mm middle forbidden; no family
+more than twice in a row; no filler pages; titles in the artist's own
+spelling.
