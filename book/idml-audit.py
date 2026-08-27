@@ -140,17 +140,61 @@ for n, t in trees.items():
 for mm in sorted(set(miss))[:5]: bad.append('bag dosyasi yok: %s' % mm)
 if len(set(miss)) > 5: bad.append('... ve %d bag daha' % (len(set(miss)) - 5))
 
-# 9 · yazi tipleri: stillerin istedigi her aile Document fonts icinde mi
+# 9 · yazi tipleri: her stilin istedigi aile+kesim cifti, pakette o adi
+#     gercekten tasiyan bir dosyaya karsilik geliyor mu. Dosya adina degil,
+#     dosyanin kendi ad tablosuna bakilir: Inter'in SemiBold kesimi 'Inter'
+#     ailesinde 'SemiBold' diye degil, 'Inter SemiBold' ailesinde 'Regular'
+#     diye durur. Yanlis sorulursa InDesign bulamaz ve yaziyi pembe zeminle
+#     isaretler; bu denetim tam olarak onu yakalar.
+def ttf_names(path):
+    import struct
+    d = open(path, 'rb').read()
+    n = struct.unpack('>H', d[4:6])[0]
+    tab = {}
+    for i in range(n):
+        o = 12 + 16 * i
+        off, ln = struct.unpack('>II', d[o + 8:o + 16])
+        tab[d[o:o + 4].decode('latin1')] = (off, ln)
+    if 'name' not in tab: return ('', '')
+    off = tab['name'][0]
+    cnt, so = struct.unpack('>HH', d[off + 2:off + 6])
+    got = {}
+    for i in range(cnt):
+        r = off + 6 + 12 * i
+        pid, eid, lid, nid, sl, so2 = struct.unpack('>HHHHHH', d[r:r + 12])
+        raw = d[off + so + so2: off + so + so2 + sl]
+        try:
+            v = raw.decode('utf-16-be') if pid == 3 else raw.decode('latin1')
+        except Exception:
+            continue
+        if nid in (1, 2) and nid not in got: got[nid] = v
+    return (got.get(1, ''), got.get(2, 'Regular'))
+
 dfonts = os.path.join(ROOT, 'Document fonts')
 have_f = set()
 if os.path.isdir(dfonts):
-    for f in os.listdir(dfonts): have_f.add(f.split('-')[0].lower())
-want_f = set()
-if st is not None:
-    for el in st.iter('AppliedFont'):
-        want_f.add((el.text or '').strip().lower())
-for w in sorted(want_f - have_f):
-    if w: bad.append('yazi tipi paketle gelmiyor: %s' % w)
+    for f in os.listdir(dfonts):
+        if f.lower().endswith(('.ttf', '.otf')):
+            have_f.add(ttf_names(os.path.join(dfonts, f)))
+else:
+    bad.append('Document fonts klasoru yok')
+
+def pairs(tree):
+    """Bir stildeki AppliedFont + FontStyle ciftleri."""
+    out = set()
+    for el in tree.iter():
+        if el.tag not in ('ParagraphStyle', 'CharacterStyle'): continue
+        fam = el.find('.//AppliedFont')
+        sty = el.find('FontStyle')
+        if fam is None or sty is None: continue
+        out.add(((fam.text or '').strip(), (sty.text or '').strip()))
+    return out
+
+want_f = pairs(st) if st is not None else set()
+for fam, sty in sorted(want_f - have_f):
+    bad.append('bu aile+kesim pakette yok: %r + %r  (pakette: %s)'
+               % (fam, sty, ', '.join('%s/%s' % h for h in sorted(have_f))[:120]))
+note.append('yazi tipi cifti: %d istendi, %d pakette' % (len(want_f), len(have_f)))
 
 # 10 · geometri: hicbir nesne yapragin makul sinirinin disina dusmesin
 PT = 72 / 25.4

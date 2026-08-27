@@ -11,22 +11,40 @@ NASIL ACILIR
   yan yana durdugu surece InDesign gorselleri ve yazi tiplerini kendisi
   bulur; hicbir seyi sisteme kurmak gerekmez.
 
-  .indd ISTIYORSAN: InDesign'da acildiktan sonra Dosya > Farkli Kaydet,
-  bicim InDesign Belgesi (.indd). .indd Adobe'nin kapali bicimidir ve
-  yalnizca InDesign'in kendisi yazabilir; IDML tam olarak bunun icin var.
+  .indd ISTIYORSAN: acildiktan sonra Dosya > Farkli Kaydet, bicim
+  InDesign Belgesi (.indd). .indd Adobe'nin kapali bicimidir ve yalnizca
+  InDesign'in kendisi yazabilir; IDML tam olarak bunun icin var.
+
+YAZI TIPLERI
+
+  Belge yazi tiplerini dosyalarin kendi tasidigi adlarla ister. Inter'in
+  Medium ve SemiBold kesimleri statik yapidir ve kendilerini 'Inter
+  Medium' / 'Inter SemiBold' ailesi, kesim 'Regular' diye tanitir: bir
+  ailenin klasik dort yuvasi (Regular, Bold, Italic, Bold Italic) disina
+  cikan her agirlik boyle durmak zorundadir. Font menusunde de oyle
+  gorunurler. Yanlis sorulsaydi InDesign bulamaz ve yaziyi pembe zeminle
+  isaretlerdi.
+
+KILAVUZLAR
+
+  Sayfada yalniz kenar bosluklari cizilidir. Kitabin on iki kolonlu
+  izgarasi kagit uzerindeki kurgudur; belgede kolon kilavuzu olarak
+  cizilmez, cunku yerlesim zaten mutlak konumludur ve yirmi dort mor
+  cizgi sayfayi okunmaz yapar. Istersen Duzen > Kenar Bosluklari ve
+  Kolonlar'dan on ikiye alabilirsin, bosluk 4 mm.
 
 ICINDE NE VAR
 
   129 sayfa, 65 yaprak. Kapak tek, gerisi karsilikli.
   734 yazi cercevesi, hepsi gercek yazi ve bir paragraf stiline bagli.
-  24 paragraf stili — kitabin yazi kademelerinin karsiligi. Butun
+  23 paragraf stili — kitabin yazi kademelerinin karsiligi. Butun
   altyazilarin puntosunu degistirmek tek islem.
-  5 karakter stili. Bunlardan biri kitaba ozel: bir kunye icindeki egik
-  isaret egiklik degil gri renk demektir, o ayrim korunmustur.
-  177 bagli gorsel, her biri kendi olcek ve kaydirmasiyla; tasan kadraj
-  odak noktasini korur.
-  119 cizgi nesne olarak. Renkler, kenar bosluklari, 12 kolon, dort
-  register ve 3 mm tasma payi belgede tanimli.
+  6 karakter stili. Biri kitaba ozel: bir kunye icindeki egik isaret
+  egiklik degil gri renk demektir, o ayrim korunmustur.
+  175 bagli gorsel, her biri kendi olcek ve kaydirmasiyla; tasan
+  kadraj odak noktasini korur.
+  Cizgiler nesne olarak. Renkler, kenar bosluklari, dort register ve
+  3 mm tasma payi belgede tanimli.
 
   58 yerlestirme 240 ppi altinda kalir. Sebebi tasarim degil kaynak:
   tablo fotograflari 1761 x 2000 piksel, yani web turevi. Orijinaller

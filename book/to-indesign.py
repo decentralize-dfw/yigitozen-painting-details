@@ -83,11 +83,13 @@ PSTYLES = {
 # Yazi icindeki isaretler. book.css'te .m i egik degil, gri demektir:
 # bu ayrim korunur, yoksa kunyeler InDesign'da egik cikar.
 CSTYLES = {
-    'grey':   (None, 'Medium',   'grey'),      # .m i
-    'bold':   (None, 'Bold',     None),        # b
-    'italic': (None, 'Italic',   None),        # em, i (govde yazisinda)
-    'place':  (None, 'Medium',   'grey'),      # .f span
-    'greywh': (None, 'Medium',   'paperdim'),  # koyu sayfada .m i
+    # ad        : (aile, kesim, renk)
+    'grey':     (INTER, 'Medium', 'grey'),      # .m i  — egik degil, gri
+    'bold':     (INTER, 'Bold',   None),        # b
+    'italic':   (NEWS,  'Italic', None),        # em, i — serif govdede
+    'italic s': (INTER, 'Italic', None),        # em, i — grotesk govdede
+    'place':    (INTER, 'Medium', 'grey'),      # .f span
+    'greywh':   (INTER, 'Medium', 'paperdim'),  # koyu sayfada .m i
 }
 COLORS = {'ink': (0x11, 0x11, 0x11), 'grey': (0x6e, 0x6e, 0x6e),
           'hair': (0xd8, 0xd8, 0xd8), 'paper': (0xff, 0xff, 0xff),
@@ -99,6 +101,51 @@ FONTFILE = {(INTER, 'Regular'): 'Inter-400.ttf', (INTER, 'Medium'): 'Inter-500.t
             (NEWS, 'Regular'): 'Newsreader-400.ttf',
             (NEWS, 'Medium'): 'Newsreader-500.ttf',
             (NEWS, 'Italic'): 'Newsreader-Italic-400.ttf'}
+
+
+def ttf_names(path):
+    """Dosyanin kendi ad tablosu: aile, alt stil, PostScript adi.
+
+    Onemli olan ID 1 ve 2'dir, ID 16/17 degil. Inter'in Medium ve SemiBold
+    kesimleri statik yapidir: eski adlari 'Inter SemiBold' + 'Regular'dir,
+    cunku bir ailenin klasik dort yuvasi (Regular, Bold, Italic, Bold
+    Italic) disina cikan her agirlik ayri bir aile olmak zorundadir.
+    InDesign bu adlari okur. 'Inter' + 'SemiBold' diye sorulursa bulamaz
+    ve yaziyi pembe zeminle isaretler.
+    """
+    import struct
+    d = open(path, 'rb').read()
+    n = struct.unpack('>H', d[4:6])[0]
+    tab = {}
+    for i in range(n):
+        o = 12 + 16 * i
+        off, ln = struct.unpack('>II', d[o + 8:o + 16])
+        tab[d[o:o + 4].decode('latin1')] = (off, ln)
+    off = tab['name'][0]
+    cnt, so = struct.unpack('>HH', d[off + 2:off + 6])
+    got = {}
+    for i in range(cnt):
+        r = off + 6 + 12 * i
+        pid, eid, lid, nid, sl, so2 = struct.unpack('>HHHHHH', d[r:r + 12])
+        raw = d[off + so + so2: off + so + so2 + sl]
+        try:
+            v = raw.decode('utf-16-be') if pid == 3 else raw.decode('latin1')
+        except Exception:
+            continue
+        if nid in (1, 2, 6) and nid not in got: got[nid] = v
+    return got.get(1, ''), got.get(2, 'Regular'), got.get(6, '')
+
+
+# Istenen (aile, kesim) -> dosyanin gercekten tasidigi (aile, stil, ps adi)
+REAL = {}
+for key, fn in FONTFILE.items():
+    p = os.path.join(HERE, 'fonts', fn)
+    REAL[key] = ttf_names(p) if os.path.isfile(p) else (key[0], key[1], '')
+
+
+def real_font(fam, sty):
+    """Stil tablosundaki ad ciftini dosyanin gercek adlarina cevirir."""
+    return REAL.get((fam, sty), (fam, sty, ''))[:2]
 
 
 def x(s):
@@ -198,7 +245,9 @@ def geom(x1, y1, x2, y2):
 
 def fonts_xml():
     fams = {}
-    for (fam, sty) in FONTFILE: fams.setdefault(fam, []).append(sty)
+    for key in FONTFILE:
+        rf, rs, _ = REAL[key]
+        fams.setdefault(rf, []).append(rs)
     out = []
     for fam, stys in fams.items():
         f = ['<FontFamily Self="%s" Name="%s">' % (uid('fam'), x(fam))]
@@ -245,6 +294,7 @@ def graphic_xml():
 
 def pstyle(name, spec):
     fam, sty, size, lead, upper, col, align, track = spec
+    fam, sty = real_font(fam, sty)
     return ('<ParagraphStyle Self="ParagraphStyle/%s" Name="%s" '
             'Imported="false" NextStyle="ParagraphStyle/%s" '
             'KeyboardShortcut="0 0" PointSize="%.2f" Leading="%.2f" '
@@ -265,14 +315,17 @@ def pstyle(name, spec):
 
 def cstyle(name, spec):
     fam, sty, col = spec
+    fam, sty = real_font(fam, sty)
     bits = ''
     if col: bits += 'FillColor="Color/%s" ' % x(col)
     return ('<CharacterStyle Self="CharacterStyle/%s" Name="%s" '
             'Imported="false" KeyboardShortcut="0 0" %s>'
-            '<Properties><BasedOn type="object">$ID/[No character style]</BasedOn>'
+            '<Properties>'
+            '<BasedOn type="object">$ID/[No character style]</BasedOn>'
+            '<AppliedFont type="string">%s</AppliedFont>'
             '</Properties>'
             '<FontStyle type="string">%s</FontStyle>'
-            '</CharacterStyle>' % (x(name), x(name), bits, x(sty)))
+            '</CharacterStyle>' % (x(name), x(name), bits, x(fam), x(sty)))
 
 
 def styles_xml():
@@ -310,7 +363,7 @@ def prefs_xml():
             '<ViewPreference Self="vprefs" HorizontalMeasurementUnits="Millimeters" '
             'VerticalMeasurementUnits="Millimeters" RulerOrigin="PageOrigin"/>'
             '<MarginPreference Self="mprefs" Top="%.4f" Bottom="%.4f" '
-            'Left="%.4f" Right="%.4f" ColumnCount="12" ColumnGutter="%.4f"/>'
+            'Left="%.4f" Right="%.4f" ColumnCount="1" ColumnGutter="%.4f"/>'
             '<TransparencyDefaultContainerObject Self="tdco"/>'
             '</idPkg:Preferences>'
             % (NS, DOM, PH, PW, BLEED, BLEED, BLEED, BLEED,
@@ -323,8 +376,15 @@ def story_xml(sid, cls, frag, dark):
     if st not in PSTYLES: st = 't'
     if dark and st in ('m', 'm g', 'm rt', 'm rt g', 'm g rt'):
         st = 'm wh' if 'rt' not in st else 'm rt wh'
+    # Italik hangi aileden alinacak, paragrafin ailesi soyler: serif bir
+    # govdede Newsreader Italic, grotesk bir govdede Inter Italic.
+    sans = PSTYLES[st][0] == INTER
+    def pick(c):
+        if c == 'italic' and sans: return 'italic s'
+        return c
     paras = [[]]
     for c, t in runs(frag, cls, dark):
+        c = pick(c)
         for k, piece in enumerate(t.split('\n')):
             if k: paras.append([])
             if piece: paras[-1].append((c, piece))
@@ -381,7 +441,7 @@ def spread_xml(sid, pageinfo, items):
                   'GeometricBounds="%s" ItemTransform="1 0 0 1 0 0" '
                   'OverrideList="" AppliedTrapPreset="TrapPreset/$ID/kDefaultTrapStyleName" '
                   'TabOrder="" GridStartingPoint="TopOutside" UseMasterGrid="true">'
-                  '<MarginPreference ColumnCount="12" ColumnGutter="%.4f" Top="%.4f" '
+                  '<MarginPreference ColumnCount="1" ColumnGutter="%.4f" Top="%.4f" '
                   'Bottom="%.4f" Left="%.4f" Right="%.4f"/>'
                   '</Page>' % (x(pself), x(name), x(master), gb, 4 * PT,
                                18 * PT, 22 * PT, 20 * PT, 16 * PT))
@@ -560,12 +620,12 @@ master = (AID % 'masterspread' + '<idPkg:MasterSpread %s %s>'
           '<Page Self="mpL" Name="A" AppliedMaster="n" GeometricBounds="0 %.4f %.4f 0" '
           'ItemTransform="1 0 0 1 0 0" OverrideList="" TabOrder="" '
           'GridStartingPoint="TopOutside" UseMasterGrid="true">'
-          '<MarginPreference ColumnCount="12" ColumnGutter="%.4f" Top="%.4f" '
+          '<MarginPreference ColumnCount="1" ColumnGutter="%.4f" Top="%.4f" '
           'Bottom="%.4f" Left="%.4f" Right="%.4f"/></Page>'
           '<Page Self="mpR" Name="A" AppliedMaster="n" GeometricBounds="0 0 %.4f %.4f" '
           'ItemTransform="1 0 0 1 0 0" OverrideList="" TabOrder="" '
           'GridStartingPoint="TopOutside" UseMasterGrid="true">'
-          '<MarginPreference ColumnCount="12" ColumnGutter="%.4f" Top="%.4f" '
+          '<MarginPreference ColumnCount="1" ColumnGutter="%.4f" Top="%.4f" '
           'Bottom="%.4f" Left="%.4f" Right="%.4f"/></Page>'
           '</MasterSpread></idPkg:MasterSpread>'
           % (NS, DOM, MASTER, -PW, PH, 4 * PT, 18 * PT, 22 * PT, 20 * PT, 16 * PT,
@@ -632,6 +692,73 @@ with zipfile.ZipFile(IDML, 'w', zipfile.ZIP_DEFLATED) as z:
     z.writestr(zi, 'application/vnd.adobe.indesign-idml-package')
     for name, data in parts:
         z.writestr(name, data.encode('utf-8'))
+
+# Paketin yaninda duran aciklama: klasor her uretimde bastan kuruldugu
+# icin buradan yazilir, elle konursa bir sonraki uretimde kaybolur.
+OKU = u"""YIĞIT ÖZEN — PAINTINGS SINCE 2019
+InDesign paketi
+
+  Yigit-Ozen-Paintings.idml     InDesign bunu acar
+  Links/                        %(nlink)d gorsel, baski cozunurlugunde
+  Document fonts/               Inter ve Newsreader
+
+NASIL ACILIR
+
+  Klasoru oldugu gibi indir, sonra .idml dosyasina cift tikla. Uc klasor
+  yan yana durdugu surece InDesign gorselleri ve yazi tiplerini kendisi
+  bulur; hicbir seyi sisteme kurmak gerekmez.
+
+  .indd ISTIYORSAN: acildiktan sonra Dosya > Farkli Kaydet, bicim
+  InDesign Belgesi (.indd). .indd Adobe'nin kapali bicimidir ve yalnizca
+  InDesign'in kendisi yazabilir; IDML tam olarak bunun icin var.
+
+YAZI TIPLERI
+
+  Belge yazi tiplerini dosyalarin kendi tasidigi adlarla ister. Inter'in
+  Medium ve SemiBold kesimleri statik yapidir ve kendilerini 'Inter
+  Medium' / 'Inter SemiBold' ailesi, kesim 'Regular' diye tanitir: bir
+  ailenin klasik dort yuvasi (Regular, Bold, Italic, Bold Italic) disina
+  cikan her agirlik boyle durmak zorundadir. Font menusunde de oyle
+  gorunurler. Yanlis sorulsaydi InDesign bulamaz ve yaziyi pembe zeminle
+  isaretlerdi.
+
+KILAVUZLAR
+
+  Sayfada yalniz kenar bosluklari cizilidir. Kitabin on iki kolonlu
+  izgarasi kagit uzerindeki kurgudur; belgede kolon kilavuzu olarak
+  cizilmez, cunku yerlesim zaten mutlak konumludur ve yirmi dort mor
+  cizgi sayfayi okunmaz yapar. Istersen Duzen > Kenar Bosluklari ve
+  Kolonlar'dan on ikiye alabilirsin, bosluk 4 mm.
+
+ICINDE NE VAR
+
+  %(npage)d sayfa, %(nspread)d yaprak. Kapak tek, gerisi karsilikli.
+  %(ntext)d yazi cercevesi, hepsi gercek yazi ve bir paragraf stiline bagli.
+  %(npara)d paragraf stili — kitabin yazi kademelerinin karsiligi. Butun
+  altyazilarin puntosunu degistirmek tek islem.
+  %(nchar)d karakter stili. Biri kitaba ozel: bir kunye icindeki egik isaret
+  egiklik degil gri renk demektir, o ayrim korunmustur.
+  %(nlink)d bagli gorsel, her biri kendi olcek ve kaydirmasiyla; tasan
+  kadraj odak noktasini korur.
+  Cizgiler nesne olarak. Renkler, kenar bosluklari, dort register ve
+  3 mm tasma payi belgede tanimli.
+
+  %(nlow)d yerlestirme 240 ppi altinda kalir. Sebebi tasarim degil kaynak:
+  tablo fotograflari 1761 x 2000 piksel, yani web turevi. Orijinaller
+  depoya girerse book/layout-export.py ve to-indesign.py ayni duzenden
+  daha yuksek cozunurluklu bir dosya uretir; sayfada hicbir seyin
+  degismesi gerekmez.
+
+NASIL URETILDI
+
+  python3 book/to-indesign.py            paketi yazar
+  python3 book/idml-audit.py             paketin tutarliligini olcer
+  python3 book/idml-preview.py 21        yapragi geri okuyup cizer
+"""
+open(os.path.join(OUTDIR, 'OKU.txt'), 'w', encoding='utf-8').write(
+    OKU % {'nlink': len(copied), 'npage': len(pages), 'nspread': len(spreads),
+           'ntext': len(stories), 'npara': len(PSTYLES), 'nchar': len(CSTYLES),
+           'nlow': len(lowres)})
 
 mb = lambda p: sum(os.path.getsize(os.path.join(p, f)) for f in os.listdir(p)) / 1048576.0
 print('%s' % os.path.basename(IDML))
