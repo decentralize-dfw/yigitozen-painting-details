@@ -158,7 +158,12 @@ capitalisation exactly.
 ## 10. Two files
 
 - **Screen edition** — `Yigit-Ozen-Paintings-since-2019.pdf`, trim size,
-  RGB, about 137 ppi, bookmarked.
+  RGB, bookmarked. Cut at 203 ppi where the source allows, never upscaled:
+  the median picture resolves at 203 ppi, a tenth at 153 or under, and
+  a quarter at 240 or over. It was cut at 137 ppi in the first build,
+  which was enough to read on a screen but threw away pixels the
+  photographs actually held, so a picture enlarged in the editor — or
+  printed from that file — showed less than the archive could give.
 - **Print master** — `Yigit-Ozen-Paintings-Print-Master.pdf`, 246 × 326 mm:
   the 240 × 320 trim with a real 3 mm bleed on every edge, images cut at
   300 ppi where the source allows and never upscaled.

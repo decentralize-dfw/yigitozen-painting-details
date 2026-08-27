@@ -71,14 +71,16 @@ PUNCTUM   = 0.028      # ipucu: 240 x 320'de yaklasik 57 mm eninde
 SECONDARY = 0.300      # ikincil: karsisindakiyle konusacak kadar buyuk
 
 # ── gorsel hazirligi ─────────────────────────────────────────────────
-# Basilacak genislige gore kesilir: milimetreye 5.4 piksel. Serit gibi
-# cok genis basilan parcalar icin tavan yukselir; kaynakta olmayan piksel
-# uydurulmaz, buyutme yoktur.
+# Basilacak genislige gore kesilir. Serit gibi cok genis basilan parcalar
+# icin tavan yukselir; kaynakta olmayan piksel uydurulmaz, buyutme yoktur.
 CACHE, MADE = {}, set()
 
-# Kagit icin milimetreye 11.81 piksel, yani 300 ppi; ekran icin 5.4, yani
-# 137 ppi. Hicbir dosya buyutulmez: kaynakta olmayan piksel uydurulmaz.
-PPMM  = 11.811 if PRINT else 5.4
+# Kagit icin milimetreye 11.81 piksel, yani 300 ppi; ekran icin 8.0, yani
+# 203 ppi. Ekran sayisi bir zamanlar 5.4 idi, 137 ppi: ekranda yeterli,
+# ama editorde bir resim buyutuldugunde ya da o dosyadan cikti alindiginda
+# elde olmayan piksel gorunuyordu. Hicbir dosya buyutulmez: kaynakta
+# olmayan piksel uydurulmaz, yalnizca var olan piksel atilmaz.
+PPMM  = 11.811 if PRINT else 8.0
 SCALE = PPMM / 5.4
 QUAL  = 88 if PRINT else 76
 
@@ -159,7 +161,10 @@ def best_src(src):
     return out
 
 def prep(src, mm, tag, box=None, hi=1360):
-    px = int(max(360, min(hi * SCALE, round(mm * PPMM))))
+    # Istenen: basilacak milimetrenin ppi karsiligi. Tavan yalnizca
+    # dosyayi sinirlamak icindir; kaynakta olmayan piksel uydurulmaz.
+    px = int(max(360, min(hi * SCALE * (2.2 if not PRINT else 1.0),
+                          round(mm * PPMM))))
     key = (src, px, tuple(box) if box else None)
     if key in CACHE: return CACHE[key]
     path = best_src(src) or os.path.join(ROOT, src.lstrip('/'))
