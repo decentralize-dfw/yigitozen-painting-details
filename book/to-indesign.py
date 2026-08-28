@@ -83,13 +83,17 @@ PSTYLES = {
 # Yazi icindeki isaretler. book.css'te .m i egik degil, gri demektir:
 # bu ayrim korunur, yoksa kunyeler InDesign'da egik cikar.
 CSTYLES = {
-    # ad        : (aile, kesim, renk)
-    'grey':     (INTER, 'Medium', 'grey'),      # .m i  — egik degil, gri
-    'bold':     (INTER, 'Bold',   None),        # b
-    'italic':   (NEWS,  'Italic', None),        # em, i — serif govdede
-    'italic s': (INTER, 'Italic', None),        # em, i — grotesk govdede
-    'place':    (INTER, 'Medium', 'grey'),      # .f span
-    'greywh':   (INTER, 'Medium', 'paperdim'),  # koyu sayfada .m i
+    # ad        : (aile, kesim, renk, buyukharf, punto, harf araligi)
+    # Bir karakter stili paragrafindan yalniz sayilan seyi devralir; devir
+    # alinmayan her sey burada yazilmali. .f span yalniz gri degildir:
+    # 7,2 punto, buyuk harf ve genis aralikli. Bunlar yazilmayinca folyodaki
+    # yer adi yazildigi gibi, folyo puntosunda cikiyordu.
+    'grey':     (INTER, 'Medium', 'grey',     0, None, None),   # .m i — gri
+    'bold':     (INTER, 'Bold',   None,       0, None, None),   # b
+    'italic':   (NEWS,  'Italic', None,       0, None, None),   # em — serif
+    'italic s': (INTER, 'Italic', None,       0, None, None),   # em — grotesk
+    'place':    (INTER, 'Medium', 'grey',     1, 7.2,  70),     # .f span
+    'greywh':   (INTER, 'Medium', 'paperdim', 0, None, None),   # koyu sayfa
 }
 COLORS = {'ink': (0x11, 0x11, 0x11), 'grey': (0x6e, 0x6e, 0x6e),
           'hair': (0xd8, 0xd8, 0xd8), 'paper': (0xff, 0xff, 0xff),
@@ -314,10 +318,13 @@ def pstyle(name, spec):
 
 
 def cstyle(name, spec):
-    fam, sty, col = spec
+    fam, sty, col, upper, size, track = spec
     fam, sty = real_font(fam, sty)
     bits = ''
     if col: bits += 'FillColor="Color/%s" ' % x(col)
+    if upper: bits += 'Capitalization="AllCaps" '
+    if size: bits += 'PointSize="%.2f" ' % size
+    if track is not None: bits += 'Tracking="%d" ' % track
     return ('<CharacterStyle Self="CharacterStyle/%s" Name="%s" '
             'Imported="false" KeyboardShortcut="0 0" %s>'
             '<Properties>'
