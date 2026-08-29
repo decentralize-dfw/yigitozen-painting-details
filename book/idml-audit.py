@@ -20,8 +20,11 @@ ROOT = sys.argv[1] if len(sys.argv) > 1 else os.path.join(
     os.path.dirname(os.path.abspath(__file__)), os.pardir,
     'Yigit-Ozen-Paintings-InDesign')
 ROOT = os.path.abspath(ROOT)
-IDML = next((os.path.join(ROOT, f) for f in os.listdir(ROOT)
-             if f.endswith('.idml')), None)
+if os.path.isfile(ROOT) and ROOT.endswith('.idml'):
+    IDML, ROOT = ROOT, os.path.dirname(ROOT)
+else:
+    IDML = next((os.path.join(ROOT, f) for f in os.listdir(ROOT)
+                 if f.endswith('.idml')), None)
 if not IDML: sys.exit('paket icinde .idml yok: %s' % ROOT)
 
 PKG = 'http://ns.adobe.com/AdobeInDesign/idml/1.0/packaging'
@@ -106,7 +109,10 @@ for n, t in trees.items():
         for a in ('FillColor', 'StrokeColor'):
             v = el.get(a)
             if v: used_col.add(v)
-for u in sorted(used_col - cols):
+# InDesign'in kendi hazir kunyeleri Graphic.xml'de yazili olmaz.
+BUILTIN = {'Swatch/$ID/[None]', 'Color/$ID/[Black]', 'Color/$ID/[Paper]',
+           'Color/$ID/[Registration]', 'Swatch/None'}
+for u in sorted(used_col - cols - BUILTIN):
     bad.append('tanimsiz renk: %s' % u)
 
 # 7 · yazi cerceveleri: her biri var olan bir hikayeye baglaniyor mu
@@ -196,23 +202,35 @@ for fam, sty in sorted(want_f - have_f):
                % (fam, sty, ', '.join('%s/%s' % h for h in sorted(have_f))[:120]))
 note.append('yazi tipi cifti: %d istendi, %d pakette' % (len(want_f), len(have_f)))
 
-# 10 · geometri: hicbir nesne yapragin makul sinirinin disina dusmesin
+# 10 · geometri: hicbir nesne sayfalarin disina dusmesin
+# Olcu ItemTransform uygulanarak alinir — PathPointType degerleri nesnenin
+# kendi uzayindadir — ve sinir yapragin kendi sayfa dikdortgenlerinden
+# okunur; varsayilan bir sayfa boyu bu belgeye uymuyor.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from place import transform
 PT = 72 / 25.4
-PWpt, PHpt = 240 * PT, 320 * PT
-out = 0; items = 0
+SLACK = 40.0
+out = 0; items = 0; outlist = []
 for n, t in trees.items():
     if not n.startswith('Spreads/'): continue
     sp = t.find('.//Spread')
-    npages = len(sp.findall('Page')) if sp is not None else 1
-    lo = -PWpt - 40 if npages > 1 else -40
-    hi = PWpt + 40
+    if sp is None: continue
+    pg = []
+    for p in sp.findall('Page'):
+        g = [float(v) for v in p.get('GeometricBounds').split()]
+        it = [float(v) for v in (p.get('ItemTransform') or '1 0 0 1 0 0').split()]
+        pg.append((g[1] + it[4], g[0] + it[5], g[3] + it[4], g[2] + it[5]))
+    if not pg: continue
+    lo, top = min(q[0] for q in pg), min(q[1] for q in pg)
+    hi, bot = max(q[2] for q in pg), max(q[3] for q in pg)
     for el in list(t.iter('Rectangle')) + list(t.iter('TextFrame')):
-        pts = [p.get('Anchor').split() for p in el.iter('PathPointType')]
-        if not pts: continue
+        bx = transform(el)
+        if not bx: continue
         items += 1
-        xs = [float(p[0]) for p in pts]; ys = [float(p[1]) for p in pts]
-        if min(xs) < lo or max(xs) > hi or min(ys) < -40 or max(ys) > PHpt + 40:
+        if (bx[2] < lo - SLACK or bx[0] > hi + SLACK
+                or bx[3] < top - SLACK or bx[1] > bot + SLACK):
             out += 1
+            if len(outlist) < 8: outlist.append((n.split('/')[-1], el.get('Self')))
 if out: bad.append('yaprak disina dusen nesne: %d / %d' % (out, items))
 
 # 11 · sayfa sayisi ve yaprak duzeni
