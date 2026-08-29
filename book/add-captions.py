@@ -66,8 +66,20 @@ def links_of(zf):
 
 
 def bx(el):
-    pts = [q.get('Anchor').split() for q in el.iter('PathPointType')]
-    xs = [float(q[0]) for q in pts]; ys = [float(q[1]) for q in pts]
+    """Nesnenin yapraktaki kutusu, kendi ItemTransform'u uygulanmis.
+
+    Geometri nesnenin kendi uzayindadir; yaprakta nerede durdugunu donusum
+    soyler. InDesign dosyayi yeniden yazarken gercek donusumler koyar, ve
+    uygulanmazsa kunye sayfanin disina duser.
+    """
+    a, b, c, d, e, f = [float(v) for v in (el.get('ItemTransform') or
+                                           '1 0 0 1 0 0').split()]
+    xs, ys = [], []
+    for q in el.iter('PathPointType'):
+        px, py = [float(v) for v in q.get('Anchor').split()]
+        xs.append(a * px + c * py + e)
+        ys.append(b * px + d * py + f)
+    if not xs: return 0.0, 0.0, 0.0, 0.0
     return min(xs), min(ys), max(xs), max(ys)
 
 
@@ -133,7 +145,9 @@ for n in Z.namelist():
     rng = []
     for p in sp.findall('Page'):
         g = [float(v) for v in p.get('GeometricBounds').split()]
-        rng.append((g[1], g[3], p.get('Name')))
+        it = [float(v) for v in (p.get('ItemTransform') or '1 0 0 1 0 0').split()]
+        rng.append((g[1] + it[4], g[3] + it[4], p.get('Name'),
+                    g[0] + it[5], g[2] + it[5]))
     adds = []
     for r in sp.iter('Rectangle'):
         im = r.find('Image')
@@ -141,11 +155,17 @@ for n in Z.namelist():
         f = urllib.parse.unquote(im.find('Link').get('LinkResourceURI') or '').split('/')[-1]
         if f not in CAPTIONS: continue
         x1, y1, x2, y2 = bx(r)
-        pn = next((q for lo, hi, q in rng if lo - 1 <= x1 <= hi + 1), '?')
+        cxm = (x1 + x2) / 2.0
+        pn = next((q for lo, hi, q, ty, by in rng if lo - 1 <= cxm <= hi + 1), '?')
+        pl = next(((lo, ty, by) for lo, hi, q, ty, by in rng if q == pn), (0, 0, 0))
         # Kunye gorselin sol alt kosesinden dort milimetre asagida baslar,
         # genisligi gorselin genisligi kadardir.
-        cx1, cy1 = x1, y2 + GAP
-        cx2, cy2 = max(x2, x1 + 120), y2 + GAP + LINE * 3
+        # Gorselin dort milimetre altina; sigmazsa gorselin kendi ayagina.
+        if y2 + GAP + LINE * 3 <= pl[2]:
+            cx1, cy1 = max(x1, pl[0]), y2 + GAP
+        else:
+            cx1, cy1 = max(x1, pl[0]) + 16 * PT, min(y2, pl[2]) - 16 * PT - LINE * 3
+        cx2, cy2 = min(max(x2, cx1 + 120), pl[0] + 240 * PT), cy1 + LINE * 3
         sid = uid('cs')
         new_stories['Stories/Story_%s.xml' % sid] = (
             STORY % {'sid': sid, 'txt': esc(CAPTIONS[f])})
