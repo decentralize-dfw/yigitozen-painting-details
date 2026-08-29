@@ -37,7 +37,7 @@ GAP = {
 DEFAULT = 8.0
 
 
-from fix_stack_lib import lineboxes, hits, settle, grow_changed
+from fix_stack_lib import lineboxes, hits, settle, grow_changed, grow_wider
 
 
 def main():
@@ -57,6 +57,9 @@ def main():
     # tutacagi cercevenin kendi olcusuyle hesaplanir: eski yazinin kac
     # harfi kac satira sigdiysa yenisi de o hesapla sigar.
     grew = grow_changed(pages, ch)
+    gj = os.path.join(os.path.dirname(os.path.abspath(SRC)), 'genisleme.json')
+    if os.path.exists(gj):
+        grew += grow_wider(pages, json.load(open(gj)))
     if grew:
         print('  yazisi uzayan cerceve: %d' % len(grew))
         for q, sid, a, b in grew:

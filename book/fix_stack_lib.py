@@ -127,3 +127,34 @@ def grow_changed(pages, ch):
                 for k in range(want - nl)]
             grew.append((q, it['self'], nl, want))
     return grew
+
+
+def grow_wider(pages, ratios):
+    """Yazi tipi degisen cerceveleri yeni kesimin genisligine gore buyutur.
+
+    Ayni yazi Newsreader'in buyuk harfleriyle Inter'inkinden genis surer;
+    genisleyen bir kunye bir satir daha tutabilir. Satir sayisi basilan
+    satirlarin toplam genisligiyle cercevenin genisliginden bulunur.
+    """
+    grew = []
+    for q, P in pages.items():
+        for it in P['items']:
+            k = ratios.get(it.get('story'))
+            if not k or not it['lines']: continue
+            nl = len(it['lines'])
+            wide = sum(l['x2'] - l['x1'] for l in it['lines']) * k
+            box = max(60.0, it['box'][2] - it['box'][0])
+            want = max(nl, -(-int(wide) // int(box)))
+            if want <= nl: continue
+            pitch = ((it['ren'][3] - it['ren'][1]) / nl if nl > 1
+                     else it['lines'][0]['span']['size'] * 1.46)
+            add = (want - nl) * pitch
+            base = it['ren'][3]
+            it['ren'] = (it['ren'][0], it['ren'][1], it['ren'][2], base + add)
+            it['lines'] = it['lines'] + [
+                {'x1': it['ren'][0], 'x2': it['ren'][2],
+                 'y1': base + j * pitch, 'y2': base + (j + 1) * pitch - 1.0,
+                 't': '', 'sz': 0, 'span': it['lines'][0]['span']}
+                for j in range(want - nl)]
+            grew.append((q, it['self'], nl, want))
+    return grew

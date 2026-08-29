@@ -16,7 +16,7 @@ Z = zipfile.ZipFile(sys.argv[1])
 CUT = re.compile(r'[,;:]$|\b(and|or|the|a|an|of|to|in|with|that|which|from|'
                  r'for|at|on|by|as|but|its|his|her|their|is|are|was|were)$'
                  r'|[—–-]$', re.I)
-SKIP = {'f', 'f rt', 'm wn'}
+SKIP = {'f', 'f rt', 'f yr', 'm wn', 'm stg'}
 
 rows, seen = [], collections.defaultdict(list)
 for n in sorted(Z.namelist()):
