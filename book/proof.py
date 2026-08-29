@@ -30,6 +30,8 @@ FONT = {
     'Helvetica-Light': 'Inter-400.ttf',
 }
 import json
+STY = {'f': 8.2, 'f rt': 8.2, 'm wn': 10.4, 't': 10.8, 'sans': 9.6,
+       'd': 26.0}
 LAY, CAP, PDF = sys.argv[1], sys.argv[2], sys.argv[3]
 WANT = [int(a) for a in sys.argv[4:] if a.isdigit()]
 BOOK = None
@@ -38,8 +40,10 @@ for i, a in enumerate(sys.argv):
 OUT = os.path.dirname(os.path.abspath(CAP))
 dj = os.path.join(os.path.dirname(os.path.abspath(LAY)), 'degisen.json')
 CH = json.load(open(dj)) if os.path.exists(dj) else {}
+yj = os.path.join(os.path.dirname(os.path.abspath(LAY)), 'yeni.json')
+YENI = set(json.load(open(yj))) if os.path.exists(yj) else set()
 
-pages, lines, miss = read(LAY, PDF, {k: v[0] for k, v in CH.items()})
+pages, lines, miss = read(LAY, PDF, {k: v[0] for k, v in CH.items()}, YENI)
 grow_changed(pages, CH)
 OUTDOC = pymupdf.open() if BOOK else None
 D = pymupdf.open(PDF)
@@ -119,8 +123,25 @@ for q in WANT:
         p2.draw_rect(pymupdf.Rect(r[0], r[1] + d, r[2], r[3] + d),
                      color=None, fill=(.72, .72, .72))
     for k, i in enumerate(P['items']):
-        if i['role'] == 'rule' or not i['lines']: continue
+        if i['role'] == 'rule': continue
         d = new[k] - i['ren'][1]
+        if i.get('fresh'):
+            # Tasinmis ya da yeni: ciktida satiri yok, belgeden dizilir.
+            sz = STY.get(i['style'], 7.6)
+            fp0 = os.path.join(HERE, 'fonts',
+                               'Newsreader-400.ttf' if i['style'] == 't'
+                               else 'Inter-500.ttf')
+            p2.insert_textbox(
+                pymupdf.Rect(i['ren'][0], i['ren'][1] + d - 1,
+                             max(i['ren'][2], i['ren'][0] + 40),
+                             i['ren'][3] + d + 40),
+                i['txt'].upper() if sz < 9 and not i['style'].startswith('f')
+                else i['txt'],
+                fontfile=fp0, fontname='nw%d' % k, fontsize=sz, lineheight=1.46,
+                align=(2 if i['style'].endswith('rt') else 0),
+                color=COL.get(i.get('story'), (.42, .42, .42)))
+            continue
+        if not i['lines']: continue
         if i.get('story') in CH:
             # Yazisi degisti: ciktidaki eski satirlar degil, belgedeki
             # yeni yazi cizilir, cercevenin kendi genisligine sarilarak.

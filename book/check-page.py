@@ -21,7 +21,7 @@ bad = []
 for q, P in sorted(pages.items()):
     boxes = []
     for it in P['items']:
-        if it.get('approx'): continue
+        if it.get('approx') and not it.get('fresh'): continue
         if it['kind'] == 'rule' or not it['lines']:
             boxes.append((it['ren'], it, it['txt'] or '(cizgi)'))
         else:

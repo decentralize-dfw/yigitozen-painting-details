@@ -23,7 +23,13 @@ from stackmodel import read
 if len(sys.argv) < 4:
     sys.exit('kullanim: fix-contrast.py girdi.idml cikti.pdf cikti.idml [--rapor]')
 SRC, PDF, DST = sys.argv[1], sys.argv[2], sys.argv[3]
-pages, lines, miss = read(SRC, PDF)
+import json
+_d = os.path.dirname(os.path.abspath(SRC))
+_ch = json.load(open(os.path.join(_d, 'degisen.json'))) \
+    if os.path.exists(os.path.join(_d, 'degisen.json')) else {}
+_ye = json.load(open(os.path.join(_d, 'yeni.json'))) \
+    if os.path.exists(os.path.join(_d, 'yeni.json')) else []
+pages, lines, miss = read(SRC, PDF, {k: v[0] for k, v in _ch.items()}, _ye)
 D = pymupdf.open(PDF)
 
 CAND = {'Color/paper': (255, 255, 255), 'Color/ink': (17, 17, 17)}

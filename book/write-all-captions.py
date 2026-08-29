@@ -41,6 +41,9 @@ BYFILE = {
         'before any figure is found',
     'Stlop-full copy.png':
         '06 · s(t)lop · the painting whole, after the four details',
+    'IMG_6521.JPG':
+        'The same boat drawn in white line only, on a ground scraped flat '
+        'before the line was put down',
     '3.jpg':
         '07 · penguin is not a friend, only a sinner · the one commission '
         'of the painting years',
@@ -87,8 +90,13 @@ BYPAGE = {
     51: ['06 · s(t)lop · the rounded fields, lilac over turquoise, nothing '
          'closed'],
     53: ['The figure found among the strokes, at the middle right'],
+    56: ['Before the yellow · the whole field worked in white and grey '
+         'over the ochre',
+         'After the yellow · one warm line drawn through the same field'],
     57: ['07 · penguin is not a friend, only a sinner · the mass swept '
          'outward from one centre'],
+    62: ['The head at full page · the snout brought down, the ground left '
+         'bare around it'],
     66: ['09 · cellular spleens · the red limb laid over the pink ground'],
     67: ['The cells packed against each other, each ring left open'],
 }

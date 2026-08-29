@@ -18,6 +18,8 @@ from ink import band
 
 PT = 72 / 25.4
 ASC, DESC = 0.78, 0.27      # gorunen harfin yazi cizgisine gore siniri
+SIZE = {'f': 8.2, 'f rt': 8.2, 'm wn': 10.4, 't': 10.8, 'sans': 9.6,
+        'd': 26.0, 'd s': 19.0, 'd l': 44.0, 'd xl': 64.0, 'd yr': 108.0}
 ROLE = {'d': 'title', 'm wn': 'num', 't': 'body', 'sans': 'body'}
 
 
@@ -34,11 +36,17 @@ def norm(s):
     return re.sub(r'[\s­-]+', '', s or '').lower()
 
 
-def read(idml, pdf, changed=None):
+def read(idml, pdf, changed=None, synthetic=None):
     """changed: {oyku -> eski yazi}. Yazisi sonradan degistirilen
     cerceveler ciktida hala eski yaziyla duruyor; eslesme eski yaziyla
-    kurulur, yoksa o cerceveler yerlerini kaybeder."""
+    kurulur, yoksa o cerceveler yerlerini kaybeder.
+
+    synthetic: ciktida hic bulunmayan ya da baska bir sayfaya tasinmis
+    oykuler. Bunlar yaziyla eslenmez — eski yerlerindeki satirlari
+    kapardi — kutulari belgeden alinir, boylari yazinin genisligine gore
+    hesaplanir."""
     changed = changed or {}
+    synthetic = set(synthetic or ())
     Z, D = zipfile.ZipFile(idml), pymupdf.open(pdf)
     names = set(Z.namelist())
 
@@ -144,6 +152,7 @@ def read(idml, pdf, changed=None):
         # duruyor, dolayisiyla yaziya bakarak eslemek onlari birbirine
         # karistirir. Yerleri ise degismedi.
         for it in tf:
+            if it.get('story') in synthetic: continue
             t = it['match']
             if not t or len(t) > 6 or ' ' in t: continue
             c = [l for l in L if not l['used'] and inside(l, it)
@@ -154,7 +163,7 @@ def read(idml, pdf, changed=None):
                 a['used'] = True; it['lines'] = [a]
 
         for it in tf:
-            if it['lines']: continue
+            if it['lines'] or it.get('story') in synthetic: continue
             want = norm(it['match'])
             if not want: continue
             runs = []
@@ -187,7 +196,7 @@ def read(idml, pdf, changed=None):
         # yazi yok. Bunlar icin satir yeriyle bulunur ve paylasilir; olcu
         # icin yeterlidir, ama yerlesim denetimine sokulmaz.
         for it in tf:
-            if it['lines']: continue
+            if it['lines'] or it.get('story') in synthetic: continue
             b = it['box']
             near = [l for l in L
                     if l['x2'] > b[0] - 3 and l['x1'] < b[2] + 3
@@ -205,14 +214,18 @@ def read(idml, pdf, changed=None):
                              max(l['y2'] for l in it['lines']))
             else:
                 # Eslesmedi: ciktida kendi satiri yok (folyo yaniyla ayni
-                # satira dizilenler) ya da henuz basilmamis yeni kunye.
-                # Belgedeki kutu konum icin dogrudur, boyu kisadir.
+                # satira dizilenler), yeni eklenmis ya da baska sayfaya
+                # tasinmis. Belgedeki kutu konum icin dogrudur, boyu kisa.
                 from place import caption_height
                 b = it['box']
-                h = (caption_height(it['txt'], b[2] - b[0])
-                     if it['self'].startswith('tf') else (b[3] - b[1]) + 4.0)
+                pt = SIZE.get(it['style'], 7.6)
+                h = (caption_height(it['txt'], b[2] - b[0], pt, pt * 1.46)
+                     if (it['self'].startswith('tf')
+                         or it.get('story') in synthetic)
+                     else (b[3] - b[1]) + 4.0)
                 it['ren'] = (b[0], b[1], b[2], b[1] + max(h, b[3] - b[1]))
                 it['guess'] = True
+                it['fresh'] = it.get('story') in synthetic
         P['items'] = [i for i in P['items'] if i['ren']]
         P['items'].sort(key=lambda i: (round(i['ren'][1], 1), i['ren'][0]))
     return pages, lines, miss

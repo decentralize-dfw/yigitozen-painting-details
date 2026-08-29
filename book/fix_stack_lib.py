@@ -61,7 +61,8 @@ def settle(P):
     moved = {}
     for j in range(len(it)):
         b = it[j]
-        if b['role'] not in MOVABLE or b.get('pin') or b.get('approx'): continue
+        if b['role'] not in MOVABLE or b.get('pin'): continue
+        if b.get('approx') and not b.get('fresh'): continue
         need = new[j]
         for i in range(j):
             a = it[i]

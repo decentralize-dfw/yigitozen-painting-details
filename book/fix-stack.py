@@ -47,7 +47,9 @@ def main():
     import json
     dj = os.path.join(os.path.dirname(os.path.abspath(SRC)), 'degisen.json')
     ch = json.load(open(dj)) if os.path.exists(dj) else {}
-    pages, lines, miss = read(SRC, PDF, {k: v[0] for k, v in ch.items()})
+    yj = os.path.join(os.path.dirname(os.path.abspath(SRC)), 'yeni.json')
+    yeni = json.load(open(yj)) if os.path.exists(yj) else []
+    pages, lines, miss = read(SRC, PDF, {k: v[0] for k, v in ch.items()}, yeni)
 
     # Yazisi degistirilen cerceveler ciktida hala eski yaziyla duruyor.
     # Yeni yazi daha uzunsa cerceve bir satir daha tutacaktir; oturtma

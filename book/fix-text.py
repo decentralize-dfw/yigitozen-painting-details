@@ -44,6 +44,16 @@ FIX = {
               "outlined where no one will sit.",
               "A head under a yellow wig, and opposite it a second, greener "
               "face; neither is given a contour that closes."),
+    # s.42 · ilk virgulde kesilmisti ve karsi sayfadaki kunyeyle ayni
+    # sozu soyluyordu; bu sayfa tek bir kusun tam genislikte kesiti
+    'u1d84': ("The flock, upper middle — Blue, grey, white and black only, "
+              "contrast",
+              "One bird at full width — Blue, grey, white and black only, "
+              "contrast carried by value and not by hue"),
+    # s.43 · yalniz eserin adi yaziyordu, altindaki kesiti anlatmiyordu
+    'u1db3': ("05 · articulo attack on mandarin",
+              "05 · articulo attack on mandarin · the birds closing on the "
+              "mast, and the figures at the foot of it"),
     # s.09 · icindekiler girisi de ayni kesik sozu tasiyordu
     'u1531': ("01 · 7 fam board game · Opposite · The right player's head "
               "— Warm and cool level at about a third each,",
