@@ -27,11 +27,13 @@ that straddles two says so.
 
 ## The page
 
-- A4 portrait, three works to a page, in three bands.
-- The plate falls to one side and then the other — right, left, right on one
-  page, left, right, left on the page facing it — so an opened spread reads
-  as a single descending line. The caption always sits opposite its plate,
-  and the plate hangs on the outer margin.
+- A4 portrait, four works to a page, in four bands.
+- The plate falls to one side and then the other down the page — right, left,
+  right, left — and the page facing it keeps the same beat rather than
+  answering it. The caption always sits opposite its plate, and the plate
+  hangs on the outer margin.
+- No rule is drawn around a plate: most of the archive files are PNGs with a
+  transparent ground, and a hairline there reads as the edge of the work.
 - Dimensions are omitted where the record has none, Location likewise; the
   115 carry no location.
 
@@ -48,9 +50,15 @@ sentence each work carries in `list-mobile-2.html`
 (`"acrylic on 120x120 canvas, 2023"`); for the 35 it comes from the main
 catalogue.
 
-`trim.py` cuts the empty ground from around a plate — the archive
+114 of the 115 archive files carry an alpha channel. Converting one straight
+to RGB drops that alpha onto **black**, which is why several plates first
+printed with a black ground or a black edge; the fetch composites onto white
+instead, which is what the page is.
+
+`trim.py` then cuts the empty ground from around a plate — the archive
 photographs are wider than the work — and refuses when the ground is dark or
 when what is left would be under half the frame. It has been run over the
-115; the main catalogue's plates were already cropped.
+115; the main catalogue's plates were already cropped. The plates that still
+read dark at the edge are dark works: black paper, black ground.
 
 Requires Playwright with Chromium.

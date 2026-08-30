@@ -75,39 +75,40 @@ table.idx td.pg { width: 10mm; text-align: right; color: #857b73; font-variant-n
 /* ---------- levhalar: sayfaya uc ---------- */
 .plates {
   position: absolute; left: 22mm; right: 22mm; top: 26mm; bottom: 26mm;
-  display: flex; flex-direction: column; justify-content: space-between;
-}
-.band { height: 77.6mm; display: flex; align-items: center; }
+  display: flex; flex-direction: column; justify-content: flex-start; gap: 5mm;
+}   /* yukaridan dizilir: son sayfa iki isle kalirsa ikisi de ustte durur */
+.band { height: 57.5mm; display: flex; align-items: center; }
 .band > * + * { margin-left: 10mm; }
 
 .band .pic {
-  flex: 0 0 78mm; height: 100%;
+  flex: 0 0 70mm; height: 100%;
   display: flex; align-items: center; justify-content: center;
 }
 /* Resim sayfanin dis kenarina yaslanir, kunye ice bakar: acilmis
    serimde levhalar olcunun kenariyla ayni cizgide durur. */
 .band .pic { justify-content: flex-start; }       /* resim solda */
 .band.r .pic { justify-content: flex-end; }       /* resim sagda */
+/* Levhanin cevresine cizgi cizilmez: bir kismi arkasi bos PNG, ve
+   cizgi orada isin kendi kenari saniliyor. */
 .band .pic img {
-  max-height: 100%; max-width: 100%; width: auto; height: auto;
-  display: block; box-shadow: 0 0 0 .5pt #ded7cf;
+  max-height: 100%; max-width: 100%; width: auto; height: auto; display: block;
 }
 
-.band .info { flex: 1 1 78mm; min-width: 0; }
+.band .info { flex: 1 1 86mm; min-width: 0; }
 .band .cat {
   font-family: "Liberation Sans", "DejaVu Sans", sans-serif;
-  font-size: 6.8pt; letter-spacing: .2em; color: #857b73; margin-bottom: 3.4mm;
+  font-size: 6.6pt; letter-spacing: .2em; color: #857b73; margin-bottom: 2.6mm;
 }
 .band h3 {
-  font-size: 12pt; font-weight: 400; line-height: 1.26; margin: 0 0 5mm;
+  font-size: 11pt; font-weight: 400; line-height: 1.25; margin: 0 0 3.6mm;
   hyphens: auto;
 }
-.band dl.meta { margin: 0; font-size: 8.2pt; line-height: 1.45; }
-.band dl.meta div { display: flex; padding: 1.5mm 0; border-top: .25pt solid #e8e2db; }
+.band dl.meta { margin: 0; font-size: 7.8pt; line-height: 1.4; }
+.band dl.meta div { display: flex; padding: 1.1mm 0; border-top: .25pt solid #e8e2db; }
 .band dl.meta div:last-child { border-bottom: .25pt solid #e8e2db; }
 .band dl.meta dt {
   font-family: "Liberation Sans", "DejaVu Sans", sans-serif;
-  width: 21mm; flex: 0 0 21mm; font-size: 6.4pt; letter-spacing: .13em;
+  width: 20mm; flex: 0 0 20mm; font-size: 6.2pt; letter-spacing: .13em;
   text-transform: uppercase; color: #857b73; padding-top: .6mm;
 }
 .band dl.meta dd { margin: 0; color: #16130f; min-width: 0; }

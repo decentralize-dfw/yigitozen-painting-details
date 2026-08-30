@@ -19,7 +19,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROWS = json.load(open(os.path.join(HERE, 'works.json'), encoding='utf-8'))
 
 E = lambda s: html.escape(str(s or ''), quote=True)
-PER = 3                        # sayfaya kac is
+PER = 4                        # sayfaya kac is
 IDX = 34                       # indeks sayfasina kac satir
 SUP = {'canvas': 'Canvas', 'paper': 'Paper', 'object': 'Object'}
 
@@ -64,9 +64,9 @@ parts.append(page(
     '2019</em> and the %d that had not been catalogued. They are ordered by '
     'what they are made on rather than by when — %d on canvas, then %d on '
     'paper, carton and print, then %d that are objects — and within each the '
-    'catalogued work leads. Three to a page, the plate falling first to one '
-    'side and then to the other, so a spread reads as a single descending '
-    'line.</p>\n'
+    'catalogued work leads. Four to a page, the plate falling to one side '
+    'and then the other down the page, and the page facing it keeping the '
+    'same beat rather than answering it.</p>\n'
     '      <div class="line">%d Works &middot; Mini Catalogue &middot; yigitozen.xyz</div>\n'
     '    </div>\n  </div>'
     % (min(years), max(years), n_main, len(ROWS) - n_main,
@@ -93,8 +93,9 @@ for k, ch in enumerate(chunks):
 # ── levhalar: sayfaya uc, resim zikzak ─────────────────────────────
 pages = [ROWS[i:i + PER] for i in range(0, len(ROWS), PER)]
 for p, group in enumerate(pages):
-    # cift sayfada resim sag-sol-sag, tek sayfada sol-sag-sol
-    bands = ''.join(band(r, (p + b) % 2 == 0) for b, r in enumerate(group))
+    # Her sayfa ayni: resim sag-sol-sag-sol. Karsi sayfa aynalanmaz,
+    # onu izler; serim boyunca ayni ritim surer.
+    bands = ''.join(band(r, b % 2 == 0) for b, r in enumerate(group))
     sups = [SUP[s] for s in dict.fromkeys(r['sup'] for r in group)]
     parts.append(page('  <div class="plates">%s</div>' % bands,
                       '%s &middot; Cat. %s&ndash;%s'
