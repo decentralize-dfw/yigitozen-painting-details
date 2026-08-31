@@ -1,11 +1,13 @@
 # Mini Catalogue
 
-One hundred and fifty works at three to a page: the 35 of `../catalogue/`
-and the 115 that had never been catalogued.
+One hundred and fifty-one works at four to a page: the 36 of the catalogued
+sequence and the 115 that had never been catalogued. The newest, *sept neuf*,
+leads at Cat. 001; the printed `../catalogue/` still holds the earlier 35
+until it is set again.
 
 `list-mobile-2.html` in `decentralize-dfw/decentralize` records 577 works;
 147 carry `type: "painting"`. 32 of those are already the main catalogue's,
-so 115 were new. The main catalogue's own 35 are read back out of
+so 115 were new. The catalogued works are read back out of
 `../catalogue/catalogue.html`, with their plates.
 
 `catalogue-mini.html` is the source. `Yigit-Ozen-Paintings-Mini-Catalogue.pdf`
@@ -18,9 +20,9 @@ been catalogued before:
 
 | | | |
 |---|---|---|
-| **Canvas** | Cat. 001–032 | 26 catalogued, then 6 |
-| **Paper**  | Cat. 033–141 | 9 catalogued, then 100 — paper, carton, print, whiteboard |
-| **Object** | Cat. 142–150 | 9 — assemblages, and work made on packaging taken apart |
+| **Canvas** | Cat. 001–033 | 27 catalogued, then 6 |
+| **Paper**  | Cat. 034–142 | 9 catalogued, then 100 — paper, carton, print, whiteboard |
+| **Object** | Cat. 143–151 | 9 — assemblages, and work made on packaging taken apart |
 
 Each group runs newest first. The running foot names the group, so a page
 that straddles two says so.

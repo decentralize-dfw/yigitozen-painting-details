@@ -20,8 +20,28 @@ ROWS = json.load(open(os.path.join(HERE, 'works.json'), encoding='utf-8'))
 
 E = lambda s: html.escape(str(s or ''), quote=True)
 PER = 4                        # sayfaya kac is
-IDX = 34                       # indeks sayfasina kac satir
+# Indeks sayfasi sabit sayida satir almiyor: uzun bir baslik ya da uzun bir
+# malzeme adi iki satira sariyor ve o satiri yukseltiyor. Sayfa bu yuzden
+# satirla degil yukseklikle dolduruluyor, boylece hicbir satir alt bilgiye
+# inmiyor. Olculer sayfadan alindi: yazi alani, tek satirlik bir satirin
+# adimi ve sarma basina eklenen yukseklik.
+BODY  = 640.0                  # basligin altindan alt bilgiye kalan, punto
+STEP  = 20.1                   # tek satirlik bir indeks satirinin adimi
+WRAP  = 11.2                   # her sarmanin ekledigi
+TI_CH = 32                     # baslik sutununa sigan karakter
+MD_CH = 26                     # malzeme sutununa sigan karakter
 SUP = {'canvas': 'Canvas', 'paper': 'Paper', 'object': 'Object'}
+
+
+def words(n):
+    """Kunyede sayilar yaziyla geciyor; 999'a kadar yeter."""
+    one = ('zero one two three four five six seven eight nine ten eleven twelve '
+           'thirteen fourteen fifteen sixteen seventeen eighteen nineteen').split()
+    ten = 'x x twenty thirty forty fifty sixty seventy eighty ninety'.split()
+    if n < 20: return one[n]
+    if n < 100:
+        return ten[n // 10] + ('-' + one[n % 10] if n % 10 else '')
+    return one[n // 100] + ' hundred' + (' and ' + words(n % 100) if n % 100 else '')
 
 
 def meta(r):
@@ -47,7 +67,25 @@ def page(inner, foot_r, cls=''):
 
 
 FOOT_L = 'Yiğit Özen &middot; Paintings 2018&ndash;2026'
-chunks = [ROWS[i:i + IDX] for i in range(0, len(ROWS), IDX)]
+def lines(r):
+    """Bir indeks satirinin kac satira yayildigi."""
+    from math import ceil
+    return max(1, ceil(len(str(r['name'])) / TI_CH), ceil(len(str(r['medium'])) / MD_CH))
+
+
+def pack(rows):
+    """Satirlari yukseklige gore sayfalara boler."""
+    out, cur, h = [], [], 0.0
+    for r in rows:
+        need = STEP + WRAP * (lines(r) - 1)
+        if cur and h + need > BODY:
+            out.append(cur); cur, h = [], 0.0
+        cur.append(r); h += need
+    if cur: out.append(cur)
+    return out
+
+
+chunks = pack(ROWS)
 FIRST = 2 + len(chunks)                 # ilk levha sayfasinin numarasi - 1
 
 parts = ['<section class="page cover"><div class="emblem">'
@@ -60,8 +98,8 @@ parts.append(page(
     '  <div class="sheet">\n    <div class="imprint">\n'
     '      <div class="ti">Paintings %d&ndash;%d</div>\n'
     '      <div class="who">Yiğit Özen</div>\n'
-    '      <p>One hundred and fifty works: the %d of <em>Paintings since '
-    '2019</em> and the %d that had not been catalogued. They are ordered by '
+    '      <p>%s works: the %d of the catalogued sequence and the %d that '
+    'had not been catalogued. They are ordered by '
     'what they are made on rather than by when — %d on canvas, then %d on '
     'paper, carton and print, then %d that are objects — and within each the '
     'catalogued work leads. Four to a page, the plate falling to one side '
@@ -69,7 +107,8 @@ parts.append(page(
     'same beat rather than answering it.</p>\n'
     '      <div class="line">%d Works &middot; Mini Catalogue &middot; yigitozen.xyz</div>\n'
     '    </div>\n  </div>'
-    % (min(years), max(years), n_main, len(ROWS) - n_main,
+    % (min(years), max(years), words(len(ROWS)).capitalize(), n_main,
+       len(ROWS) - n_main,
        c['canvas'], c['paper'], c['object'], len(ROWS)), 'Imprint'))
 
 # ── indeks ─────────────────────────────────────────────────────────

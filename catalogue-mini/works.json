@@ -1,6 +1,19 @@
 [
  {
   "no": "001",
+  "id": "cat-36",
+  "name": "sept neuf",
+  "yr": 2026,
+  "medium": "Acrylic on canvas",
+  "dim": "55 × 75 cm",
+  "loc": "Luxembourg",
+  "sup": "canvas",
+  "main": true,
+  "file": "c36.jpg",
+  "img": "images/c36.jpg"
+ },
+ {
+  "no": "002",
   "id": "cat-01",
   "name": "7 fam board game",
   "yr": 2026,
@@ -13,7 +26,7 @@
   "img": "images/c01.jpg"
  },
  {
-  "no": "002",
+  "no": "003",
   "id": "cat-02",
   "name": "Virgil on Virtual Cage (final_final-finalV9)",
   "yr": 2026,
@@ -26,7 +39,7 @@
   "img": "images/c02.jpg"
  },
  {
-  "no": "003",
+  "no": "004",
   "id": "cat-03",
   "name": "gary grills cooper",
   "yr": 2026,
@@ -39,7 +52,7 @@
   "img": "images/c03.jpg"
  },
  {
-  "no": "004",
+  "no": "005",
   "id": "cat-04",
   "name": "walls of perception",
   "yr": 2026,
@@ -52,7 +65,7 @@
   "img": "images/c04.jpg"
  },
  {
-  "no": "005",
+  "no": "006",
   "id": "cat-05",
   "name": "articulo attack on mandarin",
   "yr": 2026,
@@ -65,7 +78,7 @@
   "img": "images/c05.jpg"
  },
  {
-  "no": "006",
+  "no": "007",
   "id": "cat-06",
   "name": "s(t)lop",
   "yr": 2026,
@@ -78,7 +91,7 @@
   "img": "images/c06.jpg"
  },
  {
-  "no": "007",
+  "no": "008",
   "id": "cat-07",
   "name": "penguin is not a friend, only a sinner",
   "yr": 2023,
@@ -91,7 +104,7 @@
   "img": "images/c07.jpg"
  },
  {
-  "no": "008",
+  "no": "009",
   "id": "cat-08",
   "name": "ciao capo, sono squalo",
   "yr": 2020,
@@ -104,7 +117,7 @@
   "img": "images/c08.jpg"
  },
  {
-  "no": "009",
+  "no": "010",
   "id": "cat-09",
   "name": "cellular spleens",
   "yr": 2020,
@@ -117,7 +130,7 @@
   "img": "images/c09.jpg"
  },
  {
-  "no": "010",
+  "no": "011",
   "id": "cat-10",
   "name": "cute but unemployed cartoon figure",
   "yr": 2020,
@@ -130,7 +143,7 @@
   "img": "images/c10.jpg"
  },
  {
-  "no": "011",
+  "no": "012",
   "id": "cat-11",
   "name": "the family dinner after a night in jaïl",
   "yr": 2020,
@@ -143,7 +156,7 @@
   "img": "images/c11.jpg"
  },
  {
-  "no": "012",
+  "no": "013",
   "id": "cat-12",
   "name": "caprocorn sister: war, plague, earthquake",
   "yr": 2020,
@@ -156,7 +169,7 @@
   "img": "images/c12.jpg"
  },
  {
-  "no": "013",
+  "no": "014",
   "id": "cat-13",
   "name": "baby rights 101",
   "yr": 2020,
@@ -169,7 +182,7 @@
   "img": "images/c13.jpg"
  },
  {
-  "no": "014",
+  "no": "015",
   "id": "cat-14",
   "name": "When the Darkness surrounds, be among those who burn the Great Fire",
   "yr": 2020,
@@ -182,7 +195,7 @@
   "img": "images/c14.jpg"
  },
  {
-  "no": "015",
+  "no": "016",
   "id": "cat-15",
   "name": "viperella",
   "yr": 2020,
@@ -195,7 +208,7 @@
   "img": "images/c15.jpg"
  },
  {
-  "no": "016",
+  "no": "017",
   "id": "cat-18",
   "name": "sin over black matter",
   "yr": 2019,
@@ -208,7 +221,7 @@
   "img": "images/c18.jpg"
  },
  {
-  "no": "017",
+  "no": "018",
   "id": "cat-19",
   "name": "the assassination of the crow",
   "yr": 2019,
@@ -221,7 +234,7 @@
   "img": "images/c19.jpg"
  },
  {
-  "no": "018",
+  "no": "019",
   "id": "cat-21",
   "name": "duality of the angelic summarization",
   "yr": 2019,
@@ -234,7 +247,7 @@
   "img": "images/c21.jpg"
  },
  {
-  "no": "019",
+  "no": "020",
   "id": "cat-22",
   "name": "victim psycho-logique II : the peachy pharaoh connects with the chair",
   "yr": 2019,
@@ -247,7 +260,7 @@
   "img": "images/c22.jpg"
  },
  {
-  "no": "020",
+  "no": "021",
   "id": "cat-23",
   "name": "guarding holy mountains from malice",
   "yr": 2019,
@@ -260,7 +273,7 @@
   "img": "images/c23.jpg"
  },
  {
-  "no": "021",
+  "no": "022",
   "id": "cat-27",
   "name": "il sbagliato di rompipalle",
   "yr": 2019,
@@ -273,7 +286,7 @@
   "img": "images/c27.jpg"
  },
  {
-  "no": "022",
+  "no": "023",
   "id": "cat-29",
   "name": "wings of abyss",
   "yr": 2019,
@@ -286,7 +299,7 @@
   "img": "images/c29.jpg"
  },
  {
-  "no": "023",
+  "no": "024",
   "id": "cat-32",
   "name": "How to materialize your loneliness by using an animal in somewhere concrete or technologic",
   "yr": 2019,
@@ -299,7 +312,7 @@
   "img": "images/c32.jpg"
  },
  {
-  "no": "024",
+  "no": "025",
   "id": "cat-33",
   "name": "Century of 0 & 1 / Transhumanism",
   "yr": 2019,
@@ -312,7 +325,7 @@
   "img": "images/c33.jpg"
  },
  {
-  "no": "025",
+  "no": "026",
   "id": "cat-34",
   "name": "remixed execution of lucid drowning",
   "yr": 2019,
@@ -325,7 +338,7 @@
   "img": "images/c34.jpg"
  },
  {
-  "no": "026",
+  "no": "027",
   "id": "cat-35",
   "name": "two woman figures sitting at the back of the canvas",
   "yr": 2019,
@@ -338,7 +351,7 @@
   "img": "images/c35.jpg"
  },
  {
-  "no": "027",
+  "no": "028",
   "id": "abs-2",
   "name": "soldiers x lust x nature",
   "yr": 2019,
@@ -351,7 +364,7 @@
   "img": "images/p018.jpg"
  },
  {
-  "no": "028",
+  "no": "029",
   "id": "abs-4",
   "name": "the spike chats with the flesh",
   "yr": 2019,
@@ -364,7 +377,7 @@
   "img": "images/p020.jpg"
  },
  {
-  "no": "029",
+  "no": "030",
   "id": "fig-27",
   "name": "execution of lucid drowning",
   "yr": 2019,
@@ -377,7 +390,7 @@
   "img": "images/p001.jpg"
  },
  {
-  "no": "030",
+  "no": "031",
   "id": "abs-1",
   "name": "eeriy forest",
   "yr": 2018,
@@ -390,7 +403,7 @@
   "img": "images/p017.jpg"
  },
  {
-  "no": "031",
+  "no": "032",
   "id": "abs-3",
   "name": "outta cave 1st",
   "yr": 2018,
@@ -403,7 +416,7 @@
   "img": "images/p019.jpg"
  },
  {
-  "no": "032",
+  "no": "033",
   "id": "abs-5",
   "name": "river habitat",
   "yr": 2018,
@@ -416,7 +429,7 @@
   "img": "images/p021.jpg"
  },
  {
-  "no": "033",
+  "no": "034",
   "id": "cat-16",
   "name": "bacchus 2",
   "yr": 2020,
@@ -429,7 +442,7 @@
   "img": "images/c16.jpg"
  },
  {
-  "no": "034",
+  "no": "035",
   "id": "cat-17",
   "name": "The On-Top Ruler",
   "yr": 2020,
@@ -442,7 +455,7 @@
   "img": "images/c17.jpg"
  },
  {
-  "no": "035",
+  "no": "036",
   "id": "cat-20",
   "name": "despite transgression",
   "yr": 2019,
@@ -455,7 +468,7 @@
   "img": "images/c20.jpg"
  },
  {
-  "no": "036",
+  "no": "037",
   "id": "cat-24",
   "name": "good people helping bad ones (that’s why they’re bad too)",
   "yr": 2019,
@@ -468,7 +481,7 @@
   "img": "images/c24.jpg"
  },
  {
-  "no": "037",
+  "no": "038",
   "id": "cat-25",
   "name": "amor cathedra",
   "yr": 2019,
@@ -481,7 +494,7 @@
   "img": "images/c25.jpg"
  },
  {
-  "no": "038",
+  "no": "039",
   "id": "cat-26",
   "name": "burningman fast",
   "yr": 2019,
@@ -494,7 +507,7 @@
   "img": "images/c26.jpg"
  },
  {
-  "no": "039",
+  "no": "040",
   "id": "cat-28",
   "name": "morbid forebodings triggered by childish landscape",
   "yr": 2019,
@@ -507,7 +520,7 @@
   "img": "images/c28.jpg"
  },
  {
-  "no": "040",
+  "no": "041",
   "id": "cat-30",
   "name": "see u in the other side",
   "yr": 2019,
@@ -520,7 +533,7 @@
   "img": "images/c30.jpg"
  },
  {
-  "no": "041",
+  "no": "042",
   "id": "cat-31",
   "name": "society screwing balance",
   "yr": 2019,
@@ -533,7 +546,7 @@
   "img": "images/c31.jpg"
  },
  {
-  "no": "042",
+  "no": "043",
   "id": "abs-13",
   "name": "pt showing how to squat",
   "yr": 2024,
@@ -546,7 +559,7 @@
   "img": "images/p029.jpg"
  },
  {
-  "no": "043",
+  "no": "044",
   "id": "abs-14",
   "name": "barbarossa",
   "yr": 2024,
@@ -559,7 +572,7 @@
   "img": "images/p030.jpg"
  },
  {
-  "no": "044",
+  "no": "045",
   "id": "abs-15",
   "name": "thickness",
   "yr": 2024,
@@ -572,7 +585,7 @@
   "img": "images/p031.jpg"
  },
  {
-  "no": "045",
+  "no": "046",
   "id": "abs-16",
   "name": "fidelio",
   "yr": 2024,
@@ -585,7 +598,7 @@
   "img": "images/p032.jpg"
  },
  {
-  "no": "046",
+  "no": "047",
   "id": "abs-17",
   "name": "river when we eat gold",
   "yr": 2024,
@@ -598,7 +611,7 @@
   "img": "images/p033.jpg"
  },
  {
-  "no": "047",
+  "no": "048",
   "id": "abs-18",
   "name": "69 crow",
   "yr": 2024,
@@ -611,7 +624,7 @@
   "img": "images/p034.jpg"
  },
  {
-  "no": "048",
+  "no": "049",
   "id": "abs-26",
   "name": "rain dog",
   "yr": 2024,
@@ -624,7 +637,7 @@
   "img": "images/p042.jpg"
  },
  {
-  "no": "049",
+  "no": "050",
   "id": "mix-11",
   "name": "autonomous lavoro",
   "yr": 2024,
@@ -637,7 +650,7 @@
   "img": "images/p111.jpg"
  },
  {
-  "no": "050",
+  "no": "051",
   "id": "mix-7",
   "name": "collage etude no 4",
   "yr": 2024,
@@ -650,7 +663,7 @@
   "img": "images/p107.jpg"
  },
  {
-  "no": "051",
+  "no": "052",
   "id": "mix-9",
   "name": "forget",
   "yr": 2024,
@@ -663,7 +676,7 @@
   "img": "images/p109.jpg"
  },
  {
-  "no": "052",
+  "no": "053",
   "id": "ske-34",
   "name": "milano fashion week",
   "yr": 2024,
@@ -676,7 +689,7 @@
   "img": "images/p098.jpg"
  },
  {
-  "no": "053",
+  "no": "054",
   "id": "ske-36",
   "name": "degen bobbin on metaphysical grid",
   "yr": 2024,
@@ -689,7 +702,7 @@
   "img": "images/p100.jpg"
  },
  {
-  "no": "054",
+  "no": "055",
   "id": "stu-3",
   "name": "69 crow",
   "yr": 2024,
@@ -702,7 +715,7 @@
   "img": "images/p048.jpg"
  },
  {
-  "no": "055",
+  "no": "056",
   "id": "fig-45",
   "name": "touch on syn",
   "yr": 2022,
@@ -715,7 +728,7 @@
   "img": "images/p016.jpg"
  },
  {
-  "no": "056",
+  "no": "057",
   "id": "mix-6",
   "name": "padre x damien",
   "yr": 2021,
@@ -728,7 +741,7 @@
   "img": "images/p106.jpg"
  },
  {
-  "no": "057",
+  "no": "058",
   "id": "abs-11",
   "name": "abstract village photograph",
   "yr": 2020,
@@ -741,7 +754,7 @@
   "img": "images/p027.jpg"
  },
  {
-  "no": "058",
+  "no": "059",
   "id": "abs-28",
   "name": "human ocean on armageddon",
   "yr": 2020,
@@ -754,7 +767,7 @@
   "img": "images/p044.jpg"
  },
  {
-  "no": "059",
+  "no": "060",
   "id": "abs-8",
   "name": "rothko sigara",
   "yr": 2020,
@@ -767,7 +780,7 @@
   "img": "images/p024.jpg"
  },
  {
-  "no": "060",
+  "no": "061",
   "id": "fig-37",
   "name": "blood of ethereum",
   "yr": 2020,
@@ -780,7 +793,7 @@
   "img": "images/p008.jpg"
  },
  {
-  "no": "061",
+  "no": "062",
   "id": "fig-41",
   "name": "masterb",
   "yr": 2020,
@@ -793,7 +806,7 @@
   "img": "images/p012.jpg"
  },
  {
-  "no": "062",
+  "no": "063",
   "id": "fig-42",
   "name": "dirty plates since thursday",
   "yr": 2020,
@@ -806,7 +819,7 @@
   "img": "images/p013.jpg"
  },
  {
-  "no": "063",
+  "no": "064",
   "id": "fig-44",
   "name": "kokorec",
   "yr": 2020,
@@ -819,7 +832,7 @@
   "img": "images/p015.jpg"
  },
  {
-  "no": "064",
+  "no": "065",
   "id": "mix-8",
   "name": "arxitect",
   "yr": 2020,
@@ -832,7 +845,7 @@
   "img": "images/p108.jpg"
  },
  {
-  "no": "065",
+  "no": "066",
   "id": "ske-1",
   "name": "xyyz008-s prototype",
   "yr": 2020,
@@ -845,7 +858,7 @@
   "img": "images/p068.jpg"
  },
  {
-  "no": "066",
+  "no": "067",
   "id": "ske-11",
   "name": "abortion",
   "yr": 2020,
@@ -858,7 +871,7 @@
   "img": "images/p078.jpg"
  },
  {
-  "no": "067",
+  "no": "068",
   "id": "ske-18",
   "name": "italian psycho",
   "yr": 2020,
@@ -871,7 +884,7 @@
   "img": "images/p083.jpg"
  },
  {
-  "no": "068",
+  "no": "069",
   "id": "ske-22",
   "name": "freedom",
   "yr": 2020,
@@ -884,7 +897,7 @@
   "img": "images/p087.jpg"
  },
  {
-  "no": "069",
+  "no": "070",
   "id": "ske-25",
   "name": "getting more keys",
   "yr": 2020,
@@ -897,7 +910,7 @@
   "img": "images/p089.jpg"
  },
  {
-  "no": "070",
+  "no": "071",
   "id": "ske-26",
   "name": "fake condos",
   "yr": 2020,
@@ -910,7 +923,7 @@
   "img": "images/p090.jpg"
  },
  {
-  "no": "071",
+  "no": "072",
   "id": "ske-28",
   "name": "fake dali",
   "yr": 2020,
@@ -923,7 +936,7 @@
   "img": "images/p092.jpg"
  },
  {
-  "no": "072",
+  "no": "073",
   "id": "ske-30",
   "name": "polimi statics lesson boredom",
   "yr": 2020,
@@ -936,7 +949,7 @@
   "img": "images/p094.jpg"
  },
  {
-  "no": "073",
+  "no": "074",
   "id": "ske-35",
   "name": "laught cryer",
   "yr": 2020,
@@ -949,7 +962,7 @@
   "img": "images/p099.jpg"
  },
  {
-  "no": "074",
+  "no": "075",
   "id": "stu-1",
   "name": "crow_4",
   "yr": 2020,
@@ -962,7 +975,7 @@
   "img": "images/p046.jpg"
  },
  {
-  "no": "075",
+  "no": "076",
   "id": "stu-16",
   "name": "jack’s smirking revenge",
   "yr": 2020,
@@ -975,7 +988,7 @@
   "img": "images/p061.jpg"
  },
  {
-  "no": "076",
+  "no": "077",
   "id": "stu-2",
   "name": "crow_3",
   "yr": 2020,
@@ -988,7 +1001,7 @@
   "img": "images/p047.jpg"
  },
  {
-  "no": "077",
+  "no": "078",
   "id": "stu-4",
   "name": "beecrow",
   "yr": 2020,
@@ -1001,7 +1014,7 @@
   "img": "images/p049.jpg"
  },
  {
-  "no": "078",
+  "no": "079",
   "id": "abs-10",
   "name": "shape study",
   "yr": 2019,
@@ -1014,7 +1027,7 @@
   "img": "images/p026.jpg"
  },
  {
-  "no": "079",
+  "no": "080",
   "id": "abs-12",
   "name": "worm thinker",
   "yr": 2019,
@@ -1027,7 +1040,7 @@
   "img": "images/p028.jpg"
  },
  {
-  "no": "080",
+  "no": "081",
   "id": "abs-19",
   "name": "exhibition flyer freestyle",
   "yr": 2019,
@@ -1040,7 +1053,7 @@
   "img": "images/p035.jpg"
  },
  {
-  "no": "081",
+  "no": "082",
   "id": "abs-20",
   "name": "forest of chaqras i",
   "yr": 2019,
@@ -1053,7 +1066,7 @@
   "img": "images/p036.jpg"
  },
  {
-  "no": "082",
+  "no": "083",
   "id": "abs-21",
   "name": "forest of chaqras ii",
   "yr": 2019,
@@ -1066,7 +1079,7 @@
   "img": "images/p037.jpg"
  },
  {
-  "no": "083",
+  "no": "084",
   "id": "abs-22",
   "name": "forest of chaqras iii",
   "yr": 2019,
@@ -1079,7 +1092,7 @@
   "img": "images/p038.jpg"
  },
  {
-  "no": "084",
+  "no": "085",
   "id": "abs-23",
   "name": "forest of chaqras iv",
   "yr": 2019,
@@ -1092,7 +1105,7 @@
   "img": "images/p039.jpg"
  },
  {
-  "no": "085",
+  "no": "086",
   "id": "abs-24",
   "name": "forest of chaqras v",
   "yr": 2019,
@@ -1105,7 +1118,7 @@
   "img": "images/p040.jpg"
  },
  {
-  "no": "086",
+  "no": "087",
   "id": "abs-25",
   "name": "forest of chaqras vi",
   "yr": 2019,
@@ -1118,7 +1131,7 @@
   "img": "images/p041.jpg"
  },
  {
-  "no": "087",
+  "no": "088",
   "id": "abs-27",
   "name": "gift",
   "yr": 2019,
@@ -1131,7 +1144,7 @@
   "img": "images/p043.jpg"
  },
  {
-  "no": "088",
+  "no": "089",
   "id": "abs-6",
   "name": "cloud daemons",
   "yr": 2019,
@@ -1144,7 +1157,7 @@
   "img": "images/p022.jpg"
  },
  {
-  "no": "089",
+  "no": "090",
   "id": "abs-9",
   "name": "architypical cave meltdown / hunting thru deepres",
   "yr": 2019,
@@ -1157,7 +1170,7 @@
   "img": "images/p025.jpg"
  },
  {
-  "no": "090",
+  "no": "091",
   "id": "fig-31",
   "name": "instagra, influencer kibele",
   "yr": 2019,
@@ -1170,7 +1183,7 @@
   "img": "images/p002.jpg"
  },
  {
-  "no": "091",
+  "no": "092",
   "id": "fig-32",
   "name": "hell one",
   "yr": 2019,
@@ -1183,7 +1196,7 @@
   "img": "images/p003.jpg"
  },
  {
-  "no": "092",
+  "no": "093",
   "id": "fig-33",
   "name": "the rulers and governors are bipolar and childish",
   "yr": 2019,
@@ -1196,7 +1209,7 @@
   "img": "images/p004.jpg"
  },
  {
-  "no": "093",
+  "no": "094",
   "id": "fig-34",
   "name": "famp",
   "yr": 2019,
@@ -1209,7 +1222,7 @@
   "img": "images/p005.jpg"
  },
  {
-  "no": "094",
+  "no": "095",
   "id": "fig-35",
   "name": "yes we met",
   "yr": 2019,
@@ -1222,7 +1235,7 @@
   "img": "images/p006.jpg"
  },
  {
-  "no": "095",
+  "no": "096",
   "id": "fig-36",
   "name": "frontation",
   "yr": 2019,
@@ -1235,7 +1248,7 @@
   "img": "images/p007.jpg"
  },
  {
-  "no": "096",
+  "no": "097",
   "id": "fig-38",
   "name": "chewing gum fight",
   "yr": 2019,
@@ -1248,7 +1261,7 @@
   "img": "images/p009.jpg"
  },
  {
-  "no": "097",
+  "no": "098",
   "id": "fig-39",
   "name": "fabl",
   "yr": 2019,
@@ -1261,7 +1274,7 @@
   "img": "images/p010.jpg"
  },
  {
-  "no": "098",
+  "no": "099",
   "id": "fig-40",
   "name": "drinking in navigli",
   "yr": 2019,
@@ -1274,7 +1287,7 @@
   "img": "images/p011.jpg"
  },
  {
-  "no": "099",
+  "no": "100",
   "id": "fig-43",
   "name": "when it pains, it rours",
   "yr": 2019,
@@ -1287,7 +1300,7 @@
   "img": "images/p014.jpg"
  },
  {
-  "no": "100",
+  "no": "101",
   "id": "mix-2",
   "name": "cool bar wc wall sample",
   "yr": 2019,
@@ -1300,7 +1313,7 @@
   "img": "images/p102.jpg"
  },
  {
-  "no": "101",
+  "no": "102",
   "id": "mix-3",
   "name": "mondrian pellegrino flag",
   "yr": 2019,
@@ -1313,7 +1326,7 @@
   "img": "images/p103.jpg"
  },
  {
-  "no": "102",
+  "no": "103",
   "id": "ske-10",
   "name": "triplet",
   "yr": 2019,
@@ -1326,7 +1339,7 @@
   "img": "images/p077.jpg"
  },
  {
-  "no": "103",
+  "no": "104",
   "id": "ske-12",
   "name": "etoile shooting innocent",
   "yr": 2019,
@@ -1339,7 +1352,7 @@
   "img": "images/p079.jpg"
  },
  {
-  "no": "104",
+  "no": "105",
   "id": "ske-13",
   "name": "the rulers and governors are bipolar and childish studies",
   "yr": 2019,
@@ -1352,7 +1365,7 @@
   "img": "images/p080.jpg"
  },
  {
-  "no": "105",
+  "no": "106",
   "id": "ske-14",
   "name": "good people help bad ones v1",
   "yr": 2019,
@@ -1365,7 +1378,7 @@
   "img": "images/p081.jpg"
  },
  {
-  "no": "106",
+  "no": "107",
   "id": "ske-16",
   "name": "3quility",
   "yr": 2019,
@@ -1378,7 +1391,7 @@
   "img": "images/p082.jpg"
  },
  {
-  "no": "107",
+  "no": "108",
   "id": "ske-19",
   "name": "fly",
   "yr": 2019,
@@ -1391,7 +1404,7 @@
   "img": "images/p084.jpg"
  },
  {
-  "no": "108",
+  "no": "109",
   "id": "ske-2",
   "name": "protecting the big cat with cross from the anger of village",
   "yr": 2019,
@@ -1404,7 +1417,7 @@
   "img": "images/p069.jpg"
  },
  {
-  "no": "109",
+  "no": "110",
   "id": "ske-20",
   "name": "pistacchio",
   "yr": 2019,
@@ -1417,7 +1430,7 @@
   "img": "images/p085.jpg"
  },
  {
-  "no": "110",
+  "no": "111",
   "id": "ske-21",
   "name": "self",
   "yr": 2019,
@@ -1430,7 +1443,7 @@
   "img": "images/p086.jpg"
  },
  {
-  "no": "111",
+  "no": "112",
   "id": "ske-27",
   "name": "witch",
   "yr": 2019,
@@ -1443,7 +1456,7 @@
   "img": "images/p091.jpg"
  },
  {
-  "no": "112",
+  "no": "113",
   "id": "ske-29",
   "name": "trans-control",
   "yr": 2019,
@@ -1456,7 +1469,7 @@
   "img": "images/p093.jpg"
  },
  {
-  "no": "113",
+  "no": "114",
   "id": "ske-3",
   "name": "calibra",
   "yr": 2019,
@@ -1469,7 +1482,7 @@
   "img": "images/p070.jpg"
  },
  {
-  "no": "114",
+  "no": "115",
   "id": "ske-32",
   "name": "human figure smoking black void",
   "yr": 2019,
@@ -1482,7 +1495,7 @@
   "img": "images/p096.jpg"
  },
  {
-  "no": "115",
+  "no": "116",
   "id": "ske-4",
   "name": "melting",
   "yr": 2019,
@@ -1495,7 +1508,7 @@
   "img": "images/p071.jpg"
  },
  {
-  "no": "116",
+  "no": "117",
   "id": "ske-5",
   "name": "mad scientist & clone & dna",
   "yr": 2019,
@@ -1508,7 +1521,7 @@
   "img": "images/p072.jpg"
  },
  {
-  "no": "117",
+  "no": "118",
   "id": "ske-6",
   "name": "parentship",
   "yr": 2019,
@@ -1521,7 +1534,7 @@
   "img": "images/p073.jpg"
  },
  {
-  "no": "118",
+  "no": "119",
   "id": "ske-7",
   "name": "chairjob",
   "yr": 2019,
@@ -1534,7 +1547,7 @@
   "img": "images/p074.jpg"
  },
  {
-  "no": "119",
+  "no": "120",
   "id": "ske-8",
   "name": "being tried",
   "yr": 2019,
@@ -1547,7 +1560,7 @@
   "img": "images/p075.jpg"
  },
  {
-  "no": "120",
+  "no": "121",
   "id": "ske-9",
   "name": "bambi",
   "yr": 2019,
@@ -1560,7 +1573,7 @@
   "img": "images/p076.jpg"
  },
  {
-  "no": "121",
+  "no": "122",
   "id": "stu-10",
   "name": "qui e 2",
   "yr": 2019,
@@ -1573,7 +1586,7 @@
   "img": "images/p055.jpg"
  },
  {
-  "no": "122",
+  "no": "123",
   "id": "stu-11",
   "name": "qui e",
   "yr": 2019,
@@ -1586,7 +1599,7 @@
   "img": "images/p056.jpg"
  },
  {
-  "no": "123",
+  "no": "124",
   "id": "stu-12",
   "name": "frank pastrami i",
   "yr": 2019,
@@ -1599,7 +1612,7 @@
   "img": "images/p057.jpg"
  },
  {
-  "no": "124",
+  "no": "125",
   "id": "stu-13",
   "name": "frank pastrami ii",
   "yr": 2019,
@@ -1612,7 +1625,7 @@
   "img": "images/p058.jpg"
  },
  {
-  "no": "125",
+  "no": "126",
   "id": "stu-14",
   "name": "frank pastrami iii",
   "yr": 2019,
@@ -1625,7 +1638,7 @@
   "img": "images/p059.jpg"
  },
  {
-  "no": "126",
+  "no": "127",
   "id": "stu-15",
   "name": "frank pastrami iv",
   "yr": 2019,
@@ -1638,7 +1651,7 @@
   "img": "images/p060.jpg"
  },
  {
-  "no": "127",
+  "no": "128",
   "id": "stu-17",
   "name": "egypt reunited",
   "yr": 2019,
@@ -1651,7 +1664,7 @@
   "img": "images/p062.jpg"
  },
  {
-  "no": "128",
+  "no": "129",
   "id": "stu-18",
   "name": "bet bet",
   "yr": 2019,
@@ -1664,7 +1677,7 @@
   "img": "images/p063.jpg"
  },
  {
-  "no": "129",
+  "no": "130",
   "id": "stu-19",
   "name": "against",
   "yr": 2019,
@@ -1677,7 +1690,7 @@
   "img": "images/p064.jpg"
  },
  {
-  "no": "130",
+  "no": "131",
   "id": "stu-20",
   "name": "avatars for president",
   "yr": 2019,
@@ -1690,7 +1703,7 @@
   "img": "images/p065.jpg"
  },
  {
-  "no": "131",
+  "no": "132",
   "id": "stu-21",
   "name": "being eight",
   "yr": 2019,
@@ -1703,7 +1716,7 @@
   "img": "images/p066.jpg"
  },
  {
-  "no": "132",
+  "no": "133",
   "id": "stu-22",
   "name": "fishman",
   "yr": 2019,
@@ -1716,7 +1729,7 @@
   "img": "images/p067.jpg"
  },
  {
-  "no": "133",
+  "no": "134",
   "id": "stu-5",
   "name": "myth of con",
   "yr": 2019,
@@ -1729,7 +1742,7 @@
   "img": "images/p050.jpg"
  },
  {
-  "no": "134",
+  "no": "135",
   "id": "stu-7",
   "name": "bee",
   "yr": 2019,
@@ -1742,7 +1755,7 @@
   "img": "images/p052.jpg"
  },
  {
-  "no": "135",
+  "no": "136",
   "id": "stu-8",
   "name": "crow_2",
   "yr": 2019,
@@ -1755,7 +1768,7 @@
   "img": "images/p053.jpg"
  },
  {
-  "no": "136",
+  "no": "137",
   "id": "stu-9",
   "name": "filthy (qui e 3)",
   "yr": 2019,
@@ -1768,7 +1781,7 @@
   "img": "images/p054.jpg"
  },
  {
-  "no": "137",
+  "no": "138",
   "id": "mix-4",
   "name": "collage etude no 1",
   "yr": 2018,
@@ -1781,7 +1794,7 @@
   "img": "images/p104.jpg"
  },
  {
-  "no": "138",
+  "no": "139",
   "id": "mix-5",
   "name": "honest lyes",
   "yr": 2018,
@@ -1794,7 +1807,7 @@
   "img": "images/p105.jpg"
  },
  {
-  "no": "139",
+  "no": "140",
   "id": "ske-23",
   "name": "missionaire",
   "yr": 2018,
@@ -1807,7 +1820,7 @@
   "img": "images/p088.jpg"
  },
  {
-  "no": "140",
+  "no": "141",
   "id": "ske-31",
   "name": "depersonalization towards digital medias",
   "yr": 2018,
@@ -1820,7 +1833,7 @@
   "img": "images/p095.jpg"
  },
  {
-  "no": "141",
+  "no": "142",
   "id": "ske-33",
   "name": "architectural sketches",
   "yr": 2018,
@@ -1833,7 +1846,7 @@
   "img": "images/p097.jpg"
  },
  {
-  "no": "142",
+  "no": "143",
   "id": "mix-10",
   "name": "tombpaper",
   "yr": 2024,
@@ -1846,7 +1859,7 @@
   "img": "images/p110.jpg"
  },
  {
-  "no": "143",
+  "no": "144",
   "id": "obj-1",
   "name": "unopened letter",
   "yr": 2024,
@@ -1859,7 +1872,7 @@
   "img": "images/p112.jpg"
  },
  {
-  "no": "144",
+  "no": "145",
   "id": "obj-2",
   "name": "sand box capital",
   "yr": 2024,
@@ -1872,7 +1885,7 @@
   "img": "images/p113.jpg"
  },
  {
-  "no": "145",
+  "no": "146",
   "id": "obj-3",
   "name": "i've changed",
   "yr": 2024,
@@ -1885,7 +1898,7 @@
   "img": "images/p114.jpg"
  },
  {
-  "no": "146",
+  "no": "147",
   "id": "obj-4",
   "name": "Milanese Istanbul Matrix",
   "yr": 2023,
@@ -1898,7 +1911,7 @@
   "img": "images/p115.jpg"
  },
  {
-  "no": "147",
+  "no": "148",
   "id": "mix-1",
   "name": "i dolci dell'ticinese",
   "yr": 2021,
@@ -1911,7 +1924,7 @@
   "img": "images/p101.jpg"
  },
  {
-  "no": "148",
+  "no": "149",
   "id": "stu-6",
   "name": "cult joint",
   "yr": 2021,
@@ -1924,7 +1937,7 @@
   "img": "images/p051.jpg"
  },
  {
-  "no": "149",
+  "no": "150",
   "id": "abs-7",
   "name": "ikeacyan",
   "yr": 2020,
@@ -1937,7 +1950,7 @@
   "img": "images/p023.jpg"
  },
  {
-  "no": "150",
+  "no": "151",
   "id": "abs-29",
   "name": "self-eesteem",
   "yr": 2019,
