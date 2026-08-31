@@ -182,12 +182,12 @@ sheets = [ROWS[i:i + PER] for i in range(0, len(ROWS), PER)]
 # katalogla bitmesin diye kus sayfasi var, ve o sag sayfaya dussun diye
 # gerekirse orada da bir bos sayfa. Tek sayfa numaralari sag, cift olanlar
 # soldur.
-BEFORE = 2 + len(chunks) + 3
+BEFORE = 2 + len(chunks)                      # kapak, kunye, indeks
 PAD_A  = 1 if BEFORE % 2 == 0 else 0          # ilk levha sayfasi cift olsun
 FIRST  = BEFORE + PAD_A                       # ilk levha sayfasinin numarasi - 1
-LASTPL = FIRST + len(sheets)                  # son levha sayfasi
-PAD_B  = 0 if (LASTPL + 1) % 2 else 1         # kus sayfasi tek olsun
-TOTAL  = LASTPL + PAD_B + 1
+BACK   = FIRST + len(sheets) + 2              # levhalar, sonra iki yazi sayfasi
+PAD_B  = 0 if (BACK + 1) % 2 else 1           # kus sayfasi tek olsun
+TOTAL  = BACK + PAD_B + 1
 
 parts = ['<section class="page cover"><div class="emblem">'
          '<img src="images/logo.svg" alt="Yiğit Özen"></div></section>\n']
@@ -199,18 +199,10 @@ parts.append(page(
     '  <div class="sheet">\n    <div class="imprint">\n'
     '      <div class="ti">Paintings %d&ndash;%d</div>\n'
     '      <div class="who">Yiğit Özen</div>\n'
-    '      <p>%s works: the %d of the catalogued sequence and the %d that '
-    'had not been catalogued. They are ordered by what they are made on '
-    'rather than by when — %d on canvas, then %d on paper, carton and print, '
-    'then %d that are objects — and within each the catalogued work leads. '
-    'Four to a page, the plate falling to one side and then the other down '
-    'the page, and the page facing it keeping the same beat rather than '
-    'answering it.</p>\n'
-    '      <div class="line">%d Works &middot; Mini Catalogue &middot; yigitozen.xyz</div>\n'
+    '      %s\n'
     '    </div>\n  </div>'
-    % (min(years), max(years), words(len(ROWS)).capitalize(), n_main,
-       len(ROWS) - n_main,
-       c['canvas'], c['paper'], c['object'], len(ROWS)), 'Imprint'))
+    % (min(years), max(years), ''.join('<p>%s</p>' % t for t in ON_WORK)),
+    'On the work'))
 
 # ── indeks ─────────────────────────────────────────────────────────
 for k, ch in enumerate(chunks):
@@ -230,17 +222,6 @@ for k, ch in enumerate(chunks):
         % (' <span class="cont">continued</span>' if k else '', rows_html),
         'Index %d/%d' % (k + 1, len(chunks))))
 
-# ── yazi sayfalari ─────────────────────────────────────────────────
-parts.append(page(prose('Biography', BIO,
-    '<dl class="facts">%s</dl>' % ''.join(
-        '<div><dt>%s</dt><dd>%s</dd></div>' % (k, E(v)) for k, v in FACTS)),
-    'Biography'))
-parts.append(page(prose('On the Work', ON_WORK), 'On the work'))
-parts.append(page('  <div class="sheet">\n%s%s%s\n  </div>'
-                  % (rows('Awards and Mentions', AWARDS),
-                     rows('Talks', TALKS), rows('Exhibitions', SHOWS)),
-                  'Curriculum'))
-
 parts.extend([blank()] * PAD_A)
 
 # ── levhalar: sayfaya dort, resim zikzak ───────────────────────────
@@ -253,6 +234,16 @@ for group in sheets:
                       '%s &middot; Cat. %s&ndash;%s'
                       % (' &ndash; '.join(sups), group[0]['no'], group[-1]['no'])))
 
+# ── arka yazi sayfalari ────────────────────────────────────────────
+parts.append(page(prose('Biography', BIO,
+    '<dl class="facts">%s</dl>' % ''.join(
+        '<div><dt>%s</dt><dd>%s</dd></div>' % (k, E(v)) for k, v in FACTS)),
+    'Biography'))
+parts.append(page('  <div class="sheet">\n%s%s%s\n  </div>'
+                  % (rows('Awards and Mentions', AWARDS),
+                     rows('Talks', TALKS), rows('Exhibitions', SHOWS)),
+                  'Curriculum'))
+
 parts.extend([blank()] * PAD_B)
 parts.append(closing())
 
@@ -261,8 +252,9 @@ doc = ('<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
        '<link rel="stylesheet" href="catalogue-mini.css">\n</head>\n<body>\n\n'
        + '\n'.join(parts) + '\n</body>\n</html>\n')
 open(os.path.join(HERE, 'catalogue-mini.html'), 'w', encoding='utf-8').write(doc)
-print('is %d (ana %d) · indeks %d · yazi 3 · levha %d · bos %d · toplam sayfa %d'
+print('is %d (ana %d) · indeks %d · levha %d · arka yazi 2 · bos %d · toplam sayfa %d'
       % (len(ROWS), n_main, len(chunks), len(sheets), PAD_A + PAD_B, TOTAL))
-print('ilk levha sayfasi %d (%s) · son levha %d · kus sayfasi %d (%s)'
+print('ilk levha sayfasi %d (%s) · son levha %d · arka yazi %d-%d · kus %d (%s)'
       % (FIRST + 1, 'sol' if (FIRST + 1) % 2 == 0 else 'SAG',
-         LASTPL, TOTAL, 'sag' if TOTAL % 2 else 'SOL'))
+         FIRST + len(sheets), BACK - 1, BACK, TOTAL,
+         'sag' if TOTAL % 2 else 'SOL'))

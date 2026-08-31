@@ -15,12 +15,12 @@ is printed from it.
 
 ## The order of the book
 
-Cover, imprint, the index, then three pages of text — a biography, On the
-work, and the curriculum — and then the plates. Odd page numbers fall on
-the right and even ones on the left, so two rules hold: the plates open on
-a left page rather than beside the last page of the text, and the book does
-not end on a plate. A page is left blank wherever the count does not come
-out, and the last page carries the bird alone, low on the left.
+Cover; the title page, which carries On the work; the index; the plates;
+then a biography and the curriculum; then the bird. Odd page numbers fall
+on the right and even ones on the left, so two rules hold: the plates open
+on a left page rather than beside the last page of the index, and the book
+does not end on a plate. A page is left blank wherever the count does not
+come out, and the last page carries the bird alone, low on the left.
 
 ## The order
 
