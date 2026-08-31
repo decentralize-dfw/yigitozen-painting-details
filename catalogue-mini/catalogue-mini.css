@@ -112,3 +112,31 @@ table.idx td.pg { width: 10mm; text-align: right; color: #857b73; font-variant-n
   text-transform: uppercase; color: #857b73; padding-top: .6mm;
 }
 .band dl.meta dd { margin: 0; color: #16130f; min-width: 0; }
+
+/* ---------- yazi sayfalari ---------- */
+.prose p { font-size: 9.4pt; line-height: 1.62; color: #2c2620; margin: 0 0 4.6mm; max-width: 118mm; }
+.prose p:last-child { margin-bottom: 0; }
+dl.facts { margin: 9mm 0 0; max-width: 128mm; }
+dl.facts div { display: flex; padding: 1.6mm 0; border-top: .25pt solid #e8e2db; }
+dl.facts div:last-child { border-bottom: .25pt solid #e8e2db; }
+dl.facts dt {
+  font-family: "Liberation Sans", "DejaVu Sans", sans-serif;
+  width: 34mm; flex: 0 0 34mm; font-size: 6.4pt; letter-spacing: .13em;
+  text-transform: uppercase; color: #857b73; padding-top: .5mm;
+}
+dl.facts dd { margin: 0; font-size: 8.2pt; line-height: 1.45; color: #16130f; min-width: 0; }
+
+/* Kronoloji: yil solda dar bir sutun, satir sagda; bolumler alt alta. */
+h2.sect.run { margin-top: 9mm; }
+.sheet > h2.sect.run:first-child { margin-top: 0; }
+.rows { font-size: 8pt; line-height: 1.4; }
+.rows div { display: flex; padding: 1.3mm 0; border-bottom: .25pt solid #e8e2db; }
+.rows .yr {
+  width: 14mm; flex: 0 0 14mm; color: #857b73;
+  font-variant-numeric: tabular-nums;
+}
+.rows .wh { color: #2c2620; min-width: 0; }
+
+/* ---------- kapanis: yalniz kus, sol altta ---------- */
+.page.end .bird { position: absolute; left: 22mm; bottom: 26mm; line-height: 0; }
+.page.end .bird img { height: 34mm; width: auto; display: block; }
