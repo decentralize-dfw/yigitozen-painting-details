@@ -1,8 +1,9 @@
 # Mini Catalogue
 
-One hundred and fifty-one works at four to a page: the 36 of the catalogued
-sequence and the 115 that had never been catalogued. The newest, *sept neuf*,
-leads at Cat. 001; the printed `../catalogue/` still holds the earlier 35
+One hundred and fifty-three works at four to a page: the 38 of the catalogued
+sequence and the 115 that had never been catalogued. The newest, *Angora Mergvs*,
+leads at Cat. 001, followed by *Gxd is AFK, We banned it* at Cat. 002;
+the printed `../catalogue/` still holds the earlier 35
 until it is set again.
 
 `list-mobile-2.html` in `decentralize-dfw/decentralize` records 577 works;
@@ -29,9 +30,9 @@ been catalogued before:
 
 | | | |
 |---|---|---|
-| **Canvas** | Cat. 001–033 | 27 catalogued, then 6 |
-| **Paper**  | Cat. 034–142 | 9 catalogued, then 100 — paper, carton, print, whiteboard |
-| **Object** | Cat. 143–151 | 9 — assemblages, and work made on packaging taken apart |
+| **Canvas** | Cat. 001–035 | 29 catalogued, then 6 |
+| **Paper**  | Cat. 036–144 | 9 catalogued, then 100 — paper, carton, print, whiteboard |
+| **Object** | Cat. 145–153 | 9 — assemblages, and work made on packaging taken apart |
 
 Each group runs newest first. The running foot names the group, so a page
 that straddles two says so.
@@ -47,6 +48,13 @@ that straddles two says so.
   transparent ground, and a hairline there reads as the edge of the work.
 - Dimensions are omitted where the record has none, Location likewise; the
   115 carry no location.
+- Dimensions read `H … cm, W … cm`. The 38 site works use the site's
+  `height_cm` and `width_cm`; archive works retain their recorded sizes,
+  with height and width assigned from plate orientation. ISO paper sizes
+  are expanded to their centimetre dimensions.
+- The 53 pages contain eight index pages (3–10), a blank page (11),
+  39 plate pages (12–50), biography (51), curriculum (52) and the bird (53).
+- The On the work text on page 2 is the text from page 5 of `AUS-3-v10.pdf`.
 
 ## Rebuilding
 
@@ -72,4 +80,8 @@ when what is left would be under half the frame. It has been run over the
 115; the main catalogue's plates were already cropped. The plates that still
 read dark at the edge are dark works: black paper, black ground.
 
-Requires Playwright with Chromium.
+Requires Python with Pillow, and Playwright with Chromium. The Liberation
+Serif and Sans font files are bundled under `fonts/` to preserve typography
+across systems; `fonts/copyright` contains their licence. The print step waits
+for these fonts and all plates to load. `CHROMIUM_EXECUTABLE_PATH` optionally
+selects an existing Chromium executable.

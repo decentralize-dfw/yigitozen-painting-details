@@ -1,3 +1,7 @@
+@font-face { font-family: "Liberation Serif"; font-style: normal; font-weight: 400; src: url("fonts/LiberationSerif-Regular.ttf"); }
+@font-face { font-family: "Liberation Sans"; font-style: normal; font-weight: 400; src: url("fonts/LiberationSans-Regular.ttf"); }
+@font-face { font-family: "Liberation Sans"; font-style: normal; font-weight: 700; src: url("fonts/LiberationSans-Bold.ttf"); }
+
 /* Mini katalog. Buyuk katalogun harfleri ve grileri, ama sayfaya uc is.
    Bir levha sayfanin ucte biri kadar; resim bir sagda bir solda durur ve
    karsi sayfa ters baslar, boylece serim capraz iner. */

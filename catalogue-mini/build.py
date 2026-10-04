@@ -110,20 +110,7 @@ FACTS = [('Born', '1994, Istanbul'),
                       'Holy Art Gallery London, Art Basel Miami')]
 
 ON_WORK = [
-    'In Özen&rsquo;s paintings a body appears as rounded units settle on top of one '
-    'another. The contour arrives late and often does not arrive. Scale gives the '
-    'verdict. A shape held large enough becomes somebody, and the same shape beside '
-    'it becomes a row. Most of the ground stays unpainted, and that emptiness '
-    'decides how far the figure gets to build.',
-    'The same parts have been turning up since the beginning. A figure present in '
-    'the scene and not looking. A chair nobody sits in. A frame drawn over the '
-    'scene and left open. A bird that arrives under its own power, carrying '
-    'something never unwrapped. These are working parts. Nothing in them waits to '
-    'be solved. The one helping and the one crushing are made of the same heap.',
-    'Titles do not name the picture. A greeting, a game, a file name, a line taken '
-    'from elsewhere. They set a second language beside the image and tilt it. '
-    'Decisions are taken in wet paint, colour is held as a distribution. Over the '
-    'years the parts stay where they are and the temperature changes.',
+    'Yiğit Özen’s practice examines how bodies remain together while attention, intimacy and individual agency begin to break down. His figures are assembled from rounded, organ-like forms that blur the boundaries between a person, a fragment and a collective body. Colour carries much of the psychological pressure, moving across flesh, clothing, objects and space without following natural light. Eyes often appear closed, empty or turned away, while hands, mouths and postures continue to act. Physical participation persists even when emotional contact has failed. Tables, cages, vehicles and other objects organise these bodies into temporary systems of care, restraint and dependence. References to art history and popular culture provide existing structures of authority, desire and collective behaviour, which Özen transforms through his own fragmented anatomy, compressed spaces and unstable social relations.',
 ]
 
 AWARDS = [
@@ -157,7 +144,7 @@ SHOWS = [
 def lines(r):
     """Bir indeks satirinin kac satira yayildigi."""
     from math import ceil
-    return max(1, ceil(len(str(r['name'])) / TI_CH), ceil(len(str(r['medium'])) / MD_CH))
+    return max(1, ceil(len(str(r['name'])) / TI_CH), ceil(len(str(r['medium'])) / MD_CH), 2 if r['dim'] else 1)
 
 
 def pack(rows):
@@ -210,7 +197,7 @@ for k, ch in enumerate(chunks):
         '<tr><td class="no">%s</td><td class="ti">%s</td><td class="yr">%s</td>'
         '<td class="md">%s</td><td class="dm">%s</td><td class="sp">%s</td>'
         '<td class="pg">%d</td></tr>'
-        % (r['no'], E(r['name']), E(r['yr']), E(r['medium']), E(r['dim']),
+        % (r['no'], E(r['name']), E(r['yr']), E(r['medium']), E(r['dim']).replace(', W ', ',<br>W '),
            SUP[r['sup']], FIRST + (int(r['no']) - 1) // PER + 1)
         for r in ch)
     parts.append(page(
