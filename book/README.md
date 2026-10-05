@@ -1,10 +1,13 @@
 # Paintings since 2019
 
-The art book, second edition. Thirty-five paintings, built spread by
-spread from the site's `works.json` and the photographs in this
-repository.
+The art book, index edition. Thirty-eight paintings — every painting
+in the site's index, one opening each — built spread by spread from
+`works-38.json` (the book's own copy of the catalogue data) and the
+photographs in this repository. The cover is the artist's own design,
+`kapak3.pdf`, rendered to `cover-kapak.jpg`; the page behind it is
+left blank.
 
-`Yigit-Ozen-Paintings-since-2019.pdf` — 129 pages, 240 × 320 mm, the
+`Yigit-Ozen-Paintings-since-2019.pdf` — 141 pages, 240 × 320 mm, the
 screen edition.
 `Yigit-Ozen-Paintings-Print-Master.pdf` — the same 129 pages at
 246 × 326 mm: trim plus a real 3 mm bleed, images at 300 ppi where the
@@ -31,7 +34,7 @@ eight built examples. `GUIDE.md` is the binding specification, and
 
 ## What is in it
 
-- **35 openings** — every work enters on a spread: number, title,
+- **38 openings** — every work enters on a spread: number, title,
   dimensions, note and facets on the left, the painting whole on the
   right, top on the first register, its printed size following the
   physical size of the canvas. Six minor works share three paired

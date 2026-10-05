@@ -340,10 +340,10 @@ BY_N = {w['n']: w for w in WORKS}
 FIRST = {}
 
 def det(w, i):
-    suf = '_detail_%d.jpg' % i
+    sufs = ('_detail_%d.jpg' % i, '-detail-%d.jpg' % i)
     for d in w['details'] + w['aside']:
-        if d['src'].endswith(suf): return d
-    raise SystemExit('detay yok: %02d %s' % (w['n'], suf))
+        if d['src'].endswith(sufs): return d
+    raise SystemExit('detay yok: %02d %s' % (w['n'], sufs[0]))
 
 def proc(w, i):
     return w['process'][i - 1]
@@ -392,7 +392,7 @@ def plate_size(w, k=1.0):
     ar = w['ar']
     if ar <= 1.05:
         h = min(BAND_H, 111.0 + 0.93 * hcm)
-        if w['n'] == 20: h = BAND_H          # anitsal: kitabin en buyuk tuvali
+        if w['n'] == 23: h = BAND_H          # anitsal: kitabin en buyuk tuvali
         wd = h * ar
         if wd > MEASURE: wd = MEASURE; h = wd / ar
     else:
@@ -1063,36 +1063,49 @@ def f_pause(w, text, attrib, img=None, img_box=None, img_cap='', kind='reach'):
     return pl, pr
 
 # ── metinler ─────────────────────────────────────────────────────────
-P1 = ('In Özen\'s paintings a body appears as rounded units settle on top of one '
-      'another. The contour arrives late and often does not arrive. Scale gives '
-      'the verdict. A shape held large enough becomes somebody, and the same '
-      'shape beside it becomes a row. Most of the ground stays unpainted, and '
-      'that emptiness decides how far the figure gets to build.')
-P2 = ('The same parts have been turning up since the beginning. A figure present '
-      'in the scene and not looking. A chair nobody sits in. A frame drawn over '
-      'the scene and left open. A bird that arrives under its own power, carrying '
-      'something never unwrapped. These are working parts. Nothing in them waits '
-      'to be solved. The one helping and the one crushing are made of the same '
-      'heap.')
-P3 = ('Titles do not name the picture. A greeting, a game, a file name, a line '
-      'taken from elsewhere. They set a second language beside the image and tilt '
-      'it. Decisions are taken in wet paint, colour is held as a distribution. '
-      'Over the years the parts stay where they are and the temperature changes.')
-BLURB = ('Thirty-five works made since 2019 across Istanbul, Milan and Luxembourg: '
+P1 = ('In Yiğit Özen\'s paintings, a scene often emerges from a few lines and '
+      'masses drawing towards one another. As colour moves from bodies to objects '
+      'and into the surrounding space, the boundaries of these forms loosen. A '
+      'figure that appears whole from a distance may reveal itself as small, '
+      'rounded parts when seen up close. In places, forms extend beyond their own '
+      'edges, as in a long exposure photograph.')
+P2 = ('The figures are close to one another, though what they share is not always '
+      'clear. Hands reach out, bodies bend, mouths remain open. Closed or averted '
+      'eyes seem removed from this activity. A table, cage or vehicle sometimes '
+      'appears as an extension of the bodies. Whether what holds them together is '
+      'support, habit or some kind of pressure is left open. The scene waits, as '
+      'though something is about to happen.')
+P3 = ('Movement continues on the painted surface. A contour stops short, an '
+      'underlying colour reappears, a mass changes into another form. The initial '
+      'arrangement changes through decisions made while painting; the surface '
+      'retains traces of those changes. Beside a rough brushstroke, a slight '
+      'shift in colour can alter the feeling of the entire scene. The forms\' '
+      'resemblance to toys is also part of this atmosphere.')
+P4 = ('In some paintings, a familiar scene from art history or popular culture '
+      'can be recognised. Arrangements or gestures recalling the source may '
+      'still be visible, but the bodies carrying them have changed. Among the '
+      'layers of paint, the source image\'s identity fades in places. A childlike '
+      'form enters a serious scene; a familiar movement continues within an '
+      'unexpected mass.')
+BLURB = ('Thirty-eight works made since 2019 across Istanbul, Milan and Luxembourg: '
          'acrylic on canvas, on carton and on paper, and one drawing in charcoal on the '
          'reverse of a canvas. They are given here newest first, and a small figure with '
          'crossed eyes runs through them from one end of the seven years to the other.')
-SHORT_BLURB = ('Eight of thirty-five works made since 2019 across Istanbul, Milan and '
+SHORT_BLURB = ('Eight of thirty-eight works made since 2019 across Istanbul, Milan and '
                'Luxembourg. The whole book, with every detail and the stages of the '
                'newest paintings, is at yigitozen.xyz/artbook.')
-BIO = ['Yiğit Özen was born in 1994 in Istanbul and trained as an architect.',
-       'Özen has painted since 2018. The thirty-five works in this book were made between '
+BIO = ['Yiğit Özen is a painter, born in 1994 in Istanbul and trained as an '
+       'architect. The thirty-eight paintings in this book were made between '
        '2019 and 2026, across Istanbul, Milan and Luxembourg.',
-       'From 2020 the studio work went largely to XR and spatial design, and the canvases '
-       'thin out to one commission in 2023 before the painting resumes in 2026. The years '
-       'are given as they fall rather than smoothed over.',
-       'Alongside the paintings, Özen works as an XR and spatial web designer, and is the '
-       'founder of decentralize design in Milan and Virtually Ever After in Luxembourg.']
+       'He moved to Milan in 2018, after two years of photography, and painted '
+       'steadily until the pandemic, which found him in Istanbul with the '
+       'studio and the paintings in Milan.',
+       'In those years the work moved into digital production and became '
+       'decentralize design; around a thousand digital works from 2020 to '
+       '2025 are at de-centralize.com. One commission was painted in 2023.',
+       'He co-founded and co-runs Virtually Ever After, an architect-led '
+       'studio in Luxembourg, where in 2026 he returned to a regular painting '
+       'practice.']
 CV = [('Painting, selected exhibitions', [
         ('Power of the Nature, Fabbrica del Vapore, Milan', '2019'),
         ('The Arts Special Projects, Fabbrica del Vapore, Milan', '2019')]),
@@ -1115,39 +1128,16 @@ COVER_SRC = '/img/full/detail/7famboardgame_detail_3.jpg'
 COVER_ON_PLATE = [0.125, 0.375, 0.550, 0.458]   # kapagin 01 uzerindeki yeri
 
 def front_matter():
-    # Kapak: kesit ustte, koyu zeminde baslik. Kesitin tablodaki yeri
-    # kitabin son sayfasinda isaretlenir.
+    # Kapak: sanatcinin verdigi tasarim, oldugu gibi, tam sayfa.
     p = page('', 'dark')
     p.folio = False
     p.fam = 'F'
-    register(COVER_SRC, None, 'crop', 'cover')
-    cpath, car = prep(COVER_SRC, 240, 'cover')
-    ch = 240.0 / car
-    p.raw('<img src="%s" style="left:0;top:0;width:240mm;height:%.2fmm">' % (cpath, ch))
-    p.m(X(0), ch + 8.0, W(6), NM)
-    p.m(R(4), ch + 8.0, W(4), 'Thirty-five works', 'rt g')
-    p.rule(X(0), ch + 16.0, MEASURE, True)
-    p.d(X(0), 206.0, W(10), 'Paintings<br>since 2019', 'l')
-    p.rule(X(0), 292.0, MEASURE)
-    p.m(X(0), 295.4, W(6), 'Istanbul <i>&middot;</i> Milan <i>&middot;</i> Luxembourg')
-    p.m(R(3), 295.4, W(3), 'yigitozen.xyz', 'rt')
+    p.raw('<img src="cover-kapak.jpg" style="left:0;top:0;width:240mm;height:320mm">')
 
-    p = page('Imprint')
+    # Ic kapak bos birakilir.
+    p = page('')
+    p.folio = False
     p.fam = 'F'
-    p.m(X(0), HEAD, W(6), 'Imprint')
-    p.m(R(4), HEAD, W(4), NM, 'rt g')
-    p.rule(X(0), HRULE, MEASURE, True)
-    p.d(X(0), 29.0, W(9), 'Thirty-five<br>paintings', 's')
-    p.rule(X(0), 66.0, W(9))
-    p.m(X(0), 69.4, W(7), '2019&ndash;2026 <i>&middot;</i> Istanbul, Milan and Luxembourg')
-    p.t(X(0), 196.0, W(6), e(SHORT_BLURB if SHORT else BLURB))
-    p.rule(X(0), 258.0, MEASURE)
-    p.m(X(0), 261.6, W(4), '<b>Medium</b><br>Acrylic on canvas, on carton and on '
-        'paper, and one drawing in charcoal', 'g')
-    p.m(X(4), 261.6, W(4), '<b>Order</b><br>Newest first, so the seven years are '
-        'read backwards', 'g')
-    p.m(X(8), 261.6, W(4), '<b>Rights</b><br>All works &copy; Yiğit Özen. '
-        'All rights reserved', 'g')
 
     p = page('Paintings since 2019')
     p.fam = 'F'
@@ -1156,7 +1146,7 @@ def front_matter():
     p.rule(X(0), HRULE, MEASURE, True)
     p.d(X(0), 118.0, W(11), 'Paintings<br>since<br>2019', 'xl')
     p.rule(X(0), 262.0, MEASURE)
-    p.m(X(0), 265.4, W(5), 'Thirty-five works' if not SHORT else 'Eight works')
+    p.m(X(0), 265.4, W(5), 'Thirty-eight works' if not SHORT else 'Eight works')
     p.m(R(4), 265.4, W(4), 'Newest first', 'rt g')
 
     if SHORT: return
@@ -1171,10 +1161,10 @@ def front_matter():
     pl.rule(X(0), HRULE, MEASURE, True)
     cw = W(5.8)
     pl.t(X(0), 34.0, cw, '<p>%s</p><p>%s</p>' % (e(P1), e(P2)))
-    pl.t(X(6.2), 34.0, cw, '<p>%s</p>' % e(P3))
+    pl.t(X(6.2), 34.0, cw, '<p>%s</p><p>%s</p>' % (e(P3), e(P4)))
     pl.rule(X(0), 262.0, MEASURE)
-    pl.m(X(0), 265.4, W(8), 'Thirty-five works, 2019&ndash;2026, read newest first')
-    pl.m(R(3), 265.4, W(3), '15 <i>&middot;</i> viperella', 'rt g')
+    pl.m(X(0), 265.4, W(8), 'Thirty-eight works, 2019&ndash;2026, read newest first')
+    pl.m(R(3), 265.4, W(3), '18 <i>&middot;</i> viperella', 'rt g')
     use(pr)
     _esrc = '/img/full/detail/viperella_detail_1.jpg'
     register(_esrc, None, 'crop', 'essay')
@@ -1224,7 +1214,7 @@ def front_matter():
     pl.m(X(0), HEAD, W(8), 'How this book is arranged')
     pl.rule(X(0), HRULE, MEASURE, True)
     pl.t(X(0), 34.0, W(6),
-         '<p>The thirty-five paintings are given newest first, so the seven '
+         '<p>The thirty-eight paintings are given newest first, so the seven '
          'years are read backwards. A paragraph that says a thing happens for '
          'the first time means the first time reading backwards through the '
          'book.</p>'
@@ -1253,22 +1243,22 @@ def front_matter():
 def toc_fill(p):
     use(p)
     p.m(X(0), HEAD, W(6), 'Contents')
-    p.m(R(4), HEAD, W(4), 'Thirty-five works', 'rt g')
+    p.m(R(4), HEAD, W(4), 'Thirty-eight works', 'rt g')
     p.rule(X(0), HRULE, MEASURE, True)
-    y = 26.0
+    y = 24.0
     for wk in WORKS:
         p.m(X(0), y + 0.4, W(1), '%02d' % wk['n'], 'g')
         p.sans(X(1), y, W(8), e(wk['title']), '', 'font-size:8.0pt;line-height:1.3')
         p.m(X(9), y + 0.4, W(1), e(wk['year']), 'g')
         p.m(R(1), y + 0.4, W(1), str(FIRST.get(wk['n'], 0)), 'rt')
-        y += 6.1
-    y += 2.4
+        y += 5.8
+    y += 2.2
     p.rule(X(0), y, MEASURE)
-    y += 3.2
+    y += 3.0
     for name, pg in SECTIONS:
         p.sans(X(1), y, W(7), name, '', 'font-size:8.0pt;line-height:1.3')
         p.m(R(1), y + 0.4, W(1), str(pg), 'rt')
-        y += 6.1
+        y += 5.8
     p.rule(X(0), FRULE, MEASURE)
     p.m(X(0), FMICRO, W(8),
         'Each work opens on a spread: the note on the left, the painting on the right')
@@ -1280,9 +1270,27 @@ def toc_fill(p):
 def build_works():
     N = BY_N
 
-    # 2026 — alti is
+    # 2026 — dokuz is
     w = N[1]
-    f_open(w, thresh='2026', thresh_line='Six works <i>&middot;</i> Luxembourg')
+    f_open(w, thresh='2026', thresh_line='Nine works <i>&middot;</i> Luxembourg')
+    # Tek ipucu: dislerini gosteren yuz, ve dumanin ustundeki pence.
+    f_clue(w, det(w, 6), [(det(w, 4), REG[2])], side='R', pos='50% 40%')
+
+    w = N[2]
+    f_open(w)
+    # Indirme semasinin sakladigi iki el: aciklanan avuc ve sarkan kol.
+    f_weld(w, det(w, 5), det(w, 9),
+           'The open hand against the dark',
+           'The hanging arm, its fingers on the step',
+           pos_a='50% 35%', pos_b='50% 45%')
+
+    w = N[3]
+    f_open(w)
+    # Bakan bas genis basilir, taburedeki kus karsisinda durur.
+    f_wide(w, det(w, 1), det(w, 4), side='R', pos='50% 30%')
+
+    w = N[4]
+    f_open(w)
     # Tek ipucu: karsidaki yuzun altina, orta-alt registere.
     f_clue(w, det(w, 2), [(det(w, 5), REG[2])], side='R', pos='50% 32%')
     f_sequence(w, {'layout': 'rows', 'dom': proc(w, 1),
@@ -1293,7 +1301,7 @@ def build_works():
                            'over it, and the blue family arrives last, after both '
                            'heads are already fixed.'})
 
-    w = N[2]
+    w = N[5]
     f_open(w)
     f_wide(w, det(w, 3), det(w, 2), side='L', pos='50% 32%')
     f_argument(w, det(w, 7), [det(w, 5)], mode='band', focal=0.1,
@@ -1309,7 +1317,7 @@ def build_works():
                            'pencil, buried under a field of red, and Virgil is '
                            'assembled on top of the grave.'})
 
-    w = N[3]
+    w = N[6]
     f_open(w)
     f_clue(w, det(w, 2), [(det(w, 9), REG[1]), (det(w, 6), REG[3])],
            side='R', pos='50% 30%')
@@ -1322,7 +1330,7 @@ def build_works():
                            'blue, the ground goes orange, and the body is '
                            'rebuilt from lobes until the face arrives, last.'})
 
-    w = N[4]
+    w = N[7]
     f_open(w, integrate=(proc(w, 1)['src'], None, 'w04sk'),
            int_cap='The first stage, in pencil')
     f_sequence(w, {'layout': 'faces', 'dom': det(w, 1), 'pos': '50% 42%',
@@ -1332,7 +1340,7 @@ def build_works():
                            'blocking, given a moustache, then ringed in red. '
                            'The teeth under the brim arrive last of all.'})
 
-    w = N[5]
+    w = N[8]
     f_open(w)
     f_argument(w, det(w, 1), [det(w, 5)], mode='band', focal=0.35,
                frag='The attack comes down the diagonal; the rowers hold their line.')
@@ -1343,7 +1351,7 @@ def build_works():
                            'mountains, then the boat; the crew and the flock '
                            'are drawn in white at the end.'})
 
-    w = N[6]
+    w = N[9]
     f_open(w)
     f_narrow(w, det(w, 1), [0.70, 0.02, 0.26, 0.96],
              'The right edge, from the barred frame down to the panel',
@@ -1351,14 +1359,14 @@ def build_works():
 
     # 2023 — bosluk: tek is, tek serim. Sol sayfanin ucte ikisi bos ve
     # bunu kastediyor.
-    w = N[7]
+    w = N[10]
     f_open(w, thresh='2023', thresh_line='One commission <i>&middot;</i> Istanbul',
            gap_note='From 2020 the studio work went largely to XR and spatial '
                     'design, and the canvases thin out to this one commission '
                     'before the painting resumes in 2026.')
 
     # 2020 — on is
-    w = N[8]
+    w = N[11]
     f_open(w, thresh='2020', thresh_line='Ten works <i>&middot;</i> Milan')
     f_baseline(w, det(w, 1), [(det(w, 2), 96.0), (det(w, 3), 68.0)],
                side='L', pos='50% 28%')
@@ -1368,31 +1376,31 @@ def build_works():
                            'green and blue, and in blue and grey. Which came '
                            'first the studio does not say.'})
 
-    w = N[9]
+    w = N[12]
     f_open(w)
     f_dossier(w, det(w, 1), [det(w, 4), det(w, 3)], side='R', pos='50% 40%')
 
-    f_pair(N[10], N[11])
+    f_pair(N[13], N[14])
 
-    w = N[12]
+    w = N[15]
     f_open(w)
     f_weld(w, det(w, 3), det(w, 4),
            'The kneeling figure, on its knee',
            'The standing figure, at the pole',
            pos_a='50% 35%', pos_b='50% 30%')
 
-    f_open(N[13])
+    f_open(N[16])
 
-    w = N[14]
+    w = N[17]
     f_open(w)
     f_pause(w, 'it could be about to strike, it could be reached out to hold '
                'something.',
-            'From the note on 14 <i>&middot;</i> When the Darkness surrounds, '
+            'From the note on 17 <i>&middot;</i> When the Darkness surrounds, '
             'be among those who burn the Great Fire',
             img=det(w, 2)['src'], img_cap='The shoulder, and the reaching arm',
             kind='reach')
 
-    w = N[15]
+    w = N[18]
     f_open(w, integrate=(det(w, 8)['src'], None, 'w15sig'),
            int_cap='The red mark in the top right corner')
     # Govdenin inisi soldan saga: gogus, kalca, ayak. Tek taban cizgisi.
@@ -1402,17 +1410,17 @@ def build_works():
              lead='A body read from the chest down to the floor, in three '
                   'cuts on one line.')
 
-    f_pair(N[17], N[16], ka=0.78)
+    f_pair(N[20], N[19], ka=0.78)
 
     # 2019 — on sekiz is
-    w = N[18]
+    w = N[21]
     f_open(w, thresh='2019',
            thresh_line='Eighteen works <i>&middot;</i> Milan and Istanbul',
            integrate=(aside(w, 'sinoverblacmatter')['src'], None, 'w18v'),
            int_cap='An earlier painting of the same scene, the room still red '
                    'and the seat still blue')
 
-    w = N[19]
+    w = N[22]
     f_open(w)
     f_argument(w, {'src': w['plate']['src'],
                    'box': crop_of(w, [0.04, 0.14, 0.44, 0.83]),
@@ -1422,16 +1430,16 @@ def build_works():
                     'knees push forward and swell into two large lumps, the '
                     'body foreshortened backward, the head a dark patch so far '
                     'off it nearly vanishes.',
-               frag_src='From the note on 19 <i>&middot;</i> '
+               frag_src='From the note on 22 <i>&middot;</i> '
                         'the assassination of the crow',
                frag_note='The crow itself is kept for the chapter on what '
                          'comes back.')
 
-    f_open(N[20])
-    f_open(N[21])
-    f_pair(N[22], N[23])
+    f_open(N[23])
+    f_open(N[24])
+    f_pair(N[25], N[26])
 
-    w = N[24]
+    w = N[27]
     f_open(w)
     f_sequence(w, {'layout': 'study', 'dom': aside(w, 'goodppl'), 'domw': XL,
                    'after': [({'src': w['plate']['src'],
@@ -1442,9 +1450,9 @@ def build_works():
                            'are set in charcoal before any paint; the heap '
                            'keeps the pose and the black takes the rest.'})
 
-    f_pair(N[25], N[26])
+    f_pair(N[28], N[29])
 
-    w = N[27]
+    w = N[30]
     f_open(w)
     f_argument(w, det(w, 1),
                [{'src': w['plate']['src'],
@@ -1452,24 +1460,24 @@ def build_works():
                  'line': 'The left head, near a skull'}],
                side='R', pos='55% 35%')
 
-    f_open(N[28])
+    f_open(N[31])
 
-    w = N[29]
+    w = N[32]
     f_open(w)
     f_pause(w, 'Deeply ordered chaos.',
-            'Inscribed at the top of the pencil study for 29 <i>&middot;</i> '
+            'Inscribed at the top of the pencil study for 32 <i>&middot;</i> '
             'wings of abyss',
             img=aside(w, 'wingsofabbyss')['src'],
             img_cap='Pencil study, inscribed at the top', kind='inscribe')
 
-    f_pair(N[31], N[30], ka=0.71,
-           int_a=(aside(N[31], 'societyscrewingbalance')['src'], None, 'w31st'),
+    f_pair(N[34], N[33], ka=0.71,
+           int_a=(aside(N[34], 'societyscrewingbalance')['src'], None, 'w31st'),
            int_a_cap='Pencil study; the hanging head, the seated group and '
                      'the grid behind them')
 
-    f_pair(N[32], N[33])
+    f_pair(N[35], N[36])
 
-    w = N[34]
+    w = N[37]
     f_open(w)
     f_sequence(w, {'layout': 'study', 'dom': aside(w, 'luciddrowning-v1'),
                    'domw': XL,
@@ -1481,18 +1489,18 @@ def build_works():
                            'twice; in the final canvas the border between body '
                            'and water is given up.'})
 
-    f_open(N[35])
+    f_open(N[38])
 
 # ══ dizin ════════════════════════════════════════════════════════════
 def index_spread():
     pl, pr = spread('Index')
     pl.fam = pr.fam = 'E'
-    SECTIONS.append(('Index — the thirty-five at one width', pl.no))
+    SECTIONS.append(('Index — the thirty-eight at one width', pl.no))
     halves = (WORKS[:18], WORKS[18:])
     for p, items, lead in ((pl, halves[0], True), (pr, halves[1], False)):
         use(p)
         if lead:
-            p.m(X(0), HEAD, W(8), 'The thirty-five, at one width')
+            p.m(X(0), HEAD, W(8), 'The thirty-eight, at one width')
         else:
             p.m(R(4), HEAD, W(4), 'Index <i>&middot;</i> 2019&ndash;2026', 'rt g')
         p.rule(X(0), HRULE, MEASURE, True)
@@ -1579,7 +1587,7 @@ def recur_section():
     SECTIONS.append(('What comes back — six recurring figures', pl.no))
     use(pl)
     sec0 = MOTIFS['sections'][0]
-    wk0, bx0, _ = mcrop(sec0, 1)
+    wk0, bx0, _ = mcrop(sec0, 4)
     register(wk0['plate']['src'], bx0, 'crop', 'recur open')
     pl.cover_img(wk0['plate']['src'], -BLEED, -BLEED, PW + 2 * BLEED,
                  PH + 2 * BLEED, bx0, 'recur-open', '50% 60%')
@@ -1624,11 +1632,11 @@ def m_onlooker():
     MOTIF_AT[sec['key']] = pl.no
     use(pl)
     motif_head(pl, sec)
-    put_crop(pl, sec, 31, X(6), 0, S, 'r', bottom=REG[1] + 46.0)
+    put_crop(pl, sec, 34, X(6), 0, S, 'r', bottom=REG[1] + 46.0)
     # 20 22 23 | 05 29 01: alti tanik, her biri bir oncekinden bir basamak
     # asagida. Genislik figurun tablodaki agirligini soyler.
     x = pl.X(0)
-    for nn, ww, bs in ((20, 78.0, 240.0), (22, 54.0, 248.0), (23, 62.0, 256.0)):
+    for nn, ww, bs in ((23, 78.0, 240.0), (25, 54.0, 248.0), (26, 62.0, 256.0)):
         put_crop(pl, sec, nn, x, 0, ww, 'g', bottom=bs, maxh=96.0, capw=ww)
         x += ww + 5.0
     # Sirada duranlarin satirlari: metnin altinda bir anahtar
@@ -1636,11 +1644,11 @@ def m_onlooker():
     pr.m(X(6), 18.0, W(6),
          'The witness, in every painting it stands in: ranged across a board, '
          'along a boat, at the foot of the heap. Along the foot of the '
-         'spread: 20, 22 and 23; 05, 29 and 01.', 'g')
-    put_crop(pr, sec, 24, X(0), REG[1], L, 'd')
+         'spread: 23, 25 and 26; 08, 32 and 04.', 'g')
+    put_crop(pr, sec, 27, X(0), REG[1], L, 'd')
     x = pr.X(0)
-    for nn, ww, bs, wk_ in ((5, 54.0, 262.0, 1.0), (29, 70.0, 268.0, 1.0),
-                            (1, 48.0, 274.0, 1.5)):
+    for nn, ww, bs, wk_ in ((8, 54.0, 262.0, 1.0), (32, 70.0, 268.0, 1.0),
+                            (4, 48.0, 274.0, 1.5)):
         put_crop(pr, sec, nn, x, 0, ww, 'g', bottom=bs, widen_k=wk_,
                  maxh=96.0, capw=ww)
         x += ww + 5.0
@@ -1654,11 +1662,11 @@ def m_chair():
     use(pl)
     motif_head(pl, sec)
     FLOOR = 244.0
-    put_crop(pl, sec, 35, X(0), 0, 70.0, 'b', bottom=FLOOR, maxh=120.0)
-    put_crop(pl, sec, 22, X(7), 0, 48.0, 'a', bottom=FLOOR, maxh=120.0)
+    put_crop(pl, sec, 38, X(0), 0, 70.0, 'b', bottom=FLOOR, maxh=120.0)
+    put_crop(pl, sec, 25, X(7), 0, 48.0, 'a', bottom=FLOOR, maxh=120.0)
     use(pr)
-    put_crop(pr, sec, 2, X(0), 0, 104.0, 'c', bottom=FLOOR, maxh=120.0)
-    put_crop(pr, sec, 23, X(9), 0, 48.0, 'd', bottom=FLOOR, maxh=120.0)
+    put_crop(pr, sec, 5, X(0), 0, 104.0, 'c', bottom=FLOOR, maxh=120.0)
+    put_crop(pr, sec, 26, X(9), 0, 48.0, 'd', bottom=FLOOR, maxh=120.0)
 
 def m_crow():
     # Yon: kus bedeni solda tam boy; ucus sag sayfada soldan saga,
@@ -1668,16 +1676,16 @@ def m_crow():
     pl.fam = pr.fam = 'R'
     MOTIF_AT[sec['key']] = pl.no
     use(pl)
-    wk, bx, line = mcrop(sec, 19)
+    wk, bx, line = mcrop(sec, 22)
     register(wk['plate']['src'], bx, 'crop', 'motif crow 19')
     ar = ratio(wk['plate']['src'], bx)
     h = BAND_H; wd = h * ar
     if wd > W(9): wd = W(9); h = wd / ar
     pl.img(wk['plate']['src'], X(0), REG[0], wd, h, bx, 'mcr19', hi=1600)
-    pl.m(X(0), REG[0] + h + 2.4, W(9), mcap(19, line), 'g')
+    pl.m(X(0), REG[0] + h + 2.4, W(9), mcap(22, line), 'g')
     use(pr)
     motif_head(pr, sec, y=18.0, tw=4.2)
-    for i, (nn, ww) in enumerate(((16, 68.0), (5, 62.0), (29, 56.0))):
+    for i, (nn, ww) in enumerate(((19, 68.0), (8, 62.0), (32, 56.0))):
         put_crop(pr, sec, nn, pr.X(3 + 2 * i), 0, ww, 'ab'[i:i + 1] or 'c',
                  bottom=262.0 - i * 74.0, maxh=66.0, capw=W(4))
 
@@ -1689,23 +1697,23 @@ def m_cage():
     MOTIF_AT[sec['key']] = pl.no
     use(pl)
     motif_head(pl, sec, tw=4.0)
-    wk, bx, line = mcrop(sec, 15)
+    wk, bx, line = mcrop(sec, 18)
     register(wk['plate']['src'], bx, 'crop', 'motif cage 15')
     ar = ratio(wk['plate']['src'], bx)
     h = BAND_H; wd = h * ar
     x15 = pl.ml + MEASURE - wd
     pl.img(wk['plate']['src'], x15, REG[0], wd, h, bx, 'mcg15', hi=1600)
-    pl.m(X(0), DBOT + 2.0, W(5), mcap(15, line), 'g')
+    pl.m(X(0), DBOT + 2.0, W(5), mcap(18, line), 'g')
     use(pr)
     pr.raw('<div class="r" style="left:%.2fmm;top:78.00mm;width:%.2fmm"></div>'
            % (-BLEED, pr.X(9) + BLEED))
     pr.vrule(pr.X(9), 78.0, 158.0)
     pr.rule(pr.X(3), 258.0, pr.ml + MEASURE - pr.X(3))
     WA, WB = W(6), W(5)
-    put_crop(pr, sec, 2, X(0), 0, WA, 'a', bottom=112.0, maxh=88.0)
-    put_crop(pr, sec, 6, X(7), 0, WB, 'd', bottom=112.0, maxh=88.0)
-    put_crop(pr, sec, 35, X(0), 0, WB, 'b', bottom=252.0, maxh=118.0)
-    put_crop(pr, sec, 20, X(7), 0, WB, 'c', bottom=252.0, maxh=118.0)
+    put_crop(pr, sec, 5, X(0), 0, WA, 'a', bottom=112.0, maxh=88.0)
+    put_crop(pr, sec, 9, X(7), 0, WB, 'd', bottom=112.0, maxh=88.0)
+    put_crop(pr, sec, 38, X(0), 0, WB, 'b', bottom=252.0, maxh=118.0)
+    put_crop(pr, sec, 23, X(7), 0, WB, 'c', bottom=252.0, maxh=118.0)
 
 def m_body():
     # Birikim: alti kesit sifir olukla tek kutle, serimin dibinde, sirtta
@@ -1716,8 +1724,8 @@ def m_body():
     MOTIF_AT[sec['key']] = pl.no
     use(pl)
     motif_head(pl, sec)
-    left  = [(3, 85.0), (8, 60.0), (17, 100.0)]
-    right = [(24, 100.0), (9, 75.0), (27, 70.0)]
+    left  = [(6, 85.0), (11, 60.0), (20, 100.0)]
+    right = [(27, 100.0), (12, 75.0), (30, 70.0)]
     keyed = []
     x = -BLEED
     for n, wd in left:
@@ -1747,27 +1755,27 @@ def m_face():
     MOTIF_AT[sec['key']] = pl.no
     use(pl)
     motif_head(pl, sec, tw=4.4)
-    wk, bx, line = mcrop(sec, 18)
+    wk, bx, line = mcrop(sec, 21)
     register(wk['plate']['src'], bx, 'crop', 'motif face 18')
     ar = ratio(wk['plate']['src'], bx)
     wd = W(10); h = wd / ar
     x = pl.ml + MEASURE - wd
     y = DBOT - h
     pl.img(wk['plate']['src'], x, y, wd, h, bx, 'mfc18', hi=1600)
-    pl.m(x, y - 6.0, wd, mcap(18, line), 'g')
+    pl.m(x, y - 6.0, wd, mcap(21, line), 'g')
     use(pr)
-    wk2, bx2, line2 = mcrop(sec, 32)
+    wk2, bx2, line2 = mcrop(sec, 35)
     register(wk2['plate']['src'], bx2, 'crop', 'motif face 32')
     ar2 = ratio(wk2['plate']['src'], bx2)
     wd2 = MEASURE; h2 = wd2 / ar2
     pr.img(wk2['plate']['src'], X(0), REG[0], wd2, h2, bx2, 'mfc32', hi=1600)
-    pr.m(X(0), REG[0] + h2 + 2.4, W(11), mcap(32, line2) +
-         ' <i>&middot;</i> facing it, ' + mcap(18, line), 'g')
+    pr.m(X(0), REG[0] + h2 + 2.4, W(11), mcap(35, line2) +
+         ' <i>&middot;</i> facing it, ' + mcap(21, line), 'g')
     yb = 224.0
     hh = 30.0
     x = X(0)
     caps = []
-    for a, b in ((1, 12), (21, 27)):
+    for a, b in ((4, 15), (24, 30)):
         x0 = x
         for n in (a, b):
             wk3, bx3, line3 = mcrop(sec, n)
@@ -1804,7 +1812,7 @@ def closing():
         'of the paintings; colour and surface differ from the works themselves. '
         'The files are set at about 137 pixels to the inch of printed width, '
         'made for reading and for screens rather than for offset printing.</p>'
-        '<p>Detail photography exists for fourteen of the thirty-five. Where it '
+        '<p>Detail photography exists for seventeen of the thirty-eight. Where it '
         'does not, the work is shown through its plate alone; where a cut is '
         'taken from a plate — in the chapter on what comes back, and three '
         'times in the work sections — the caption says where it is.</p>')
@@ -1818,7 +1826,7 @@ def closing():
         'punctuation. <em>il sbagliato di rompipalle</em>, <em>sono squalo</em> '
         'and <em>caprocorn</em> are his, not slips of the setting.</p>'
         '<p>Sources for the two borrowed reference images and for the epigraph '
-        'on 03 are given on the pages they appear on.</p>'
+        'on 06 are given on the pages they appear on.</p>'
         '<p>A caption gives where in the painting the cut is, and then what the '
         'hand did there, taken from that work&rsquo;s own note on colour, '
         'composition or hand. Every cut is printed once in the book; when a '
@@ -1828,7 +1836,7 @@ def closing():
         'this way is also printed whole in its own opening and in the index.</p>'
         '<p>Set in Inter and in Newsreader, both under the SIL Open Font '
         'License; the files are embedded. A short selection of the same works '
-        'is published separately for sending; the thirty-five are also at '
+        'is published separately for sending; the thirty-eight are also at '
         'yigitozen.xyz, where every photograph can be seen at full size.</p>'
         '<p>All works &copy; Yiğit Özen. All rights reserved.</p>')
     pl.rule(X(0), FRULE, MEASURE)
@@ -1836,27 +1844,14 @@ def closing():
     pl.m(X(4), FMICRO, W(4), 'Instagram @yjgjf')
     pl.m(R(4), FMICRO, W(4), 'yigitozen.xyz <i>&middot;</i> de-centralize.com', 'rt g')
 
-    # Kapanis: kapak kesitinin tablodaki yeri. Kitap nereden acildiysa
-    # orayi gostererek kapanir.
+    # Kapanis: yalniz isaret. Kapak artik sanatcinin kendi tasarimidir,
+    # bir kesitin yerini gostermek gerekmez.
     use(pr)
-    w1 = BY_N[1]
-    register(w1['plate']['src'], None, 'plate', 'close')
-    wd = W(8)
-    h = wd / w1['ar']
-    x = pr.ml + (MEASURE - wd) / 2.0
-    y = REG[1]
-    pr.img(w1['plate']['src'], x, y, wd, h, w1['plate'].get('box'), 'closep01',
-           cls='pl')
-    pr.frame(x + COVER_ON_PLATE[0] * wd, y + COVER_ON_PLATE[1] * h,
-             COVER_ON_PLATE[2] * wd, COVER_ON_PLATE[3] * h)
-    pr.m(x, y + h + 3.0, wd,
-         'The cover, marked where it was cut from 01 <i>&middot;</i> '
-         '7 fam board game', 'g')
     pr.raw('<img class="mark" src="images/logo.svg" '
-           'style="left:%.2fmm;top:250mm;width:26mm">' % (PW / 2 - 13))
+           'style="left:%.2fmm;top:139mm;width:42mm">' % (PW / 2 - 21))
 
 # ══ kurulum ══════════════════════════════════════════════════════════
-SELECT = [1, 2, 5, 8, 15, 22, 34, 35]
+SELECT = [4, 5, 8, 11, 18, 25, 37, 38]
 
 front_matter()
 
@@ -1866,7 +1861,7 @@ if SHORT:
     m_face()
     p = page('Index')
     use(p)
-    p.m(X(0), HEAD, W(8), 'The thirty-five, at one width')
+    p.m(X(0), HEAD, W(8), 'The thirty-eight, at one width')
     p.rule(X(0), HRULE, MEASURE, True)
     NC, Y0, CAP = 7, 30.0, 6.0
     rows = [WORKS[i:i + NC] for i in range(0, len(WORKS), NC)]
