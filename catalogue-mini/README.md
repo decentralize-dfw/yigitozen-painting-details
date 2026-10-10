@@ -1,8 +1,9 @@
 # Mini Catalogue
 
-One hundred and fifty-three works at four to a page: the 38 of the catalogued
-sequence and the 115 that had never been catalogued. The newest, *Angora Mergvs*,
-leads at Cat. 001, followed by *Gxd is AFK, We banned it* at Cat. 002;
+One hundred and fifty-four works at four to a page: the 39 of the catalogued
+sequence and the 115 that had never been catalogued. The newest, *Painstaking*,
+leads at Cat. 001, followed by *Angora Mergvs* at Cat. 002 and
+*Gxd is AFK, We banned it* at Cat. 003;
 the printed `../catalogue/` still holds the earlier 35
 until it is set again.
 
@@ -30,9 +31,9 @@ been catalogued before:
 
 | | | |
 |---|---|---|
-| **Canvas** | Cat. 001–035 | 29 catalogued, then 6 |
-| **Paper**  | Cat. 036–144 | 9 catalogued, then 100 — paper, carton, print, whiteboard |
-| **Object** | Cat. 145–153 | 9 — assemblages, and work made on packaging taken apart |
+| **Canvas** | Cat. 001–036 | 30 catalogued, then 6 |
+| **Paper**  | Cat. 037–145 | 9 catalogued, then 100 — paper, carton, print, whiteboard |
+| **Object** | Cat. 146–154 | 9 — assemblages, and work made on packaging taken apart |
 
 Each group runs newest first. The running foot names the group, so a page
 that straddles two says so.
@@ -48,7 +49,7 @@ that straddles two says so.
   transparent ground, and a hairline there reads as the edge of the work.
 - Dimensions are omitted where the record has none, Location likewise; the
   115 carry no location.
-- Dimensions read `H … cm, W … cm`. The 38 site works use the site's
+- Dimensions read `H … cm, W … cm`. The 39 site works use the site's
   `height_cm` and `width_cm`; archive works retain their recorded sizes,
   with height and width assigned from plate orientation. ISO paper sizes
   are expanded to their centimetre dimensions.
